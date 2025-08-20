@@ -1,0 +1,43 @@
+{
+  "type": "record",
+  "name": "AccessService",
+  "namespace": "no.digdir.fdk.model.dataset",
+  "doc": "Information about a distribution access service",
+  "fields": [
+    {
+      "name": "uri",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "URI for the access service"
+    },
+    {
+      "name": "title",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual title of the access service"
+    },
+    {
+      "name": "description",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual description of the access service"
+    },
+    {
+      "name": "endpointDescription",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.UriWithLabelAndType"
+        }
+      ],
+      "doc": "Description of the services available via the end-points"
+    }
+  ]
+}

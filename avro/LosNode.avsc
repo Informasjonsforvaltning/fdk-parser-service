@@ -1,0 +1,51 @@
+{
+  "type": "record",
+  "name": "LosNode",
+  "namespace": "no.digdir.fdk.model",
+  "doc": "LOS theme information",
+  "fields": [
+    {
+      "name": "uri",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "URI of the theme"
+    },
+    {
+      "name": "code",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Code value for the theme"
+    },
+    {
+      "name": "isTema",
+      "type": [
+        "null",
+        "boolean"
+      ],
+      "doc": "Is LOS theme or LOS word"
+    },
+    {
+      "name": "losPaths",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "LOS hierarchy paths for the theme"
+    },
+    {
+      "name": "name",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual name of the theme"
+    }
+  ]
+}

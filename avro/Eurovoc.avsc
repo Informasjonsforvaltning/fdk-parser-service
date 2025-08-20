@@ -1,0 +1,43 @@
+{
+  "type": "record",
+  "name": "Eurovoc",
+  "namespace": "no.digdir.fdk.model",
+  "doc": "EUROVOC theme information",
+  "fields": [
+    {
+      "name": "uri",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "URI of the EUROVOC theme"
+    },
+    {
+      "name": "code",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Code value for the theme"
+    },
+    {
+      "name": "eurovocPaths",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "EUROVOC hierarchy paths for the theme"
+    },
+    {
+      "name": "label",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual label of the theme"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "type": "record",
+  "name": "LocalizedStrings",
+  "namespace": "no.digdir.fdk.model",
+  "doc": "Multilingual texts",
+  "fields": [
+    {
+      "name": "no",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Text in norwegian'"
+    },
+    {
+      "name": "nb",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Text in norwegian bokmål'"
+    },
+    {
+      "name": "nn",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Text in norwegian nynorsk'"
+    },
+    {
+      "name": "en",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Text in english'"
+    }
+  ]
+}

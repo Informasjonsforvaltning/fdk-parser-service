@@ -1,0 +1,9 @@
+{
+  "type": "enum",
+  "name": "ResourceType",
+  "namespace": "no.digdir.fdk.model",
+  "doc": "Types for resources in FDK",
+  "symbols": [
+    "datasets"
+  ]
+}

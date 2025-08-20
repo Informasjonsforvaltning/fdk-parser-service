@@ -1,0 +1,24 @@
+{
+  "type": "record",
+  "name": "QualityAnnotation",
+  "namespace": "no.digdir.fdk.model.dataset",
+  "doc": "Quality annotation for a dataset",
+  "fields": [
+    {
+      "name": "inDimension",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Dimension the annotation is in"
+    },
+    {
+      "name": "hasBody",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.Publisher"
+      ],
+      "doc": "Multilingual text body of the annotation"
+    }
+  ]
+}

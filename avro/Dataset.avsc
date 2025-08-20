@@ -1,0 +1,457 @@
+{
+  "type": "record",
+  "name": "Dataset",
+  "namespace": "no.digdir.fdk.model.dataset",
+  "doc": "Internal Data.norge.no model for datasets",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string",
+      "doc": "Unique FDK identifier for the dataset"
+    },
+    {
+      "name": "uri",
+      "type": "string",
+      "doc": "Subject URI for the dataset in the harvested source"
+    },
+    {
+      "name": "identifier",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "List of dataset identifiers from dct:identifier"
+    },
+    {
+      "name": "admsIdentifier",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "List of dataset identifiers from adms:identifier"
+    },
+    {
+      "name": "harvest",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.HarvestMetaData"
+      ],
+      "doc": "Meta data about the harvest of the dataset to FDK"
+    },
+    {
+      "name": "catalog",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.Catalog"
+      ],
+      "doc": "Information about the catalog the dataset is contained in"
+    },
+    {
+      "name": "title",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual title of the dataset"
+    },
+    {
+      "name": "description",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual description of the dataset, where harvested formatting has been removed"
+    },
+    {
+      "name": "descriptionFormatted",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual description of the dataset, where harvested formatting is intact"
+    },
+    {
+      "name": "publisher",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.Publisher"
+      ],
+      "doc": "Publisher information"
+    },
+    {
+      "name": "distribution",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.dataset.Distribution"
+        }
+      ],
+      "doc": "List of distributions for the dataset"
+    },
+    {
+      "name": "sample",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.dataset.Distribution"
+        }
+      ],
+      "doc": "List of sample distributions for the dataset"
+    },
+    {
+      "name": "themeUris",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "List of theme URIs for the dataset"
+    },
+    {
+      "name": "theme",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.EuDataTheme"
+        }
+      ],
+      "doc": "List of EU data themes for the dataset"
+    },
+    {
+      "name": "losTheme",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.LosNode"
+        }
+      ],
+      "doc": "List of LOS themes for the dataset"
+    },
+    {
+      "name": "eurovocThemes",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.Eurovoc"
+        }
+      ],
+      "doc": "List of EUROVOC themes for the dataset"
+    },
+    {
+      "name": "keyword",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.LocalizedStrings"
+        }
+      ],
+      "doc": "List of keywords for the dataset"
+    },
+    {
+      "name": "issued",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Date when the dataset was issued, format: 'YYYY-MM-DD'"
+    },
+    {
+      "name": "modified",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Date when the dataset was last modified, format: 'YYYY-MM-DD'"
+    },
+    {
+      "name": "dctType",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.ReferenceDataCode"
+      ],
+      "doc": "Type of dataset"
+    },
+    {
+      "name": "accessRights",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.ReferenceDataCode"
+      ],
+      "doc": "Access rights for the dataset"
+    },
+    {
+      "name": "language",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.ReferenceDataCode"
+        }
+      ],
+      "doc": "Languages the dataset is available in"
+    },
+    {
+      "name": "page",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "Pages or documents that describes the dataset"
+    },
+    {
+      "name": "landingPage",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "List of landing pages for the dataset"
+    },
+    {
+      "name": "temporal",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.Temporal"
+        }
+      ],
+      "doc": "Publisher information"
+    },
+    {
+      "name": "subject",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.dataset.Subject"
+        }
+      ],
+      "doc": "Dataset subject information"
+    },
+    {
+      "name": "spatial",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.ReferenceDataCode"
+        }
+      ],
+      "doc": "Dataset spatial information"
+    },
+    {
+      "name": "provenance",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.ReferenceDataCode"
+      ],
+      "doc": "Provenance for the dataset"
+    },
+    {
+      "name": "accrualPeriodicity",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.ReferenceDataCode"
+      ],
+      "doc": "Frequency of updates for the dataset"
+    },
+    {
+      "name": "legalBasisForRestriction",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.UriWithLabelAndType"
+        }
+      ],
+      "doc": "Restriction rules for the dataset"
+    },
+    {
+      "name": "legalBasisForProcessing",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.UriWithLabelAndType"
+        }
+      ],
+      "doc": "Processing rules for the dataset"
+    },
+    {
+      "name": "legalBasisForAccess",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.UriWithLabelAndType"
+        }
+      ],
+      "doc": "Access rules for the dataset"
+    },
+    {
+      "name": "conformsTo",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.UriWithLabel"
+        }
+      ],
+      "doc": "Established schemas to which the dataset conforms"
+    },
+    {
+      "name": "informationModel",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.UriWithLabelAndType"
+        }
+      ],
+      "doc": "Information models to which the dataset conforms"
+    },
+    {
+      "name": "hasAccuracyAnnotation",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.dataset.QualityAnnotation"
+      ],
+      "doc": "Quality annotation about dataset accuracy"
+    },
+    {
+      "name": "hasCompletenessAnnotation",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.dataset.QualityAnnotation"
+      ],
+      "doc": "Quality annotation about dataset completeness"
+    },
+    {
+      "name": "hasCurrentnessAnnotation",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.dataset.QualityAnnotation"
+      ],
+      "doc": "Quality annotation about dataset currentness"
+    },
+    {
+      "name": "hasAvailabilityAnnotation",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.dataset.QualityAnnotation"
+      ],
+      "doc": "Quality annotation about dataset availability"
+    },
+    {
+      "name": "hasRelevanceAnnotation",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.dataset.QualityAnnotation"
+      ],
+      "doc": "Quality annotation about dataset relevance"
+    },
+    {
+      "name": "qualifiedAttributions",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.dataset.QualifiedAttribution"
+        }
+      ],
+      "doc": "Qualified attributions of the dataset"
+    },
+    {
+      "name": "isOpenData",
+      "type": "boolean",
+      "doc": "Dataset is open data"
+    },
+    {
+      "name": "isAuthoritative",
+      "type": "boolean",
+      "doc": "Dataset is authoritative"
+    },
+    {
+      "name": "isRelatedToTransportportal",
+      "type": "boolean",
+      "doc": "Dataset is related to Transportportal"
+    },
+    {
+      "name": "inSeries",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.dataset.InSeries"
+      ],
+      "doc": "Information about series, only relevant if dataset is in a series"
+    },
+    {
+      "name": "prev",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Previous dataset, only relevant if dataset is in a series"
+    },
+    {
+      "name": "last",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Last dataset in series, only relevant when specializedType is datasetSeries"
+    },
+    {
+      "name": "datasetsInSeries",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "All datasets in the series, only relevant when specializedType is datasetSeries"
+    },
+    {
+      "name": "type",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.ResourceType"
+      ],
+      "doc": "Resource type"
+    },
+    {
+      "name": "specializedType",
+      "type": [
+        "null",
+        {
+          "type": "enum",
+          "name": "DatasetType",
+          "symbols": [
+            "datasetSeries"
+          ]
+        }
+      ],
+      "doc": "Specialized dataset type"
+    }
+  ]
+}
