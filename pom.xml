@@ -112,6 +112,7 @@
                             <sourceDirs>
                                 <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
                                 <sourceDir>${project.basedir}/src/main/java</sourceDir>
+                                <sourceDir>${project.build.directory}/generated-sources/avro</sourceDir>
                             </sourceDirs>
                         </configuration>
                     </execution>
@@ -140,13 +141,12 @@
                 <executions>
                     <execution>
                         <id>schemas</id>
-                        <phase>generate-sources</phase>
                         <goals>
                             <goal>schema</goal>
                         </goals>
                         <configuration>
                             <sourceDirectory>${project.basedir}/avro/</sourceDirectory>
-                            <outputDirectory>${project.basedir}/src/main/java/</outputDirectory>
+                            <outputDirectory>${project.build.directory}/generated-sources/avro</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
