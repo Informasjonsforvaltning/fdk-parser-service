@@ -1,0 +1,48 @@
+{
+  "type": "record",
+  "name": "Catalog",
+  "namespace": "no.digdir.fdk.model",
+  "doc": "Information about the catalog a resource is a member of",
+  "fields": [
+    {
+      "name": "id",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Unique FDK identifier for the catalog"
+    },
+    {
+      "name": "uri",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "URI for the catalog"
+    },
+    {
+      "name": "publisher",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.Publisher"
+      ],
+      "doc": "Publisher of the catalog"
+    },
+    {
+      "name": "title",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual title of the catalog"
+    },
+    {
+      "name": "description",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual description of the catalog"
+    }
+  ]
+}

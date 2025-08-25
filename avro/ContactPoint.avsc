@@ -1,0 +1,64 @@
+{
+  "type": "record",
+  "name": "ContactPoint",
+  "namespace": "no.digdir.fdk.model",
+  "doc": "Information about a contact point",
+  "fields": [
+    {
+      "name": "uri",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "URI for the contact point"
+    },
+    {
+      "name": "fullname",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Name of the contact point"
+    },
+    {
+      "name": "email",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Contact point email value"
+    },
+    {
+      "name": "hasURL",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Contact point url value"
+    },
+    {
+      "name": "hasTelephone",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Contact point phone value"
+    },
+    {
+      "name": "organizationName",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual name of the associated organization"
+    },
+    {
+      "name": "organizationUnit",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual title of the associated organization unit"
+    }
+  ]
+}

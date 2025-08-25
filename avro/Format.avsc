@@ -1,0 +1,46 @@
+{
+  "type": "record",
+  "name": "Format",
+  "namespace": "no.digdir.fdk.model",
+  "doc": "Information about format or media type",
+  "fields": [
+    {
+      "name": "uri",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "URI for the format"
+    },
+    {
+      "name": "name",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Name of the format"
+    },
+    {
+      "name": "code",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Code for the format"
+    },
+    {
+      "name": "type",
+      "type": {
+        "type": "enum",
+        "name": "FormatType",
+        "symbols": [
+          "UNKNOWN",
+          "MEDIA_TYPE",
+          "FILE_TYPE"
+        ],
+        "default": "UNKNOWN"
+      },
+      "doc": "Type of the format"
+    }
+  ]
+}

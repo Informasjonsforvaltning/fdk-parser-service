@@ -1,0 +1,32 @@
+{
+  "type": "record",
+  "name": "Temporal",
+  "namespace": "no.digdir.fdk.model",
+  "doc": "Information about a temporal period",
+  "fields": [
+    {
+      "name": "uri",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Associated URI"
+    },
+    {
+      "name": "startDate",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Start date of the period, format: 'YYYY-MM-DD'"
+    },
+    {
+      "name": "endDate",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "End date of the period, format: 'YYYY-MM-DD'"
+    }
+  ]
+}

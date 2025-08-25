@@ -1,0 +1,133 @@
+{
+  "type": "record",
+  "name": "Distribution",
+  "namespace": "no.digdir.fdk.model.dataset",
+  "doc": "Distribution information",
+  "fields": [
+    {
+      "name": "uri",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "URI for the distribution"
+    },
+    {
+      "name": "title",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual title of the distribution"
+    },
+    {
+      "name": "description",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual description of the distribution"
+    },
+    {
+      "name": "accessURL",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "URL for accessing the distribution"
+    },
+    {
+      "name": "downloadURL",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "URL for downloading the distribution"
+    },
+    {
+      "name": "license",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.UriWithLabelAndType"
+        }
+      ],
+      "doc": "Licences under which the distribution is made available"
+    },
+    {
+      "name": "conformsTo",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.UriWithLabel"
+        }
+      ],
+      "doc": "Established schemas to which the described distribution conforms"
+    },
+    {
+      "name": "page",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.UriWithLabelAndType"
+        }
+      ],
+      "doc": "Page or documents about this distribution"
+    },
+    {
+      "name": "fdkFormat",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.Format"
+        }
+      ],
+      "doc": "Formats or media types of the distribution"
+    },
+    {
+      "name": "compressFormat",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.Format"
+      ],
+      "doc": "Compress format of the distribution"
+    },
+    {
+      "name": "packageFormat",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.Format"
+      ],
+      "doc": "Package format of the distribution"
+    },
+    {
+      "name": "type",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Type of the distribution"
+    },
+    {
+      "name": "accessService",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.dataset.AccessService"
+        }
+      ],
+      "doc": "Access services of the distribution"
+    }
+  ]
+}

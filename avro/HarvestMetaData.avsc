@@ -1,0 +1,24 @@
+{
+  "type": "record",
+  "name": "HarvestMetaData",
+  "namespace": "no.digdir.fdk.model",
+  "doc": "Meta data from the harvest of the resource to FDK",
+  "fields": [
+    {
+      "name": "firstHarvested",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Date when the resource was first harvested to FDK, format: 'YYYY-MM-DDTHH:mm:ssZ'"
+    },
+    {
+      "name": "modified",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Date when the harvest process last found changes to the resource, format: 'YYYY-MM-DDTHH:mm:ssZ'"
+    }
+  ]
+}

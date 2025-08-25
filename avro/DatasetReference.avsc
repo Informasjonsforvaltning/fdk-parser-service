@@ -1,0 +1,24 @@
+{
+  "type": "record",
+  "name": "Reference",
+  "namespace": "no.digdir.fdk.model.dataset",
+  "doc": "Reference information",
+  "fields": [
+    {
+      "name": "referenceType",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.ReferenceDataCode"
+      ],
+      "doc": "Type of reference"
+    },
+    {
+      "name": "source",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.UriWithLabel"
+      ],
+      "doc": "Referenced resource"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "type": "record",
+  "name": "QualifiedAttribution",
+  "namespace": "no.digdir.fdk.model.dataset",
+  "doc": "Qualified attribution for a dataset",
+  "fields": [
+    {
+      "name": "role",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Associated role"
+    },
+    {
+      "name": "agent",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.Publisher"
+      ],
+      "doc": "Associated agent"
+    }
+  ]
+}
