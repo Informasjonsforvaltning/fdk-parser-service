@@ -13,20 +13,44 @@
       "doc": "Unique identifier for the publisher"
     },
     {
-      "name": "name",
-      "type": [
-        "null",
-        "no.digdir.fdk.model.LocalizedStrings"
-      ],
-      "doc": "Multilingual name of the publisher"
-    },
-    {
       "name": "uri",
       "type": [
         "null",
         "string"
       ],
       "doc": "URI of the publisher"
+    },
+    {
+      "name": "name",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Official name of the publisher"
+    },
+    {
+      "name": "orgPath",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Simple organization map of the organization, it lists organization ID and the ID of eventual parent organizations"
+    },
+    {
+      "name": "prefLabel",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual label of the publisher"
+    },
+    {
+      "name": "organisasjonsform",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Type of organization from brreg, see https://www.brreg.no/bedrift/organisasjonsformer "
     }
   ]
 }
