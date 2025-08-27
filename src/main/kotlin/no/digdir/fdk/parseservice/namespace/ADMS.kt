@@ -10,6 +10,7 @@ class ADMS {
             "http://www.w3.org/ns/adms#"
 
         val identifier: Property = ResourceFactory.createProperty("${uri}identifier")
+        val sample: Property = ResourceFactory.createProperty("${uri}sample")
     }
 
 }

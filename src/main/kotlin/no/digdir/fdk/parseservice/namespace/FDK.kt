@@ -12,6 +12,10 @@ class FDK {
         val isAuthoritative: Property = ResourceFactory.createProperty("${uri}isAuthoritative")
         val isRelatedToTransportportal: Property = ResourceFactory.createProperty("${uri}isRelatedToTransportportal")
         val isOpenData: Property = ResourceFactory.createProperty("${uri}isOpenData")
+
+        const val internalURI = "https://fellesdatakatalog.digdir.no/ontology/internal/"
+
+        val themePath: Property = ResourceFactory.createProperty("${internalURI}themePath")
     }
 
 }

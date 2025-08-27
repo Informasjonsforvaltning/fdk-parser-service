@@ -3,6 +3,7 @@ package no.digdir.fdk.parseservice.extract.fdk
 import no.digdir.fdk.model.HarvestMetaData
 import no.digdir.fdk.parseservice.extract.containsTriple
 import no.digdir.fdk.parseservice.extract.extractStringValue
+import no.digdir.fdk.parseservice.extract.isURIResource
 import no.digdir.fdk.parseservice.extract.singleObjectStatement
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
@@ -48,7 +49,8 @@ fun fdkIdFromRecord(recordResource: Resource) : String? {
 fun primaryTopicFromFdkRecord(recordResource: Resource, acceptableTypes: List<Resource>): Resource {
     val primaryTopic = recordResource.listProperties(FOAF.primaryTopic)
         .asSequence()
-        .mapNotNull { it.resource }
+        .filter { isURIResource(it) }
+        .map { it.resource }
         .singleOrNull()
         ?: throw Exception("No primary topic found on record")
 

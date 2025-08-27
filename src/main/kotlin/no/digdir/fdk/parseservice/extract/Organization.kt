@@ -9,9 +9,7 @@ import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.ROV
 
 fun Resource.extractOrganization(pred: Property): Organization? {
-    val orgResource = singleObjectStatement(pred)
-        ?.resource
-        ?.takeIf { it.isResource }
+    val orgResource = singleResource(pred)
 
     if (orgResource == null) return null
     else {

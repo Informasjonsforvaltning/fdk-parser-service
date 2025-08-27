@@ -16,6 +16,22 @@ fun Resource.singleObjectStatement(pred: Property): Statement? {
     return if (properties.isEmpty()) null else properties.first()
 }
 
+fun Resource.singleResource(pred: Property): Resource? =
+    try{
+        singleObjectStatement(pred)?.resource?.takeIf { it.isResource }
+    } catch (ex: Exception) {
+        LOGGER.warn("Failed to extract ${pred.uri}, found on $uri, as resource", ex)
+        null
+    }
+
+fun Resource.listResources(pred: Property): List<Resource>? =
+    try{
+        listProperties(pred).asSequence().map { it.resource }.filter { it.isResource }.toList()
+    } catch (ex: Exception) {
+        LOGGER.warn("Failed to extract ${pred.uri}, found on $uri, as resource", ex)
+        null
+    }
+
 private fun Statement.extractStringValue(): String? {
     try {
         return when {
@@ -75,6 +91,12 @@ fun Model.containsTriple(subj: String, pred: String, obj: Boolean): Boolean {
 
 fun isURIResource(stmt: Statement): Boolean = try {
     stmt.resource?.isURIResource == true
+} catch (ex: Exception) {
+    false
+}
+
+fun isResource(stmt: Statement): Boolean = try {
+    stmt.resource?.isResource == true
 } catch (ex: Exception) {
     false
 }

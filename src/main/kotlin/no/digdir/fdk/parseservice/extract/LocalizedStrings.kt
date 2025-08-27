@@ -31,3 +31,17 @@ fun LocalizedStrings.descriptionHtmlCleaner(): LocalizedStrings {
         .setEn(en?.replace(regex, ""))
         .build()
 }
+
+fun Resource.extractLocalizedStringList(pred: Property): List<LocalizedStrings>? =
+    listProperties(pred)
+        .asSequence()
+        .mapNotNull { it.extractStringLanguagePair() }
+        .mapNotNull { pair -> when (pair.first) {
+            "no" -> LocalizedStrings().also { it.no = pair.second }
+            "nb" -> LocalizedStrings().also { it.nb = pair.second }
+            "nn" -> LocalizedStrings().also { it.nn = pair.second }
+            "en" -> LocalizedStrings().also { it.en = pair.second }
+            else -> null
+        } }
+        .toList()
+        .takeIf { it.isNotEmpty() }

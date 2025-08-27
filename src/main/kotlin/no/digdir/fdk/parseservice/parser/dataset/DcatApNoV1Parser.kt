@@ -1,9 +1,11 @@
 package no.digdir.fdk.parseservice.parser.dataset
 
 import no.digdir.fdk.model.dataset.Dataset
+import no.digdir.fdk.parseservice.extract.dataset.extractListOfDistributionsV1
 import no.digdir.fdk.parseservice.extract.fdk.addFdkData
 import no.digdir.fdk.parseservice.extract.fdk.fdkRecord
 import no.digdir.fdk.parseservice.extract.fdk.primaryTopicFromFdkRecord
+import no.digdir.fdk.parseservice.namespace.ADMS
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCAT
@@ -33,26 +35,10 @@ class DcatApNoV1Parser : BaseDatasetParser() {
 
         builder.addCommonDatasetValues(datasetResource)
 
-        builder.setDistribution(null)
-        builder.setSample(null)
-        builder.setThemeUris(null)
-        builder.setTheme(null)
-        builder.setLosTheme(null)
-        builder.setEurovocThemes(null)
-        builder.setKeyword(null)
-        builder.setDctType(null)
-        builder.setAccessRights(null)
-        builder.setLanguage(null)
-        builder.setTemporal(null)
-        builder.setSubject(null)
-        builder.setSpatial(null)
-        builder.setProvenance(null)
-        builder.setAccrualPeriodicity(null)
-        builder.setLegalBasisForProcessing(null)
-        builder.setLegalBasisForRestriction(null)
-        builder.setLegalBasisForAccess(null)
-        builder.setConformsTo(null)
-        builder.setInformationModel(null)
+        builder.setDistribution(datasetResource.extractListOfDistributionsV1(DCAT.distribution))
+        builder.setSample(datasetResource.extractListOfDistributionsV1(ADMS.sample))
+
+        // The following properties are not implemented in DCAT-AP-NO v1.1
         builder.setHasRelevanceAnnotation(null)
         builder.setHasCurrentnessAnnotation(null)
         builder.setHasCompletenessAnnotation(null)
@@ -60,10 +46,12 @@ class DcatApNoV1Parser : BaseDatasetParser() {
         builder.setHasAccuracyAnnotation(null)
         builder.setQualifiedAttributions(null)
         builder.setInSeries(null)
+        builder.setDatasetsInSeries(null)
         builder.setLast(null)
         builder.setPrev(null)
-        builder.setDatasetsInSeries(null)
-        builder.setType(null)
+        builder.setLegalBasisForProcessing(null)
+        builder.setLegalBasisForRestriction(null)
+        builder.setLegalBasisForAccess(null)
         builder.setSpecializedType(null)
 
         return builder.build()
