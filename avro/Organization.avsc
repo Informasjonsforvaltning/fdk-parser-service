@@ -1,8 +1,8 @@
 {
   "type": "record",
-  "name": "Publisher",
+  "name": "Organization",
   "namespace": "no.digdir.fdk.model",
-  "doc": "Publisher information",
+  "doc": "Organization information",
   "fields": [
     {
       "name": "id",
@@ -10,7 +10,7 @@
         "null",
         "string"
       ],
-      "doc": "Unique identifier for the publisher"
+      "doc": "Unique identifier for the organization"
     },
     {
       "name": "uri",
@@ -18,7 +18,7 @@
         "null",
         "string"
       ],
-      "doc": "URI of the publisher"
+      "doc": "URI of the organization"
     },
     {
       "name": "name",
@@ -26,7 +26,7 @@
         "null",
         "string"
       ],
-      "doc": "Official name of the publisher"
+      "doc": "Official name of the organization"
     },
     {
       "name": "orgPath",
@@ -42,7 +42,7 @@
         "null",
         "no.digdir.fdk.model.LocalizedStrings"
       ],
-      "doc": "Multilingual label of the publisher"
+      "doc": "Multilingual label of the organization"
     },
     {
       "name": "organisasjonsform",

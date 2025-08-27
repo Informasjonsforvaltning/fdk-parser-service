@@ -21,7 +21,7 @@ fun Resource.extractCatalogData(): Catalog? {
             .setId(catalogResource.extractStringValue(DCTerms.identifier))
             .setTitle(catalogResource.extractLocalizedStrings(DCTerms.title))
             .setDescription(catalogResource.extractLocalizedStrings(DCTerms.description))
-            .setPublisher(catalogResource.extractPublisher())
+            .setPublisher(catalogResource.extractOrganization(DCTerms.publisher))
             .build()
 
         return if (catalog.hasData()) catalog else null

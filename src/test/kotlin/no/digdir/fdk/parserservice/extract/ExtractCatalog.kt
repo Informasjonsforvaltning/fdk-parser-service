@@ -2,7 +2,7 @@ package no.digdir.fdk.parserservice.extract
 
 import no.digdir.fdk.model.Catalog
 import no.digdir.fdk.model.LocalizedStrings
-import no.digdir.fdk.model.Publisher
+import no.digdir.fdk.model.Organization
 import no.digdir.fdk.parseservice.extract.extractCatalogData
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.vocabulary.DCAT
@@ -43,7 +43,7 @@ class ExtractCatalog {
         m.read(StringReader(turtle), null, "TURTLE")
         val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
 
-        val expectedPublisher = Publisher().also {
+        val expectedPublisher = Organization().also {
             it.uri = "https://testdirektoratet.no/publisher"
             it.id = "112233445"
         }

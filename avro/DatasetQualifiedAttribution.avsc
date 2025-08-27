@@ -16,7 +16,7 @@
       "name": "agent",
       "type": [
         "null",
-        "no.digdir.fdk.model.Publisher"
+        "no.digdir.fdk.model.Organization"
       ],
       "doc": "Associated agent"
     }

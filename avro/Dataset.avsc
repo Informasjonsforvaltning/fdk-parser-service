@@ -80,9 +80,9 @@
       "name": "publisher",
       "type": [
         "null",
-        "no.digdir.fdk.model.Publisher"
+        "no.digdir.fdk.model.Organization"
       ],
-      "doc": "Publisher information"
+      "doc": "Publisher of the dataset"
     },
     {
       "name": "distribution",
@@ -235,7 +235,7 @@
           "items": "no.digdir.fdk.model.Temporal"
         }
       ],
-      "doc": "Publisher information"
+      "doc": "Temporal information"
     },
     {
       "name": "subject",

@@ -1,10 +1,11 @@
 package no.digdir.fdk.parserservice.extract
 
 import no.digdir.fdk.model.LocalizedStrings
-import no.digdir.fdk.model.Publisher
-import no.digdir.fdk.parseservice.extract.extractPublisher
+import no.digdir.fdk.model.Organization
+import no.digdir.fdk.parseservice.extract.extractOrganization
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.vocabulary.DCAT
+import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDF
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -12,7 +13,7 @@ import java.io.StringReader
 import kotlin.test.assertEquals
 
 @Tag("unit")
-class ExtractPublisher {
+class ExtractOrganization {
 
     @Test
     fun extractPublisher() {
@@ -41,7 +42,7 @@ class ExtractPublisher {
         m.read(StringReader(turtle), null, "TURTLE")
         val subject = m.listSubjectsWithProperty(RDF.type, DCAT.DataService).toList().first()
 
-        val expected = Publisher().also {
+        val expected = Organization().also {
             it.uri = "https://testdirektoratet.no/publisher"
             it.id = "112233445"
             it.name = "TESTORGANISASJON"
@@ -50,7 +51,7 @@ class ExtractPublisher {
             it.prefLabel = LocalizedStrings().also { label -> label.nb = "Norsk testorganisasjon" }
         }
 
-        assertEquals(expected, subject.extractPublisher())
+        assertEquals(expected, subject.extractOrganization(DCTerms.publisher))
     }
 
 }

@@ -11,6 +11,7 @@ import org.apache.jena.vocabulary.RDF
 fun Model.fdkRecord(acceptableTypes: List<Resource>): Resource {
     val records = listResourcesWithProperty(RDF.type, DCAT.CatalogRecord)
         .asSequence()
+        .filter { it.isURIResource }
         .filter { it.uri.contains("fellesdatakatalog.digdir.no") }
         .filter { it.hasAcceptablePrimaryTopic(acceptableTypes) }.toList()
 

@@ -4,7 +4,7 @@ import no.digdir.fdk.model.dataset.Dataset
 import no.digdir.fdk.parseservice.extract.descriptionHtmlCleaner
 import no.digdir.fdk.parseservice.extract.extractListOfStrings
 import no.digdir.fdk.parseservice.extract.extractLocalizedStrings
-import no.digdir.fdk.parseservice.extract.extractPublisher
+import no.digdir.fdk.parseservice.extract.extractOrganization
 import no.digdir.fdk.parseservice.extract.extractStringValue
 import no.digdir.fdk.parseservice.namespace.ADMS
 import org.apache.jena.rdf.model.Resource
@@ -21,7 +21,7 @@ fun Dataset.addV11Values(datasetResource: Resource): Dataset {
     title = datasetResource.extractLocalizedStrings(DCTerms.title)
     descriptionFormatted = formattedDescription
     description = formattedDescription?.descriptionHtmlCleaner()
-    publisher = datasetResource.extractPublisher()
+    publisher = datasetResource.extractOrganization(DCTerms.publisher)
     identifier = datasetResource.extractListOfStrings(DCTerms.identifier)
     admsIdentifier = datasetResource.extractListOfStrings(ADMS.identifier)
     modified = datasetResource.extractStringValue(DCTerms.modified)
