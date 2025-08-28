@@ -2,7 +2,7 @@ package no.digdir.fdk.parserservice.extract.dataset
 
 import no.digdir.fdk.model.LocalizedStrings
 import no.digdir.fdk.model.dataset.Dataset
-import no.digdir.fdk.parseservice.extract.dataset.extractDataset
+import no.digdir.fdk.parseservice.parser.dataset.DcatApNoV1Parser
 import org.apache.jena.rdf.model.ModelFactory
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -11,6 +11,7 @@ import kotlin.test.assertEquals
 
 @Tag("unit")
 class DatasetExtractionTest {
+    val parser = DcatApNoV1Parser()
 
     @Test
     fun extractsTitleAndDescriptionCorrectly() {
@@ -55,7 +56,7 @@ class DatasetExtractionTest {
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
-        val result = m.extractDataset()
+        val result = parser.parse(m)
 
         assertEquals(expected, result)
     }
@@ -95,7 +96,7 @@ class DatasetExtractionTest {
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
-        val result = m.extractDataset()
+        val result = parser.parse(m)
 
         assertEquals(expected, result)
     }
@@ -131,7 +132,7 @@ class DatasetExtractionTest {
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
-        val result = m.extractDataset()
+        val result = parser.parse(m)
 
         assertEquals(expected, result)
     }
@@ -164,7 +165,7 @@ class DatasetExtractionTest {
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
-        val result = m.extractDataset()
+        val result = parser.parse(m)
 
         assertEquals(expected, result)
     }
@@ -193,7 +194,7 @@ class DatasetExtractionTest {
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
-        val result = m.extractDataset()
+        val result = parser.parse(m)
 
         assertEquals(expectedDCT, result.identifier?.map { it.toString() }?.sorted())
         assertEquals(expectedADMS, result.admsIdentifier?.map { it.toString() }?.sorted())
@@ -222,7 +223,7 @@ class DatasetExtractionTest {
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
-        val result = m.extractDataset()
+        val result = parser.parse(m)
 
         assertEquals(expectedPage, result.page?.map { it.toString() }?.sorted())
         assertEquals(expectedLandingPage, result.landingPage?.map { it.toString() }?.sorted())

@@ -1,11 +1,8 @@
 package no.digdir.fdk.parserservice.extract
 
 import no.digdir.fdk.model.HarvestMetaData
-import no.digdir.fdk.parseservice.extract.extractHarvestMetaData
-import no.digdir.fdk.parseservice.extract.fdkRecord
+import no.digdir.fdk.parseservice.parser.dataset.DcatApNoV1Parser
 import org.apache.jena.rdf.model.ModelFactory
-import org.apache.jena.vocabulary.DCAT
-import org.apache.jena.vocabulary.RDF
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -14,6 +11,7 @@ import kotlin.test.assertEquals
 
 @Tag("unit")
 class ExtractHarvestData {
+    val parser = DcatApNoV1Parser()
 
     @Test
     fun exceptionWhenGraphIsMissingCatalogRecord() {
@@ -34,7 +32,7 @@ class ExtractHarvestData {
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
 
-        assertThrows<Exception> { m.fdkRecord(listOf(DCAT.Dataset)) }
+        assertThrows<Exception> { parser.parse(m) }
     }
 
     @Test
@@ -65,7 +63,7 @@ class ExtractHarvestData {
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
 
-        assertThrows<Exception> { m.fdkRecord(listOf(DCAT.Dataset)) }
+        assertThrows<Exception> { parser.parse(m) }
     }
 
     @Test
@@ -84,7 +82,7 @@ class ExtractHarvestData {
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
 
-        assertThrows<Exception> { m.fdkRecord(listOf(DCAT.Dataset)) }
+        assertThrows<Exception> { parser.parse(m) }
     }
 
     @Test
@@ -107,7 +105,7 @@ class ExtractHarvestData {
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
 
-        assertThrows<Exception> { m.fdkRecord(listOf(DCAT.Dataset)) }
+        assertThrows<Exception> { parser.parse(m) }
     }
 
     @Test
@@ -133,7 +131,7 @@ class ExtractHarvestData {
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
 
-        assertThrows<Exception> { m.fdkRecord(listOf(DCAT.Dataset)) }
+        assertThrows<Exception> { parser.parse(m) }
     }
 
     @Test
@@ -162,9 +160,9 @@ class ExtractHarvestData {
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
-        val subject = m.listSubjectsWithProperty(RDF.type, DCAT.CatalogRecord).toList().first()
+        val parsed = parser.parse(m)
 
-        assertEquals(expected, subject.extractHarvestMetaData())
+        assertEquals(expected, parsed.harvest)
     }
 
 }
