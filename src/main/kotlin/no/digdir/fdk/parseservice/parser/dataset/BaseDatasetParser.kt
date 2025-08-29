@@ -1,13 +1,18 @@
 package no.digdir.fdk.parseservice.parser.dataset
 
 import no.digdir.fdk.model.dataset.Dataset
-import no.digdir.fdk.parseservice.extract.containsTriple
+import no.digdir.fdk.parseservice.extract.descriptionHtmlCleaner
 import no.digdir.fdk.parseservice.extract.extractCatalogData
-import no.digdir.fdk.parseservice.extract.singleObjectStatement
-import no.digdir.fdk.parseservice.namespace.FDK
+import no.digdir.fdk.parseservice.extract.extractListOfStrings
+import no.digdir.fdk.parseservice.extract.extractLocalizedStrings
+import no.digdir.fdk.parseservice.extract.extractOrganization
+import no.digdir.fdk.parseservice.extract.extractStringValue
+import no.digdir.fdk.parseservice.namespace.ADMS
 import no.digdir.fdk.parseservice.parser.DatasetParserStrategy
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
+import org.apache.jena.sparql.vocabulary.FOAF
+import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms
 
 /**
@@ -45,20 +50,23 @@ abstract class BaseDatasetParser : DatasetParserStrategy {
     protected abstract fun getAcceptableTypes(): List<Resource>
 
     /**
-     * Get a builder for Dataset with common fields already added
+     * Add data to the builder that is common among all dataset versions
      */
-    protected fun getDatasetBuilder(recordResource: Resource, datasetResource: Resource): Dataset.Builder {
-        val builder = Dataset.newBuilder()
+    protected fun Dataset.Builder.addCommonDatasetValues(datasetResource: Resource) {
+        val formattedDescription = datasetResource.extractLocalizedStrings(DCTerms.description)
 
-        builder.id = recordResource.singleObjectStatement(DCTerms.identifier)!!.string
-        builder.uri = datasetResource.uri
-        builder.harvest = harvestMetaData(recordResource)
-        builder.catalog = datasetResource.extractCatalogData()
+        setUri(datasetResource.uri)
+        setCatalog(datasetResource.extractCatalogData())
 
-        builder.isRelatedToTransportportal = datasetResource.model.containsTriple(datasetResource.uri, FDK.isRelatedToTransportportal.uri, true)
-        builder.isOpenData = datasetResource.model.containsTriple(datasetResource.uri, FDK.isOpenData.uri, true)
-        builder.isAuthoritative = datasetResource.model.containsTriple(datasetResource.uri, FDK.isAuthoritative.uri, true)
-
-        return builder
+        setTitle(datasetResource.extractLocalizedStrings(DCTerms.title))
+        setDescriptionFormatted(formattedDescription)
+        setDescription(formattedDescription?.descriptionHtmlCleaner())
+        setPublisher(datasetResource.extractOrganization(DCTerms.publisher))
+        setIdentifier(datasetResource.extractListOfStrings(DCTerms.identifier))
+        setAdmsIdentifier(datasetResource.extractListOfStrings(ADMS.identifier))
+        setModified(datasetResource.extractStringValue(DCTerms.modified))
+        setIssued(datasetResource.extractStringValue(DCTerms.issued))
+        setLandingPage(datasetResource.extractListOfStrings(DCAT.landingPage))
+        setPage(datasetResource.extractListOfStrings(FOAF.page))
     }
 }

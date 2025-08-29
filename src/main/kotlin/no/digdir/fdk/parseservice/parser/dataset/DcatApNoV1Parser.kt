@@ -1,17 +1,12 @@
 package no.digdir.fdk.parseservice.parser.dataset
 
 import no.digdir.fdk.model.dataset.Dataset
-import no.digdir.fdk.parseservice.extract.descriptionHtmlCleaner
-import no.digdir.fdk.parseservice.extract.extractListOfStrings
-import no.digdir.fdk.parseservice.extract.extractLocalizedStrings
-import no.digdir.fdk.parseservice.extract.extractOrganization
-import no.digdir.fdk.parseservice.extract.extractStringValue
-import no.digdir.fdk.parseservice.namespace.ADMS
+import no.digdir.fdk.parseservice.extract.fdk.addFdkData
+import no.digdir.fdk.parseservice.extract.fdk.fdkRecord
+import no.digdir.fdk.parseservice.extract.fdk.primaryTopicFromFdkRecord
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
-import org.apache.jena.sparql.vocabulary.FOAF
 import org.apache.jena.vocabulary.DCAT
-import org.apache.jena.vocabulary.DCTerms
 
 /**
  * Parser for DCAT-AP-NO version 1.1
@@ -32,20 +27,11 @@ class DcatApNoV1Parser : BaseDatasetParser() {
         val recordResource = fdkRecord(model, getAcceptableTypes(), getFDKURIPattern())
         val datasetResource = primaryTopicFromFdkRecord(recordResource, getAcceptableTypes())
 
-        val builder = getDatasetBuilder(recordResource, datasetResource)
+        val builder = Dataset.newBuilder()
 
-        val formattedDescription = datasetResource.extractLocalizedStrings(DCTerms.description)
+        builder.addFdkData(recordResource, datasetResource)
 
-        builder.setTitle(datasetResource.extractLocalizedStrings(DCTerms.title))
-        builder.setDescriptionFormatted(formattedDescription)
-        builder.setDescription(formattedDescription?.descriptionHtmlCleaner())
-        builder.setPublisher(datasetResource.extractOrganization(DCTerms.publisher))
-        builder.setIdentifier(datasetResource.extractListOfStrings(DCTerms.identifier))
-        builder.setAdmsIdentifier(datasetResource.extractListOfStrings(ADMS.identifier))
-        builder.setModified(datasetResource.extractStringValue(DCTerms.modified))
-        builder.setIssued(datasetResource.extractStringValue(DCTerms.issued))
-        builder.setLandingPage(datasetResource.extractListOfStrings(DCAT.landingPage))
-        builder.setPage(datasetResource.extractListOfStrings(FOAF.page))
+        builder.addCommonDatasetValues(datasetResource)
 
         builder.setDistribution(null)
         builder.setSample(null)
