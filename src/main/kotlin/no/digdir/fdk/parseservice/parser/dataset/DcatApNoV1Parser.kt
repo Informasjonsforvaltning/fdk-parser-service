@@ -5,7 +5,7 @@ import no.digdir.fdk.parseservice.extract.dataset.extractListOfDistributionsV1
 import no.digdir.fdk.parseservice.extract.fdk.addFdkData
 import no.digdir.fdk.parseservice.extract.fdk.fdkRecord
 import no.digdir.fdk.parseservice.extract.fdk.primaryTopicFromFdkRecord
-import no.digdir.fdk.parseservice.namespace.ADMS
+import no.digdir.fdk.parseservice.vocabulary.ADMS
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCAT

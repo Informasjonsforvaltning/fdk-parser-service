@@ -3,7 +3,7 @@ package no.digdir.fdk.parseservice.extract
 import no.digdir.fdk.model.EuDataTheme
 import no.digdir.fdk.model.Eurovoc
 import no.digdir.fdk.model.LosNode
-import no.digdir.fdk.parseservice.namespace.FDK
+import no.digdir.fdk.parseservice.vocabulary.FDK
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.SKOS
 

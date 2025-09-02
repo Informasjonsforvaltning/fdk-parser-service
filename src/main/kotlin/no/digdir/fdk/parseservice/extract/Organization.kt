@@ -1,7 +1,7 @@
 package no.digdir.fdk.parseservice.extract
 
 import no.digdir.fdk.model.Organization
-import no.digdir.fdk.parseservice.namespace.FDKORG
+import no.digdir.fdk.parseservice.vocabulary.FDKORG
 import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.sparql.vocabulary.FOAF

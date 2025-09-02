@@ -1,4 +1,4 @@
-package no.digdir.fdk.parseservice.namespace
+package no.digdir.fdk.parseservice.vocabulary
 
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.rdf.model.ResourceFactory

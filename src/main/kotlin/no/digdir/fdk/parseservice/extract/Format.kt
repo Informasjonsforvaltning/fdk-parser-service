@@ -2,7 +2,7 @@ package no.digdir.fdk.parseservice.extract
 
 import no.digdir.fdk.model.Format
 import no.digdir.fdk.model.FormatType
-import no.digdir.fdk.parseservice.namespace.EUVOC
+import no.digdir.fdk.parseservice.vocabulary.EUVOC
 import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.rdf.model.Statement

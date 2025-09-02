@@ -21,9 +21,9 @@ import no.digdir.fdk.parseservice.extract.isEuDataThemeURI
 import no.digdir.fdk.parseservice.extract.isEurovocURI
 import no.digdir.fdk.parseservice.extract.isLosURI
 import no.digdir.fdk.parseservice.extract.listResources
-import no.digdir.fdk.parseservice.namespace.ADMS
-import no.digdir.fdk.parseservice.namespace.EUAT
-import no.digdir.fdk.parseservice.namespace.SCHEMA
+import no.digdir.fdk.parseservice.vocabulary.ADMS
+import no.digdir.fdk.parseservice.vocabulary.EUAT
+import no.digdir.fdk.parseservice.vocabulary.SCHEMA
 import no.digdir.fdk.parseservice.parser.DatasetParserStrategy
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
