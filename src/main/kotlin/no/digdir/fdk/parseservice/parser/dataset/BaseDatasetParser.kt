@@ -34,41 +34,81 @@ import org.apache.jena.vocabulary.DC_11
 import org.apache.jena.vocabulary.SKOS
 
 /**
- * Base parser for DCAT-AP dataset parsers
+ * Abstract base class for DCAT-AP dataset parsers.
+ * 
+ * This class provides common functionality for parsing DCAT-AP datasets
+ * and serves as a foundation for version-specific implementations.
+ * It handles the extraction of common dataset properties that are shared
+ * across different DCAT-AP versions.
+ * 
+ * Subclasses must implement the abstract methods to provide version-specific
+ * configuration and parsing logic.
+ * 
+ * @author FDK Team
+ * @version 1.0.0
+ * @since 1.0.0
+ * @see DatasetParserStrategy
+ * @see DcatApNoV1Parser
  */
 abstract class BaseDatasetParser : DatasetParserStrategy {
     /**
-     * Abstract parse method that must be implemented by subclasses
+     * Parses an RDF model into a Dataset object.
+     * 
+     * This method must be implemented by subclasses to provide
+     * version-specific parsing logic.
+     * 
+     * @param model The Jena RDF model containing the dataset
+     * @return The parsed Dataset object
+     * @throws IllegalArgumentException if the model is null or invalid
+     * @throws UnsupportedOperationException if the model format is not supported
      */
     abstract override fun parse(model: Model): Dataset
 
     /**
-     * Get the default language for this parser version
+     * Gets the default language for this parser version.
+     * 
+     * @return The default language code (e.g., "no", "en")
      */
     protected abstract fun getDefaultLanguage(): String
 
     /**
-     * Get the version string for this parser
+     * Gets the version string for this parser.
+     * 
+     * @return The version string (e.g., "1.1")
      */
     protected abstract fun getVersion(): String
 
     /**
-     * Get the source format for this parser
+     * Gets the source format identifier for this parser.
+     * 
+     * @return The source format (e.g., "DCAT-AP-NO")
      */
     protected abstract fun getSourceFormat(): String
 
     /**
-     * Get the URI pattern used by relevant FDK records with harvest metadata
+     * Gets the URI pattern used by relevant FDK records with harvest metadata.
+     * 
+     * This pattern is used to identify valid FDK catalog records
+     * in the RDF model.
+     * 
+     * @return The URI pattern string
      */
     protected abstract fun getFDKURIPattern(): String
 
     /**
-     * Get a list of acceptable RDF types of harvested datasets, i.e. DCAT:Dataset
+     * Gets a list of acceptable RDF types for harvested datasets.
+     * 
+     * @return List of acceptable RDF types (e.g., [DCAT.Dataset])
      */
     protected abstract fun getAcceptableTypes(): List<Resource>
 
     /**
-     * Add data to the builder that is common among all dataset versions
+     * Adds common dataset values to the builder that are shared across all versions.
+     * 
+     * This method extracts and sets common properties such as title, description,
+     * publisher, themes, and other metadata that are consistent across DCAT-AP versions.
+     * 
+     * @param datasetResource The RDF resource representing the dataset
      */
     protected fun Dataset.Builder.addCommonDatasetValues(datasetResource: Resource) {
         val formattedDescription = datasetResource.extractLocalizedStrings(DCTerms.description)

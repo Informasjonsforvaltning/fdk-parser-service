@@ -8,6 +8,16 @@ import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.rdf.model.Statement
 
+/**
+ * Extension function to get a single object statement for a given predicate.
+ * 
+ * This function retrieves the first statement with the given predicate from the resource.
+ * If multiple statements exist, a warning is logged and the first one is returned.
+ * 
+ * @param pred The property predicate to search for
+ * @return The first statement with the given predicate, or null if none exists
+ * @see Resource.listProperties
+ */
 fun Resource.singleObjectStatement(pred: Property): Statement? {
     val properties = listProperties(pred).toList()
 
@@ -16,6 +26,16 @@ fun Resource.singleObjectStatement(pred: Property): Statement? {
     return if (properties.isEmpty()) null else properties.first()
 }
 
+/**
+ * Extension function to get a single resource for a given predicate.
+ * 
+ * This function extracts a single resource from the statements with the given predicate.
+ * If the statement object is not a resource, null is returned.
+ * 
+ * @param pred The property predicate to search for
+ * @return The resource object, or null if not found or not a resource
+ * @see Resource.singleObjectStatement
+ */
 fun Resource.singleResource(pred: Property): Resource? =
     try{
         singleObjectStatement(pred)?.resource?.takeIf { it.isResource }
@@ -24,6 +44,16 @@ fun Resource.singleResource(pred: Property): Resource? =
         null
     }
 
+/**
+ * Extension function to get a list of resources for a given predicate.
+ * 
+ * This function extracts all resources from the statements with the given predicate.
+ * Only statements with resource objects are included in the result.
+ * 
+ * @param pred The property predicate to search for
+ * @return List of resource objects, or null if extraction fails
+ * @see Resource.listProperties
+ */
 fun Resource.listResources(pred: Property): List<Resource>? =
     try{
         listProperties(pred).asSequence().map { it.resource }.filter { it.isResource }.toList()
@@ -32,6 +62,14 @@ fun Resource.listResources(pred: Property): List<Resource>? =
         null
     }
 
+/**
+ * Private extension function to extract string value from a statement.
+ * 
+ * This function handles both URI resources and literal values, returning
+ * the URI string for resources and the literal string for other values.
+ * 
+ * @return The string value, or null if extraction fails
+ */
 private fun Statement.extractStringValue(): String? {
     try {
         return when {
@@ -44,15 +82,38 @@ private fun Statement.extractStringValue(): String? {
     }
 }
 
+/**
+ * Extension function to extract a single string value for a given predicate.
+ * 
+ * @param pred The property predicate to search for
+ * @return The string value, or null if not found
+ * @see Resource.singleObjectStatement
+ */
 fun Resource.extractStringValue(pred: Property): String? =
     singleObjectStatement(pred)?.extractStringValue()
 
+/**
+ * Extension function to extract a list of string values for a given predicate.
+ * 
+ * This function extracts all string values from statements with the given predicate.
+ * 
+ * @param pred The property predicate to search for
+ * @return List of string values, or null if no values found
+ * @see Resource.listProperties
+ */
 fun Resource.extractListOfStrings(pred: Property): List<String>? =
     listProperties(pred).asSequence()
         .mapNotNull { it.extractStringValue() }
         .toList()
         .ifEmpty { null }
 
+/**
+ * Extension function to extract a string value with its language tag.
+ * 
+ * This function extracts both the string value and language tag from a statement.
+ * 
+ * @return A pair of (language, string) or null if extraction fails
+ */
 fun Statement.extractStringLanguagePair(): Pair<String, String>? {
     try {
         val lang = language ?: ""
@@ -67,6 +128,17 @@ fun Statement.extractStringLanguagePair(): Pair<String, String>? {
     }
 }
 
+/**
+ * Checks if a model contains a specific triple with string object.
+ * 
+ * This function uses SPARQL ASK queries to check for the existence of a triple.
+ * 
+ * @param subj The subject URI
+ * @param pred The predicate URI
+ * @param obj The object value (string)
+ * @param objectIsURI Whether the object is a URI (true) or literal (false)
+ * @return true if the triple exists, false otherwise
+ */
 fun Model.containsTriple(subj: String, pred: String, obj: String, objectIsURI: Boolean): Boolean {
     val askQuery = if (objectIsURI) "ASK { <$subj> <$pred> <$obj> }" else "ASK { <$subj> <$pred> $obj }"
 
@@ -78,6 +150,14 @@ fun Model.containsTriple(subj: String, pred: String, obj: String, objectIsURI: B
     }
 }
 
+/**
+ * Checks if a model contains a specific triple with boolean object.
+ * 
+ * @param subj The subject URI
+ * @param pred The predicate URI
+ * @param obj The boolean object value
+ * @return true if the triple exists, false otherwise
+ */
 fun Model.containsTriple(subj: String, pred: String, obj: Boolean): Boolean {
     val askQuery = "ASK { <$subj> <$pred> $obj }"
 
@@ -89,12 +169,24 @@ fun Model.containsTriple(subj: String, pred: String, obj: Boolean): Boolean {
     }
 }
 
+/**
+ * Checks if a statement's object is a URI resource.
+ * 
+ * @param stmt The statement to check
+ * @return true if the object is a URI resource, false otherwise
+ */
 fun isURIResource(stmt: Statement): Boolean = try {
     stmt.resource?.isURIResource == true
 } catch (ex: Exception) {
     false
 }
 
+/**
+ * Checks if a statement's object is a resource (URI or blank node).
+ * 
+ * @param stmt The statement to check
+ * @return true if the object is a resource, false otherwise
+ */
 fun isResource(stmt: Statement): Boolean = try {
     stmt.resource?.isResource == true
 } catch (ex: Exception) {

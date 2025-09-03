@@ -23,8 +23,19 @@ import org.apache.avro.io.parsing.Symbol;
 import org.apache.avro.util.Utf8;
 
 /**
- * Copy of org.apache.avro.io.JsonEncoder without proper union support, to correctly handle nullables.
- * To achieve this a few lines were removed from the writeIndex method.
+ * Custom Avro JSON encoder that flattens union types for better nullable handling.
+ * 
+ * This class extends the standard Avro JsonEncoder but removes the union type wrapper
+ * to correctly handle nullable fields. Instead of writing {"type": value}, it writes
+ * the value directly, which is more suitable for the FDK parser service requirements.
+ * 
+ * The key modification is in the writeIndex method where the union type wrapper
+ * is skipped by removing the conditional check for non-null union types.
+ * 
+ * @author FDK Team
+ * @version 1.0.0
+ * @since 1.0.0
+ * @see org.apache.avro.io.JsonEncoder
  */
 public class FlatteningJsonEncoder extends ParsingEncoder implements Parser.ActionHandler {
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
@@ -239,13 +250,21 @@ public class FlatteningJsonEncoder extends ParsingEncoder implements Parser.Acti
     }
 
     /**
-     * Normally JsonEncoder would write { "type": value }
-     * Instead the union type wrapper is skipped by removing this if statement:
+     * Writes a union index without the union type wrapper.
+     * 
+     * This method is the key modification that enables flattening of union types.
+     * Normally JsonEncoder would write {"type": value}, but this implementation
+     * skips the union type wrapper and writes the value directly.
+     * 
+     * The union type wrapper is skipped by removing the conditional check:
      * if (symbol != Symbol.NULL && this.includeNamespace) {
      *     this.out.writeStartObject();
      *     this.out.writeFieldName(top.getLabel(unionIndex));
      *     this.parser.pushSymbol(Symbol.UNION_END);
      * }
+     * 
+     * @param unionIndex The index of the union type to write
+     * @throws IOException if writing fails
      */
     public void writeIndex(int unionIndex) throws IOException {
         this.parser.advance(Symbol.UNION);
