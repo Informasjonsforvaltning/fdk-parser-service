@@ -1,6 +1,7 @@
 package no.digdir.fdk.parseservice.extract
 
 import no.digdir.fdk.parseservice.LOGGER
+import no.digdir.fdk.parseservice.model.LanguageCodes
 import org.apache.jena.query.QueryExecutionFactory
 import org.apache.jena.query.QueryFactory
 import org.apache.jena.rdf.model.Model
@@ -114,12 +115,21 @@ fun Resource.extractListOfStrings(pred: Property): List<String>? =
  * 
  * @return A pair of (language, string) or null if extraction fails
  */
-fun Statement.extractStringLanguagePair(): Pair<String, String>? {
+fun Statement.extractStringLanguagePair(): Pair<LanguageCodes, String>? {
     try {
-        val lang = language ?: ""
+        val lang = when(language) {
+            null -> LanguageCodes.NONE
+            "" -> LanguageCodes.NONE
+            "no" -> LanguageCodes.NORWEGIAN
+            "nb" -> LanguageCodes.NORWEGIAN_BOKMAL
+            "nn" -> LanguageCodes.NORWEGIAN_NYNORSK
+            "en" -> LanguageCodes.ENGLISH
+            else -> null
+        }
         val str = string
         return when {
             str == null -> null
+            lang == null -> null
             else -> Pair(lang, str)
         }
     } catch (ex: Exception) {

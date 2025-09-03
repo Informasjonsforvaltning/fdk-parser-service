@@ -393,7 +393,7 @@ class DatasetExtractionTest {
             uri = "https://data.geonorge.no/administrativeEnheter/fylke/id/34"
             code = "34"
             prefLabel = LocalizedStrings().apply {
-                nb = "Innlandet"
+                no = "Innlandet"
             }
         })
 

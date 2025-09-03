@@ -1,6 +1,7 @@
 package no.digdir.fdk.parseservice.extract
 
 import no.digdir.fdk.model.LocalizedStrings
+import no.digdir.fdk.parseservice.model.LanguageCodes
 import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
 
@@ -34,10 +35,11 @@ fun Resource.extractLocalizedStrings(pred: Property): LocalizedStrings? {
     val builder = LocalizedStrings.newBuilder()
 
     return if (values.isEmpty()) null
-    else builder.setNb(values["nb"] ?: values[""])
-        .setNn(values["nn"])
-        .setNo(values["no"])
-        .setEn(values["en"])
+    else builder
+        .setNo(values[LanguageCodes.NORWEGIAN] ?: values[LanguageCodes.NONE])
+        .setNb(values[LanguageCodes.NORWEGIAN_BOKMAL])
+        .setNn(values[LanguageCodes.NORWEGIAN_NYNORSK])
+        .setEn(values[LanguageCodes.ENGLISH])
         .build()
 }
 
@@ -88,12 +90,14 @@ fun Resource.extractLocalizedStringList(pred: Property): List<LocalizedStrings>?
     listProperties(pred)
         .asSequence()
         .mapNotNull { it.extractStringLanguagePair() }
-        .mapNotNull { pair -> when (pair.first) {
-            "no" -> LocalizedStrings().also { it.no = pair.second }
-            "nb" -> LocalizedStrings().also { it.nb = pair.second }
-            "nn" -> LocalizedStrings().also { it.nn = pair.second }
-            "en" -> LocalizedStrings().also { it.en = pair.second }
-            else -> null
-        } }
+        .map { pair ->
+            when (pair.first) {
+                LanguageCodes.NORWEGIAN -> LocalizedStrings().also { it.no = pair.second }
+                LanguageCodes.NORWEGIAN_BOKMAL -> LocalizedStrings().also { it.nb = pair.second }
+                LanguageCodes.NORWEGIAN_NYNORSK -> LocalizedStrings().also { it.nn = pair.second }
+                LanguageCodes.ENGLISH -> LocalizedStrings().also { it.en = pair.second }
+                LanguageCodes.NONE -> LocalizedStrings().also { it.no = pair.second }
+            }
+        }
         .toList()
         .takeIf { it.isNotEmpty() }

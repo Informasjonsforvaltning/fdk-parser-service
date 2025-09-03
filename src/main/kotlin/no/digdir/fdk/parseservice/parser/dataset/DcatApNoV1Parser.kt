@@ -5,6 +5,7 @@ import no.digdir.fdk.parseservice.extract.dataset.extractListOfDistributionsV1
 import no.digdir.fdk.parseservice.extract.fdk.addFdkData
 import no.digdir.fdk.parseservice.extract.fdk.fdkRecord
 import no.digdir.fdk.parseservice.extract.fdk.primaryTopicFromFdkRecord
+import no.digdir.fdk.parseservice.model.LanguageCodes
 import no.digdir.fdk.parseservice.vocabulary.ADMS
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
@@ -54,7 +55,7 @@ class DcatApNoV1Parser : BaseDatasetParser() {
      * 
      * @return "no" (Norwegian)
      */
-    override fun getDefaultLanguage(): String = "no"
+    override fun getDefaultLanguage(): String = LanguageCodes.NORWEGIAN.code
 
     /**
      * Gets the version string for this parser.

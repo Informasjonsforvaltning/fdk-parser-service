@@ -57,7 +57,7 @@ class ExtractUriWithLabel {
 
         val expected = listOf(UriWithLabel().apply {
             uri = "https://source.no"
-            prefLabel = LocalizedStrings().also { label -> label.nb = "Blank node" }
+            prefLabel = LocalizedStrings().also { label -> label.no = "Blank node" }
         })
 
         assertEquals(expected, subject.extractListOfUriWithLabel(DCTerms.conformsTo, DCTerms.source, DCTerms.title))
