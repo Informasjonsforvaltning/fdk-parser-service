@@ -5,6 +5,10 @@ import no.digdir.fdk.parseservice.extract.containsTriple
 import no.digdir.fdk.parseservice.extract.extractStringValue
 import no.digdir.fdk.parseservice.extract.isURIResource
 import no.digdir.fdk.parseservice.extract.singleObjectStatement
+import no.digdir.fdk.parseservice.model.MoAcceptableTopicsOnFDKRecordException
+import no.digdir.fdk.parseservice.model.MultipleFDKRecordsException
+import no.digdir.fdk.parseservice.model.NoAcceptableFDKRecordsException
+import no.digdir.fdk.parseservice.model.NoPrimaryTopicOnFDKRecordException
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.sparql.vocabulary.FOAF
@@ -35,8 +39,8 @@ fun fdkRecord(model: Model, acceptableTypes: List<Resource>, fdkURIPattern: Stri
         .toList()
 
     return when {
-        records.isEmpty() -> throw Exception("No acceptable FDK records found in graph")
-        records.size > 1 -> throw Exception("Multiple FDK records found in graph")
+        records.isEmpty() -> throw NoAcceptableFDKRecordsException("No acceptable FDK records found in graph")
+        records.size > 1 -> throw MultipleFDKRecordsException("Multiple FDK records found in graph")
         else -> records.first()
     }
 }
@@ -72,10 +76,16 @@ fun primaryTopicFromFdkRecord(recordResource: Resource, acceptableTypes: List<Re
         .filter { isURIResource(it) }
         .map { it.resource }
         .singleOrNull()
-        ?: throw Exception("No primary topic found on record")
+        ?: throw NoPrimaryTopicOnFDKRecordException("No primary topic found on record")
 
     if (acceptableTypes.none { recordResource.model.containsTriple(primaryTopic.uri, RDF.type.uri, it.uri, true) }) {
-        throw Exception("Primary topic is not one of the acceptable types: ${acceptableTypes.joinToString(", ") { it.localName }}")
+        throw MoAcceptableTopicsOnFDKRecordException(
+            "Primary topic is not one of the acceptable types: ${
+                acceptableTypes.joinToString(
+                    ", "
+                ) { it.localName }
+            }"
+        )
     }
 
     return primaryTopic
