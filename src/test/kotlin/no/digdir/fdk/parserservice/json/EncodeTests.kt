@@ -10,7 +10,7 @@ import java.io.StringReader
 
 @Tag("unit")
 class EncodeTests {
-    val datasetParser = DcatApNoV1Parser()
+    val datasetParser = DcatApNoV1Parser("http://test.fellesdatakatalog.digdir.no/datasets/")
 
     @Test
     fun parseAndEncodeDataset() {

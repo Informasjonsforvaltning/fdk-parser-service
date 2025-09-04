@@ -2,6 +2,7 @@ package no.digdir.fdk.parseservice
 
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 
 /**
  * Main application class for the FDK Parser Service.
@@ -17,6 +18,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
  * @since 1.0.0
  */
 @SpringBootApplication
+@ConfigurationPropertiesScan
 open class Application
 
 /**

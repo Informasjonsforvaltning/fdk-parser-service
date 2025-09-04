@@ -17,7 +17,7 @@ import kotlin.test.assertTrue
 
 @Tag("unit")
 class DatasetExtractionTest {
-    val parser = DcatApNoV1Parser()
+    val parser = DcatApNoV1Parser("http://test.fellesdatakatalog.digdir.no/datasets/")
 
     @Test
     fun extractsTitleAndDescriptionCorrectly() {

@@ -10,6 +10,7 @@ import no.digdir.fdk.parseservice.vocabulary.ADMS
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCAT
+import org.springframework.beans.factory.annotation.Value
 
 /**
  * Parser implementation for DCAT-AP-NO version 1.1.
@@ -49,7 +50,9 @@ import org.apache.jena.vocabulary.DCAT
  * @version 1.0.0
  * @since 1.0.0
  */
-class DcatApNoV1Parser : BaseDatasetParser() {
+class DcatApNoV1Parser(
+    @Value("\${fdk.parser.patterns.datasetURI}") val uriPattern: String
+) : BaseDatasetParser() {
     /**
      * Gets the default language for DCAT-AP-NO v1.1.
      * 
@@ -74,9 +77,9 @@ class DcatApNoV1Parser : BaseDatasetParser() {
     /**
      * Gets the URI pattern for FDK records.
      * 
-     * @return "fellesdatakatalog.digdir.no"
+     * @return dataset URI pattern
      */
-    override fun getFDKURIPattern(): String = "fellesdatakatalog.digdir.no"
+    override fun getFDKURIPattern(): String = uriPattern
 
     /**
      * Gets the acceptable RDF types for datasets.

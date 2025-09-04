@@ -11,7 +11,7 @@ import kotlin.test.assertEquals
 
 @Tag("unit")
 class ExtractHarvestData {
-    val parser = DcatApNoV1Parser()
+    val parser = DcatApNoV1Parser("http://test.fellesdatakatalog.digdir.no/datasets/")
 
     @Test
     fun exceptionWhenGraphIsMissingCatalogRecord() {
