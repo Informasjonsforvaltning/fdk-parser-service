@@ -18,13 +18,19 @@ management:
   metrics:
     tags:
       application: fdk-parser-service
+fdk.parser.patterns:
+    datasetURI: ${DATASET_URI_PATTERN}
 ---
 spring:
   config.activate.on-profile: develop
 application:
   scope: test.scope
+fdk.parser.patterns:
+  datasetURI: "http://test.fellesdatakatalog.digdir.no/datasets/"
 ---
 spring:
   config.activate.on-profile: test
 application:
   scope: test.scope
+fdk.parser.patterns:
+  datasetURI: "http://test.fellesdatakatalog.digdir.no/datasets/"

@@ -2,7 +2,7 @@ package no.digdir.fdk.parseservice.extract.fdk
 
 import no.digdir.fdk.model.dataset.Dataset
 import no.digdir.fdk.parseservice.extract.containsTriple
-import no.digdir.fdk.parseservice.namespace.FDK
+import no.digdir.fdk.parseservice.vocabulary.FDK
 import org.apache.jena.rdf.model.Resource
 
 /**

@@ -32,7 +32,7 @@ class ExtractLocalizedStrings {
     }
 
     @Test
-    fun localizedStringsUsesNbAsFallbackWhenMissingLanguageDecorator() {
+    fun localizedStringsUsesNorwegianAsFallbackWhenMissingLanguageDecorator() {
         val turtle = """
             @prefix dct:   <http://purl.org/dc/terms/> .
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
@@ -46,7 +46,7 @@ class ExtractLocalizedStrings {
         m.read(StringReader(turtle), null, "TURTLE")
         val subject = m.listSubjectsWithProperty(RDF.type, DCAT.DataService).toList().first()
 
-        val expected = LocalizedStrings().also { it.nb = "title" }
+        val expected = LocalizedStrings().also { it.no = "title" }
 
         assertEquals(expected, subject.extractLocalizedStrings(DCTerms.title))
     }

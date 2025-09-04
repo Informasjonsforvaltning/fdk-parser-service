@@ -111,14 +111,6 @@
       "doc": "Package format of the distribution"
     },
     {
-      "name": "type",
-      "type": [
-        "null",
-        "string"
-      ],
-      "doc": "Type of the distribution"
-    },
-    {
       "name": "accessService",
       "type": [
         "null",

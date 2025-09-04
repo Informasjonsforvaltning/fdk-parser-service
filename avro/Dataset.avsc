@@ -320,17 +320,6 @@
       "doc": "Established schemas to which the dataset conforms"
     },
     {
-      "name": "informationModel",
-      "type": [
-        "null",
-        {
-          "type": "array",
-          "items": "no.digdir.fdk.model.UriWithLabelAndType"
-        }
-      ],
-      "doc": "Information models to which the dataset conforms"
-    },
-    {
       "name": "hasAccuracyAnnotation",
       "type": [
         "null",
