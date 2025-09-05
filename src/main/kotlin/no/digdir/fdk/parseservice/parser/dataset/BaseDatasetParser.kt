@@ -144,7 +144,6 @@ abstract class BaseDatasetParser : DatasetParserStrategy {
         setProvenance(datasetResource.extractReferenceDataCode(DCTerms.provenance, EUAT.authorityCode, SKOS.prefLabel))
         setSpatial(datasetResource.extractListOfReferenceDataCodes(DCTerms.spatial, DCTerms.identifier, DCTerms.title))
         setConformsTo(datasetResource.extractListOfUriWithLabel(DCTerms.conformsTo, DCTerms.source, DCTerms.title))
-        setTemporal(datasetResource.extractListOfTemporal(DCTerms.temporal, SCHEMA.startDate, SCHEMA.endDate))
         setSubject(datasetResource.extractListOfSubjects())
 
         setType(ResourceType.datasets)

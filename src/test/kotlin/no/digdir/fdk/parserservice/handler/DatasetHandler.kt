@@ -1,16 +1,14 @@
-package no.digdir.fdk.parserservice.json
+package no.digdir.fdk.parserservice.handler
 
 import io.kotest.assertions.json.shouldEqualJson
 import no.digdir.fdk.parseservice.parser.dataset.DcatApNoV1Parser
-import no.digdir.fdk.parseservice.utils.avroToJson
-import org.apache.jena.rdf.model.ModelFactory
+import no.digdir.fdk.parseservice.parser.handler.DatasetHandler
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
-import java.io.StringReader
 
 @Tag("unit")
-class EncodeTests {
-    val datasetParser = DcatApNoV1Parser("http://test.fellesdatakatalog.digdir.no/datasets/")
+class DatasetHandlerTest {
+    val handler = DatasetHandler(DcatApNoV1Parser("http://test.fellesdatakatalog.digdir.no/datasets/"))
 
     @Test
     fun parseAndEncodeDataset() {
@@ -197,11 +195,8 @@ class EncodeTests {
           "specializedType": null
         }""".trimIndent()
 
-        val m = ModelFactory.createDefaultModel()
-        m.read(StringReader(turtle), null, "TURTLE")
-        val dataset = datasetParser.parse(m)
-        val result = avroToJson(dataset, dataset.schema)
-        result.shouldEqualJson(expected)
+        val result = handler.parseDataset(turtle)
+        result.toString().shouldEqualJson(expected)
     }
 
 }
