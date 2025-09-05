@@ -55,4 +55,37 @@ class ExtractTemporal {
 
         assertEquals(expected, subject.extractListOfTemporal(DCTerms.temporal, SCHEMA.startDate, SCHEMA.endDate))
     }
+
+    @Test
+    fun extractDcatTemporal() {
+        val turtle = """
+            @prefix dct:    <http://purl.org/dc/terms/> .
+            @prefix dcat:   <http://www.w3.org/ns/dcat#> .
+            @prefix schema:  <http://schema.org/> .
+            @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+
+            <https://testdirektoratet.no/model/dataset/0>
+                a               dcat:Dataset ;
+                dct:temporal    <https://temporal.no> .
+
+            <https://temporal.no>
+                a                 dct:PeriodOfTime ;
+                dcat:startDate    "2021-04-02"^^xsd:date ;
+                dcat:endDate      "2022-04-02"^^xsd:date .
+        """.trimIndent()
+
+        val m = ModelFactory.createDefaultModel()
+        m.read(StringReader(turtle), null, "TURTLE")
+        val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
+
+        val expected = listOf(
+            Temporal().apply {
+                uri = "https://temporal.no"
+                startDate = "2021-04-02"
+                endDate = "2022-04-02"
+            }
+        )
+
+        assertEquals(expected, subject.extractListOfTemporal(DCTerms.temporal, DCAT.startDate, DCAT.endDate))
+    }
 }
