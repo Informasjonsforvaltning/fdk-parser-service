@@ -57,12 +57,11 @@ abstract class BaseDatasetParser : DatasetParserStrategy {
      * 
      * @param model The Jena RDF model containing the dataset
      * @param iri The IRI of the dataset
-     * @param fdkId The FDK ID of the dataset
      * @return The parsed Dataset object
      * @throws IllegalArgumentException if the model is null or invalid
      * @throws UnsupportedOperationException if the model format is not supported
      */
-    abstract override fun parse(model: Model, iri: String, fdkId: String?): Dataset
+    abstract override fun parse(model: Model, iri: String): Dataset
 
     /**
      * Gets the default language for this parser version.

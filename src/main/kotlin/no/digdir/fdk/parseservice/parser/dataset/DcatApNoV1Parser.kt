@@ -87,20 +87,25 @@ class DcatApNoV1Parser() : BaseDatasetParser() {
      */
     override fun getAcceptableTypes(): List<Resource> = listOf(DCAT.Dataset)
 
+    override fun parse(model: Model, iri: String): Dataset =
+        parseDataset(model, iri, null)
+
+    fun parse(model: Model, iri: String, fdkId: String): Dataset =
+        parseDataset(model, iri, fdkId)
+
     /**
      * Parses an RDF model into a Dataset object according to DCAT-AP-NO v1.1.
      * 
-     * This method extracts the FDK record, identifies the primary topic (dataset),
+     * This method extracts the FDK record when fdkId is present
      * and builds a complete Dataset object with all available metadata.
      * 
      * @param model The Jena RDF model containing the dataset
      * @param iri The IRI of the dataset
-     * @param fdkId The FDK ID of the dataset
      * @return The parsed Dataset object
      * @throws IllegalArgumentException if the model is null or invalid
      * @throws UnsupportedOperationException if no valid FDK record is found
      */
-    override fun parse(model: Model, iri: String, fdkId: String?): Dataset {
+    private fun parseDataset(model: Model, iri: String, fdkId: String?): Dataset {
         if (getAcceptableTypes().none { model.containsTriple(iri, RDF.type.uri, URI.create(it.uri)) }) {
             throw NoAcceptableTypesException("No acceptable types found for $iri")
         }
