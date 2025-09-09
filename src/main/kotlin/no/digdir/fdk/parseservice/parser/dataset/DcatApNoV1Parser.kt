@@ -90,7 +90,7 @@ class DcatApNoV1Parser() : BaseDatasetParser() {
     override fun parse(model: Model, iri: String): Dataset =
         parseDataset(model, iri, null)
 
-    fun parse(model: Model, iri: String, fdkId: String): Dataset =
+    override fun parse(model: Model, iri: String, fdkId: String): Dataset =
         parseDataset(model, iri, fdkId)
 
     /**

@@ -26,6 +26,18 @@ interface RdfParserStrategy<T> {
      * @throws UnsupportedOperationException if the model format is not supported
      */
     fun parse(model: Model, iri: String): T
+
+    /**
+     * Parses an RDF model into a domain object of type T.
+     *
+     * @param model The Jena RDF model to be parsed
+     * @param iri The IRI of the resource to be parsed
+     * @param fdkId The FDK ID of the resource to be parsed
+     * @return The parsed domain object
+     * @throws IllegalArgumentException if the model is null or invalid
+     * @throws UnsupportedOperationException if the model format is not supported
+     */
+    fun parse(model: Model, iri: String, fdkId: String): T
 }
 
 /**

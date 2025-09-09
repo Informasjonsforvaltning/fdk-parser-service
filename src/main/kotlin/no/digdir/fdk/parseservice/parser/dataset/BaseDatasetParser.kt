@@ -23,7 +23,6 @@ import no.digdir.fdk.parseservice.extract.listResources
 import no.digdir.fdk.parseservice.vocabulary.ADMS
 import no.digdir.fdk.parseservice.vocabulary.EUAT
 import no.digdir.fdk.parseservice.parser.DatasetParserStrategy
-import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.sparql.vocabulary.FOAF
 import org.apache.jena.vocabulary.DCAT
@@ -49,19 +48,6 @@ import org.apache.jena.vocabulary.SKOS
  * @see DcatApNoV1Parser
  */
 abstract class BaseDatasetParser : DatasetParserStrategy {
-    /**
-     * Parses an RDF model into a Dataset object.
-     * 
-     * This method must be implemented by subclasses to provide
-     * version-specific parsing logic.
-     * 
-     * @param model The Jena RDF model containing the dataset
-     * @param iri The IRI of the dataset
-     * @return The parsed Dataset object
-     * @throws IllegalArgumentException if the model is null or invalid
-     * @throws UnsupportedOperationException if the model format is not supported
-     */
-    abstract override fun parse(model: Model, iri: String): Dataset
 
     /**
      * Gets the default language for this parser version.
