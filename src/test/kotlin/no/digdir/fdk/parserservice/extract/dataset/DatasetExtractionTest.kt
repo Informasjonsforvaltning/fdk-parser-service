@@ -7,8 +7,11 @@ import no.digdir.fdk.model.LosNode
 import no.digdir.fdk.model.ReferenceDataCode
 import no.digdir.fdk.model.ResourceType
 import no.digdir.fdk.model.dataset.Dataset
+import no.digdir.fdk.model.dataset.DatasetType
 import no.digdir.fdk.parseservice.parser.dataset.DcatApNoV1Parser
+import no.digdir.fdk.parseservice.parser.dataset.DcatApNoV2Parser
 import org.apache.jena.rdf.model.ModelFactory
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.io.StringReader
@@ -17,11 +20,15 @@ import kotlin.test.assertTrue
 
 @Tag("unit")
 class DatasetExtractionTest {
-    val parser = DcatApNoV1Parser("http://test.fellesdatakatalog.digdir.no/datasets/")
 
-    @Test
-    fun extractsTitleAndDescriptionCorrectly() {
-        val turtle = """
+
+    @Nested
+    internal inner class V1 {
+        val parser = DcatApNoV1Parser("http://test.fellesdatakatalog.digdir.no/datasets/")
+
+        @Test
+        fun extractsTitleAndDescriptionCorrectly() {
+            val turtle = """
             @prefix dct:   <http://purl.org/dc/terms/> .
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
             @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
@@ -38,39 +45,39 @@ class DatasetExtractionTest {
                 dct:description           "description nb"@nb , "description nn"@nn , "description en"@en , "description no"@no .
         """.trimIndent()
 
-        val expectedTitle = LocalizedStrings().also { title ->
-            title.nb = "title nb"
-            title.nn = "title nn"
-            title.en = "title en"
-            title.no = "title no"
+            val expectedTitle = LocalizedStrings().also { title ->
+                title.nb = "title nb"
+                title.nn = "title nn"
+                title.en = "title en"
+                title.no = "title no"
+            }
+
+            val expectedDescription = LocalizedStrings().also { description ->
+                description.nb = "description nb"
+                description.nn = "description nn"
+                description.en = "description en"
+                description.no = "description no"
+            }
+
+            val expected = Dataset().also { dataset ->
+                dataset.id = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
+                dataset.uri = "https://testdirektoratet.no/model/dataset/0"
+                dataset.title = expectedTitle
+                dataset.descriptionFormatted = expectedDescription
+                dataset.description = expectedDescription
+                dataset.type = ResourceType.datasets
+            }
+
+            val m = ModelFactory.createDefaultModel()
+            m.read(StringReader(turtle), null, "TURTLE")
+            val result = parser.parse(m)
+
+            assertEquals(expected, result)
         }
 
-        val expectedDescription = LocalizedStrings().also { description ->
-            description.nb = "description nb"
-            description.nn = "description nn"
-            description.en = "description en"
-            description.no = "description no"
-        }
-
-        val expected = Dataset().also { dataset ->
-            dataset.id = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
-            dataset.uri = "https://testdirektoratet.no/model/dataset/0"
-            dataset.title = expectedTitle
-            dataset.descriptionFormatted = expectedDescription
-            dataset.description = expectedDescription
-            dataset.type = ResourceType.datasets
-        }
-
-        val m = ModelFactory.createDefaultModel()
-        m.read(StringReader(turtle), null, "TURTLE")
-        val result = parser.parse(m)
-
-        assertEquals(expected, result)
-    }
-
-    @Test
-    fun descriptionExtractHandlesFormatting() {
-        val turtle = """
+        @Test
+        fun descriptionExtractHandlesFormatting() {
+            val turtle = """
             @prefix dct:   <http://purl.org/dc/terms/> .
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
             @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
@@ -86,32 +93,32 @@ class DatasetExtractionTest {
                 dct:description           "<div>description</div>"@nb .
         """.trimIndent()
 
-        val expectedFormattedDescription = LocalizedStrings().also { description ->
-            description.nb = "<div>description</div>"
+            val expectedFormattedDescription = LocalizedStrings().also { description ->
+                description.nb = "<div>description</div>"
+            }
+
+            val expectedDescription = LocalizedStrings().also { description ->
+                description.nb = "description"
+            }
+
+            val expected = Dataset().also { dataset ->
+                dataset.id = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
+                dataset.uri = "https://testdirektoratet.no/model/dataset/0"
+                dataset.descriptionFormatted = expectedFormattedDescription
+                dataset.description = expectedDescription
+                dataset.type = ResourceType.datasets
+            }
+
+            val m = ModelFactory.createDefaultModel()
+            m.read(StringReader(turtle), null, "TURTLE")
+            val result = parser.parse(m)
+
+            assertEquals(expected, result)
         }
 
-        val expectedDescription = LocalizedStrings().also { description ->
-            description.nb = "description"
-        }
-
-        val expected = Dataset().also { dataset ->
-            dataset.id = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
-            dataset.uri = "https://testdirektoratet.no/model/dataset/0"
-            dataset.descriptionFormatted = expectedFormattedDescription
-            dataset.description = expectedDescription
-            dataset.type = ResourceType.datasets
-        }
-
-        val m = ModelFactory.createDefaultModel()
-        m.read(StringReader(turtle), null, "TURTLE")
-        val result = parser.parse(m)
-
-        assertEquals(expected, result)
-    }
-
-    @Test
-    fun extractBooleansSuppliedByHarvestToFDK() {
-        val turtle = """
+        @Test
+        fun extractBooleansSuppliedByHarvestToFDK() {
+            val turtle = """
             @prefix dct:   <http://purl.org/dc/terms/> .
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
             @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
@@ -130,25 +137,25 @@ class DatasetExtractionTest {
                 fdk:isRelatedToTransportportal  'true'^^xsd:boolean .
         """.trimIndent()
 
-        val expected = Dataset().also { dataset ->
-            dataset.id = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
-            dataset.uri = "https://testdirektoratet.no/model/dataset/0"
-            dataset.isRelatedToTransportportal = true
-            dataset.isAuthoritative = true
-            dataset.isOpenData = true
-            dataset.type = ResourceType.datasets
+            val expected = Dataset().also { dataset ->
+                dataset.id = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
+                dataset.uri = "https://testdirektoratet.no/model/dataset/0"
+                dataset.isRelatedToTransportportal = true
+                dataset.isAuthoritative = true
+                dataset.isOpenData = true
+                dataset.type = ResourceType.datasets
+            }
+
+            val m = ModelFactory.createDefaultModel()
+            m.read(StringReader(turtle), null, "TURTLE")
+            val result = parser.parse(m)
+
+            assertEquals(expected, result)
         }
 
-        val m = ModelFactory.createDefaultModel()
-        m.read(StringReader(turtle), null, "TURTLE")
-        val result = parser.parse(m)
-
-        assertEquals(expected, result)
-    }
-
-    @Test
-    fun extractModifiedAndIssued() {
-        val turtle = """
+        @Test
+        fun extractModifiedAndIssued() {
+            val turtle = """
             @prefix dct:   <http://purl.org/dc/terms/> .
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
             @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
@@ -165,24 +172,24 @@ class DatasetExtractionTest {
                 dct:modified       "2020-02-22T12:52:20.222Z"^^xsd:dateTime .
         """.trimIndent()
 
-        val expected = Dataset().also { dataset ->
-            dataset.id = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
-            dataset.uri = "https://testdirektoratet.no/model/dataset/0"
-            dataset.issued = "2018-01-11T10:50:10.111Z"
-            dataset.modified = "2020-02-22T12:52:20.222Z"
-            dataset.type = ResourceType.datasets
+            val expected = Dataset().also { dataset ->
+                dataset.id = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
+                dataset.uri = "https://testdirektoratet.no/model/dataset/0"
+                dataset.issued = "2018-01-11T10:50:10.111Z"
+                dataset.modified = "2020-02-22T12:52:20.222Z"
+                dataset.type = ResourceType.datasets
+            }
+
+            val m = ModelFactory.createDefaultModel()
+            m.read(StringReader(turtle), null, "TURTLE")
+            val result = parser.parse(m)
+
+            assertEquals(expected, result)
         }
 
-        val m = ModelFactory.createDefaultModel()
-        m.read(StringReader(turtle), null, "TURTLE")
-        val result = parser.parse(m)
-
-        assertEquals(expected, result)
-    }
-
-    @Test
-    fun extractDctAndAdmsIdentifiers() {
-        val turtle = """
+        @Test
+        fun extractDctAndAdmsIdentifiers() {
+            val turtle = """
             @prefix dct:   <http://purl.org/dc/terms/> .
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
             @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
@@ -199,20 +206,20 @@ class DatasetExtractionTest {
                 adms:identifier    <https://adms-uri.no> , "adms-string" .
         """.trimIndent()
 
-        val expectedDCT = listOf("dct-string", "https://dct-uri.no")
-        val expectedADMS = listOf("adms-string", "https://adms-uri.no")
+            val expectedDCT = listOf("dct-string", "https://dct-uri.no")
+            val expectedADMS = listOf("adms-string", "https://adms-uri.no")
 
-        val m = ModelFactory.createDefaultModel()
-        m.read(StringReader(turtle), null, "TURTLE")
-        val result = parser.parse(m)
+            val m = ModelFactory.createDefaultModel()
+            m.read(StringReader(turtle), null, "TURTLE")
+            val result = parser.parse(m)
 
-        assertEquals(expectedDCT, result.identifier?.map { it.toString() }?.sorted())
-        assertEquals(expectedADMS, result.admsIdentifier?.map { it.toString() }?.sorted())
-    }
+            assertEquals(expectedDCT, result.identifier?.map { it.toString() }?.sorted())
+            assertEquals(expectedADMS, result.admsIdentifier?.map { it.toString() }?.sorted())
+        }
 
-    @Test
-    fun extractPagesAndLandingPages() {
-        val turtle = """
+        @Test
+        fun extractPagesAndLandingPages() {
+            val turtle = """
             @prefix dct:   <http://purl.org/dc/terms/> .
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
             @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
@@ -228,20 +235,20 @@ class DatasetExtractionTest {
                 dcat:landingPage   <https://landing0.no> , <https://landing1.no> .
         """.trimIndent()
 
-        val expectedPage = listOf("https://page0.no", "https://page1.no")
-        val expectedLandingPage = listOf("https://landing0.no", "https://landing1.no")
+            val expectedPage = listOf("https://page0.no", "https://page1.no")
+            val expectedLandingPage = listOf("https://landing0.no", "https://landing1.no")
 
-        val m = ModelFactory.createDefaultModel()
-        m.read(StringReader(turtle), null, "TURTLE")
-        val result = parser.parse(m)
+            val m = ModelFactory.createDefaultModel()
+            m.read(StringReader(turtle), null, "TURTLE")
+            val result = parser.parse(m)
 
-        assertEquals(expectedPage, result.page?.map { it.toString() }?.sorted())
-        assertEquals(expectedLandingPage, result.landingPage?.map { it.toString() }?.sorted())
-    }
+            assertEquals(expectedPage, result.page?.map { it.toString() }?.sorted())
+            assertEquals(expectedLandingPage, result.landingPage?.map { it.toString() }?.sorted())
+        }
 
-    @Test
-    fun extractKeywords() {
-        val turtle = """
+        @Test
+        fun extractKeywords() {
+            val turtle = """
             @prefix dct:   <http://purl.org/dc/terms/> .
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
             @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
@@ -256,23 +263,23 @@ class DatasetExtractionTest {
                 dcat:keyword       "keyword0"@en , "keyword1"@en , "keyword2"@nn .
         """.trimIndent()
 
-        val expectedKeywords = listOf(
-            LocalizedStrings().also { it.en = "keyword0" },
-            LocalizedStrings().also { it.en = "keyword1" },
-            LocalizedStrings().also { it.nn = "keyword2" }
-        )
+            val expectedKeywords = listOf(
+                LocalizedStrings().also { it.en = "keyword0" },
+                LocalizedStrings().also { it.en = "keyword1" },
+                LocalizedStrings().also { it.nn = "keyword2" }
+            )
 
-        val m = ModelFactory.createDefaultModel()
-        m.read(StringReader(turtle), null, "TURTLE")
-        val result = parser.parse(m)
+            val m = ModelFactory.createDefaultModel()
+            m.read(StringReader(turtle), null, "TURTLE")
+            val result = parser.parse(m)
 
-        assertEquals(3, result.keyword.size)
-        assertTrue { result.keyword.containsAll(expectedKeywords) }
-    }
+            assertEquals(3, result.keyword.size)
+            assertTrue { result.keyword.containsAll(expectedKeywords) }
+        }
 
-    @Test
-    fun extractThemes() {
-        val turtle = """
+        @Test
+        fun extractThemes() {
+            val turtle = """
             @prefix dct:   <http://purl.org/dc/terms/> .
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
             @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
@@ -303,54 +310,54 @@ class DatasetExtractionTest {
                 <https://fellesdatakatalog.digdir.no/ontology/internal/themePath> "naring" .
         """.trimIndent()
 
-        val expectedUris = listOf(
-            "http://eurovoc.europa.eu/1338",
-            "http://publications.europa.eu/resource/authority/data-theme/TECH",
-            "https://psi.norge.no/los/tema/naring"
-        )
-        val expectedDataTheme = listOf(EuDataTheme().also { theme ->
-            theme.uri = "http://publications.europa.eu/resource/authority/data-theme/TECH"
-            theme.code = "TECH"
-            theme.title = LocalizedStrings().also { title ->
-                title.no = "Vitenskap og teknologi"
-                title.nb = "Vitenskap og teknologi"
-                title.nn = "Vitskap og teknologi"
-                title.en = "Science and technology"
-            }
-        })
-        val expectedLos = listOf(LosNode().also { theme ->
-            theme.uri = "https://psi.norge.no/los/tema/naring"
-            theme.code = "naring"
-            theme.losPaths = listOf("naring")
-            theme.isTema = true
-            theme.name = LocalizedStrings().also { name ->
-                name.nb = "Næring"
-                name.nn = "Næring"
-                name.en = "Business"
-            }
-        })
-        val expectedEurovoc = listOf(Eurovoc().also { theme ->
-            theme.uri = "http://eurovoc.europa.eu/1338"
-            theme.code = "1338"
-            theme.eurovocPaths = listOf("8367/1338")
-            theme.label = LocalizedStrings().also { label ->
-                label.en = "India"
-            }
-        })
+            val expectedUris = listOf(
+                "http://eurovoc.europa.eu/1338",
+                "http://publications.europa.eu/resource/authority/data-theme/TECH",
+                "https://psi.norge.no/los/tema/naring"
+            )
+            val expectedDataTheme = listOf(EuDataTheme().also { theme ->
+                theme.uri = "http://publications.europa.eu/resource/authority/data-theme/TECH"
+                theme.code = "TECH"
+                theme.title = LocalizedStrings().also { title ->
+                    title.no = "Vitenskap og teknologi"
+                    title.nb = "Vitenskap og teknologi"
+                    title.nn = "Vitskap og teknologi"
+                    title.en = "Science and technology"
+                }
+            })
+            val expectedLos = listOf(LosNode().also { theme ->
+                theme.uri = "https://psi.norge.no/los/tema/naring"
+                theme.code = "naring"
+                theme.losPaths = listOf("naring")
+                theme.isTema = true
+                theme.name = LocalizedStrings().also { name ->
+                    name.nb = "Næring"
+                    name.nn = "Næring"
+                    name.en = "Business"
+                }
+            })
+            val expectedEurovoc = listOf(Eurovoc().also { theme ->
+                theme.uri = "http://eurovoc.europa.eu/1338"
+                theme.code = "1338"
+                theme.eurovocPaths = listOf("8367/1338")
+                theme.label = LocalizedStrings().also { label ->
+                    label.en = "India"
+                }
+            })
 
-        val m = ModelFactory.createDefaultModel()
-        m.read(StringReader(turtle), null, "TURTLE")
-        val result = parser.parse(m)
+            val m = ModelFactory.createDefaultModel()
+            m.read(StringReader(turtle), null, "TURTLE")
+            val result = parser.parse(m)
 
-        assertEquals(expectedUris, result.themeUris?.map { it.toString() }?.sorted())
-        assertEquals(expectedDataTheme, result.theme)
-        assertEquals(expectedLos, result.losTheme)
-        assertEquals(expectedEurovoc, result.eurovocThemes)
-    }
+            assertEquals(expectedUris, result.themeUris?.map { it.toString() }?.sorted())
+            assertEquals(expectedDataTheme, result.theme)
+            assertEquals(expectedLos, result.losTheme)
+            assertEquals(expectedEurovoc, result.eurovocThemes)
+        }
 
-    @Test
-    fun extractTypeFrequencyProvenanceAndSpatial() {
-        val turtle = """
+        @Test
+        fun extractTypeFrequencyProvenanceAndSpatial() {
+            val turtle = """
             @prefix dct:   <http://purl.org/dc/terms/> .
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
             @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
@@ -389,54 +396,103 @@ class DatasetExtractionTest {
                 skos:prefLabel  "Testdata"@nn , "Test data"@en , "Testdata"@no , "Testdata"@nb .
         """.trimIndent()
 
-        val expectedSpatial = listOf(ReferenceDataCode().apply {
-            uri = "https://data.geonorge.no/administrativeEnheter/fylke/id/34"
-            code = "34"
-            prefLabel = LocalizedStrings().apply {
-                no = "Innlandet"
-            }
-        })
+            val expectedSpatial = listOf(ReferenceDataCode().apply {
+                uri = "https://data.geonorge.no/administrativeEnheter/fylke/id/34"
+                code = "34"
+                prefLabel = LocalizedStrings().apply {
+                    no = "Innlandet"
+                }
+            })
 
-        val expectedProvenance = ReferenceDataCode().apply {
-            uri = "http://data.brreg.no/datakatalog/provinens/nasjonal"
-            code = "NASJONAL"
-            prefLabel = LocalizedStrings().apply {
-                nb = "Autoritativ kilde"
-                nn = "Autoritativ kilde"
-                en = "Authoritativ source"
+            val expectedProvenance = ReferenceDataCode().apply {
+                uri = "http://data.brreg.no/datakatalog/provinens/nasjonal"
+                code = "NASJONAL"
+                prefLabel = LocalizedStrings().apply {
+                    nb = "Autoritativ kilde"
+                    nn = "Autoritativ kilde"
+                    en = "Authoritativ source"
+                }
             }
+
+            val expectedFrequency = ReferenceDataCode().apply {
+                uri = "http://publications.europa.eu/resource/authority/frequency/ANNUAL"
+                code = "ANNUAL"
+                prefLabel = LocalizedStrings().apply {
+                    no = "årlig"
+                    nb = "årlig"
+                    nn = "årleg"
+                    en = "annual"
+                }
+            }
+
+            val expectedType = ReferenceDataCode().apply {
+                uri = "http://publications.europa.eu/resource/authority/dataset-type/TEST_DATA"
+                code = "TEST_DATA"
+                prefLabel = LocalizedStrings().apply {
+                    no = "Testdata"
+                    nb = "Testdata"
+                    nn = "Testdata"
+                    en = "Test data"
+                }
+            }
+
+            val m = ModelFactory.createDefaultModel()
+            m.read(StringReader(turtle), null, "TURTLE")
+            val result = parser.parse(m)
+
+            assertEquals(expectedSpatial, result.spatial)
+            assertEquals(expectedProvenance, result.provenance)
+            assertEquals(expectedFrequency, result.accrualPeriodicity)
+            assertEquals(expectedType, result.dctType)
         }
+    }
 
-        val expectedFrequency = ReferenceDataCode().apply {
-            uri = "http://publications.europa.eu/resource/authority/frequency/ANNUAL"
-            code = "ANNUAL"
-            prefLabel = LocalizedStrings().apply {
-                no = "årlig"
-                nb = "årlig"
-                nn = "årleg"
-                en = "annual"
+
+    @Nested
+    internal inner class V2 {
+        val parser = DcatApNoV2Parser("http://test.fellesdatakatalog.digdir.no/datasets/")
+
+        @Test
+        fun extractDatasetSeries() {
+            val turtle = """
+            @prefix dct:   <http://purl.org/dc/terms/> .
+            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+            @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+
+            <http://test.fellesdatakatalog.digdir.no/datasets/b1c680cb-62d7-34d5-bb4c-d39b5db033be>
+                a                  dcat:CatalogRecord ;
+                dct:identifier     "b1c680cb-62d7-34d5-bb4c-d39b5db033be" ;
+                foaf:primaryTopic  <https://testdirektoratet.no/model/series/0> .
+
+            <https://testdirektoratet.no/model/dataset/0>
+                a               dcat:Dataset .
+
+            <https://testdirektoratet.no/model/dataset/1>
+                a               dcat:Dataset ;
+                dcat:prev       <https://testdirektoratet.no/model/dataset/0> .
+
+            <https://testdirektoratet.no/model/series/0>
+                a               dcat:Dataset , dcat:DatasetSeries ;
+                dcat:last       <https://testdirektoratet.no/model/dataset/1> .
+        """.trimIndent()
+
+            val expected = Dataset().also { dataset ->
+                dataset.id = "b1c680cb-62d7-34d5-bb4c-d39b5db033be"
+                dataset.uri = "https://testdirektoratet.no/model/series/0"
+                dataset.last = "https://testdirektoratet.no/model/dataset/1"
+                dataset.datasetsInSeries =
+                    listOf("https://testdirektoratet.no/model/dataset/1", "https://testdirektoratet.no/model/dataset/0")
+                dataset.type = ResourceType.datasets
+                dataset.specializedType = DatasetType.datasetSeries
             }
+
+            val m = ModelFactory.createDefaultModel()
+            m.read(StringReader(turtle), null, "TURTLE")
+            val result = parser.parse(m)
+
+            assertEquals(expected, result)
         }
-
-        val expectedType = ReferenceDataCode().apply {
-            uri = "http://publications.europa.eu/resource/authority/dataset-type/TEST_DATA"
-            code = "TEST_DATA"
-            prefLabel = LocalizedStrings().apply {
-                no = "Testdata"
-                nb = "Testdata"
-                nn = "Testdata"
-                en = "Test data"
-            }
-        }
-
-        val m = ModelFactory.createDefaultModel()
-        m.read(StringReader(turtle), null, "TURTLE")
-        val result = parser.parse(m)
-
-        assertEquals(expectedSpatial, result.spatial)
-        assertEquals(expectedProvenance, result.provenance)
-        assertEquals(expectedFrequency, result.accrualPeriodicity)
-        assertEquals(expectedType, result.dctType)
     }
 
 }

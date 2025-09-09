@@ -1,8 +1,13 @@
 package no.digdir.fdk.parseservice.parser.dataset
 
 import no.digdir.fdk.model.dataset.Dataset
+import no.digdir.fdk.model.dataset.DatasetType
+import no.digdir.fdk.parseservice.extract.containsTriple
+import no.digdir.fdk.parseservice.extract.dataset.extractInSeries
+import no.digdir.fdk.parseservice.extract.dataset.extractListOfDatasetsInSeries
 import no.digdir.fdk.parseservice.extract.dataset.extractListOfDistributionsV2
 import no.digdir.fdk.parseservice.extract.extractListOfTemporal
+import no.digdir.fdk.parseservice.extract.extractStringValue
 import no.digdir.fdk.parseservice.extract.fdk.addFdkData
 import no.digdir.fdk.parseservice.extract.fdk.fdkRecord
 import no.digdir.fdk.parseservice.extract.fdk.primaryTopicFromFdkRecord
@@ -15,6 +20,7 @@ import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms
+import org.apache.jena.vocabulary.RDF
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
@@ -120,9 +126,8 @@ class DcatApNoV2Parser(
         builder.setDistribution(datasetResource.extractListOfDistributionsV2(DCAT.distribution))
         builder.setSample(datasetResource.extractListOfDistributionsV2(ADMS.sample))
 
-        val lasDataset = datasetResource.singleResource(DCAT3.last)
-        builder.setLast(lasDataset?.takeIf { it.isURIResource }?.uri)
-        builder.setPrev(null)
+        builder.setPrev(datasetResource.extractStringValue(DCAT3.prev))
+        builder.setInSeries(datasetResource.extractInSeries())
 
         builder.setHasRelevanceAnnotation(null)
         builder.setHasCurrentnessAnnotation(null)
@@ -130,12 +135,19 @@ class DcatApNoV2Parser(
         builder.setHasAvailabilityAnnotation(null)
         builder.setHasAccuracyAnnotation(null)
         builder.setQualifiedAttributions(null)
-        builder.setInSeries(null)
-        builder.setDatasetsInSeries(null)
         builder.setLegalBasisForProcessing(null)
         builder.setLegalBasisForRestriction(null)
         builder.setLegalBasisForAccess(null)
-        builder.setSpecializedType(null)
+
+        if (model.containsTriple(datasetResource.uri, RDF.type.uri, DCAT3.DatasetSeries.uri, true)) {
+            builder.setSpecializedType(DatasetType.datasetSeries)
+            builder.setLast(datasetResource.extractStringValue(DCAT3.last))
+            builder.setDatasetsInSeries(datasetResource.extractListOfDatasetsInSeries())
+        } else {
+            builder.setSpecializedType(null)
+            builder.setLast(null)
+            builder.setDatasetsInSeries(null)
+        }
 
         return builder.build()
     }

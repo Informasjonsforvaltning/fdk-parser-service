@@ -1,6 +1,7 @@
 package no.digdir.fdk.parseservice.vocabulary
 
 import org.apache.jena.rdf.model.Property
+import org.apache.jena.rdf.model.Resource
 import org.apache.jena.rdf.model.ResourceFactory
 import org.apache.jena.vocabulary.DCAT
 
@@ -11,6 +12,9 @@ class DCAT3 {
 
         val prev: Property = ResourceFactory.createProperty("${uri}prev")
         val last: Property = ResourceFactory.createProperty("${uri}last")
+        val inSeries: Property = ResourceFactory.createProperty("${uri}inSeries")
+
+        val DatasetSeries: Resource = ResourceFactory.createResource("${uri}DatasetSeries")
     }
 
 }
