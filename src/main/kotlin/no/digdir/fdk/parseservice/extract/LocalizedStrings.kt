@@ -5,6 +5,14 @@ import no.digdir.fdk.parseservice.model.LanguageCodes
 import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
 
+fun LocalizedStrings.hasContent() = when {
+    no != null -> true
+    nb != null -> true
+    nn != null -> true
+    en != null -> true
+    else -> false
+}
+
 /**
  * Extension function to extract localized strings from an RDF resource.
  * 

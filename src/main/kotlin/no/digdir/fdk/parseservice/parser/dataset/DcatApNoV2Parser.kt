@@ -6,6 +6,7 @@ import no.digdir.fdk.parseservice.extract.containsTriple
 import no.digdir.fdk.parseservice.extract.dataset.extractInSeries
 import no.digdir.fdk.parseservice.extract.dataset.extractListOfDatasetsInSeries
 import no.digdir.fdk.parseservice.extract.dataset.extractListOfDistributionsV2
+import no.digdir.fdk.parseservice.extract.dataset.extractQualityAnnotation
 import no.digdir.fdk.parseservice.extract.extractListOfTemporal
 import no.digdir.fdk.parseservice.extract.extractStringValue
 import no.digdir.fdk.parseservice.extract.fdk.addFdkData
@@ -15,6 +16,7 @@ import no.digdir.fdk.parseservice.model.LanguageCodes
 import no.digdir.fdk.parseservice.model.NoAcceptableTypesException
 import no.digdir.fdk.parseservice.vocabulary.ADMS
 import no.digdir.fdk.parseservice.vocabulary.DCAT3
+import no.digdir.fdk.parseservice.vocabulary.DQVISO
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCAT
@@ -133,11 +135,12 @@ class DcatApNoV2Parser() : BaseDatasetParser() {
         builder.setPrev(datasetResource.extractStringValue(DCAT3.prev))
         builder.setInSeries(datasetResource.extractInSeries())
 
-        builder.setHasRelevanceAnnotation(null)
-        builder.setHasCurrentnessAnnotation(null)
-        builder.setHasCompletenessAnnotation(null)
-        builder.setHasAvailabilityAnnotation(null)
-        builder.setHasAccuracyAnnotation(null)
+        builder.setHasRelevanceAnnotation(datasetResource.extractQualityAnnotation(DQVISO.Relevance))
+        builder.setHasCurrentnessAnnotation(datasetResource.extractQualityAnnotation(DQVISO.Currentness))
+        builder.setHasCompletenessAnnotation(datasetResource.extractQualityAnnotation(DQVISO.Completeness))
+        builder.setHasAvailabilityAnnotation(datasetResource.extractQualityAnnotation(DQVISO.Availability))
+        builder.setHasAccuracyAnnotation(datasetResource.extractQualityAnnotation(DQVISO.Accuracy))
+
         builder.setQualifiedAttributions(null)
         builder.setLegalBasisForProcessing(null)
         builder.setLegalBasisForRestriction(null)
