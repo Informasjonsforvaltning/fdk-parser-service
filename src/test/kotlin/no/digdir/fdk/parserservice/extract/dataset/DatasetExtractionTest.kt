@@ -24,7 +24,9 @@ class DatasetExtractionTest {
 
     @Nested
     internal inner class V1 {
-        val parser = DcatApNoV1Parser("http://test.fellesdatakatalog.digdir.no/datasets/")
+        val datasetIRI = "https://testdirektoratet.no/model/dataset/0"
+        val fdkId = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
+        val parser = DcatApNoV1Parser()
 
         @Test
         fun extractsTitleAndDescriptionCorrectly() {
@@ -70,7 +72,7 @@ class DatasetExtractionTest {
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
-            val result = parser.parse(m)
+            val result = parser.parse(m, datasetIRI, fdkId)
 
             assertEquals(expected, result)
         }
@@ -111,7 +113,7 @@ class DatasetExtractionTest {
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
-            val result = parser.parse(m)
+            val result = parser.parse(m, datasetIRI, fdkId)
 
             assertEquals(expected, result)
         }
@@ -148,7 +150,7 @@ class DatasetExtractionTest {
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
-            val result = parser.parse(m)
+            val result = parser.parse(m, datasetIRI, fdkId)
 
             assertEquals(expected, result)
         }
@@ -182,7 +184,7 @@ class DatasetExtractionTest {
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
-            val result = parser.parse(m)
+            val result = parser.parse(m, datasetIRI, fdkId)
 
             assertEquals(expected, result)
         }
@@ -211,7 +213,7 @@ class DatasetExtractionTest {
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
-            val result = parser.parse(m)
+            val result = parser.parse(m, datasetIRI, fdkId)
 
             assertEquals(expectedDCT, result.identifier?.map { it.toString() }?.sorted())
             assertEquals(expectedADMS, result.admsIdentifier?.map { it.toString() }?.sorted())
@@ -240,7 +242,7 @@ class DatasetExtractionTest {
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
-            val result = parser.parse(m)
+            val result = parser.parse(m, datasetIRI, fdkId)
 
             assertEquals(expectedPage, result.page?.map { it.toString() }?.sorted())
             assertEquals(expectedLandingPage, result.landingPage?.map { it.toString() }?.sorted())
@@ -271,7 +273,7 @@ class DatasetExtractionTest {
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
-            val result = parser.parse(m)
+            val result = parser.parse(m, datasetIRI, fdkId)
 
             assertEquals(3, result.keyword.size)
             assertTrue { result.keyword.containsAll(expectedKeywords) }
@@ -347,7 +349,7 @@ class DatasetExtractionTest {
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
-            val result = parser.parse(m)
+            val result = parser.parse(m, datasetIRI, fdkId)
 
             assertEquals(expectedUris, result.themeUris?.map { it.toString() }?.sorted())
             assertEquals(expectedDataTheme, result.theme)
@@ -438,7 +440,7 @@ class DatasetExtractionTest {
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
-            val result = parser.parse(m)
+            val result = parser.parse(m, datasetIRI, fdkId)
 
             assertEquals(expectedSpatial, result.spatial)
             assertEquals(expectedProvenance, result.provenance)
@@ -450,7 +452,9 @@ class DatasetExtractionTest {
 
     @Nested
     internal inner class V2 {
-        val parser = DcatApNoV2Parser("http://test.fellesdatakatalog.digdir.no/datasets/")
+        val parser = DcatApNoV2Parser()
+        val datasetIRI = "https://testdirektoratet.no/model/series/0"
+        val fdkId = "b1c680cb-62d7-34d5-bb4c-d39b5db033be"
 
         @Test
         fun extractDatasetSeries() {
@@ -489,7 +493,7 @@ class DatasetExtractionTest {
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
-            val result = parser.parse(m)
+            val result = parser.parse(m, datasetIRI, fdkId)
 
             assertEquals(expected, result)
         }

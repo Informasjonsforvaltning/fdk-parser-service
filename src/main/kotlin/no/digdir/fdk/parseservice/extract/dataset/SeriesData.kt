@@ -11,6 +11,7 @@ import org.apache.jena.sparql.vocabulary.FOAF
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDF
+import java.net.URI
 
 fun Resource.extractInSeries(): InSeries? {
     val builder = InSeries.newBuilder()
@@ -20,7 +21,7 @@ fun Resource.extractInSeries(): InSeries? {
         val seriesCatalogRecord = model.listResourcesWithProperty(RDF.type, DCAT.CatalogRecord)
             .asSequence()
             .filter { it.isURIResource }
-            .filter { model.containsTriple(it.uri, FOAF.primaryTopic.uri, seriesResource.uri, true) }
+            .filter { model.containsTriple(it.uri, FOAF.primaryTopic.uri, URI.create(seriesResource.uri)) }
             .toList()
             .firstOrNull()
 

@@ -2,13 +2,16 @@ package no.digdir.fdk.parserservice.handler
 
 import io.kotest.assertions.json.shouldEqualJson
 import no.digdir.fdk.parseservice.parser.dataset.DcatApNoV1Parser
-import no.digdir.fdk.parseservice.parser.handler.DatasetHandler
+import no.digdir.fdk.parseservice.handler.DatasetHandler
+import org.apache.jena.rdf.model.ModelFactory
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import java.io.StringReader
 
 @Tag("unit")
 class DatasetHandlerTest {
-    val handler = DatasetHandler(DcatApNoV1Parser("http://test.fellesdatakatalog.digdir.no/datasets/"))
+    val handler = DatasetHandler(DcatApNoV1Parser())
 
     @Test
     fun parseAndEncodeDataset() {
@@ -54,7 +57,6 @@ class DatasetHandlerTest {
                 a                         dcat:Dataset ;
                 dct:title                 "title"@nb ;
                 dct:description           "description"@nb ;
-                 ;
                 dct:issued         "2018-01-11T10:50:10.111Z"^^xsd:dateTime ;
                 dct:modified       "2020-02-22T12:52:20.222Z"^^xsd:dateTime ;
                 dct:temporal    [ a                   dct:PeriodOfTime ;
@@ -195,8 +197,24 @@ class DatasetHandlerTest {
           "specializedType": null
         }""".trimIndent()
 
-        val result = handler.parseDataset(turtle)
+        val result = handler.parseDataset("a1c680ca-62d7-34d5-aa4c-d39b5db033ae", turtle)
         result.toString().shouldEqualJson(expected)
+    }
+
+    @Test
+    fun exceptionWhenCatalogRecordHasNoPrimaryRecord() {
+        val turtle = """
+            @prefix dct:   <http://purl.org/dc/terms/> .
+            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+            @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+
+            <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+                    a                  dcat:CatalogRecord ;
+                    dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" .
+        """.trimIndent()
+
+        assertThrows<Exception> { handler.parseDataset("a1c680ca-62d7-34d5-aa4c-d39b5db033ae", turtle) }
     }
 
 }

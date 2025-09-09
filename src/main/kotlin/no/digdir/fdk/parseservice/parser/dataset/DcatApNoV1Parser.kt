@@ -1,20 +1,23 @@
 package no.digdir.fdk.parseservice.parser.dataset
 
 import no.digdir.fdk.model.dataset.Dataset
+import no.digdir.fdk.parseservice.extract.containsTriple
 import no.digdir.fdk.parseservice.extract.dataset.extractListOfDistributionsV1
 import no.digdir.fdk.parseservice.extract.extractListOfTemporal
 import no.digdir.fdk.parseservice.extract.fdk.addFdkData
 import no.digdir.fdk.parseservice.extract.fdk.fdkRecord
-import no.digdir.fdk.parseservice.extract.fdk.primaryTopicFromFdkRecord
+import no.digdir.fdk.parseservice.extract.fdk.resourceOfIRI
 import no.digdir.fdk.parseservice.model.LanguageCodes
+import no.digdir.fdk.parseservice.model.NoAcceptableTypesException
 import no.digdir.fdk.parseservice.vocabulary.ADMS
 import no.digdir.fdk.parseservice.vocabulary.SCHEMA
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms
-import org.springframework.beans.factory.annotation.Value
+import org.apache.jena.vocabulary.RDF
 import org.springframework.stereotype.Component
+import java.net.URI
 
 /**
  * Parser implementation for DCAT-AP-NO version 1.1.
@@ -55,9 +58,7 @@ import org.springframework.stereotype.Component
  * @since 1.0.0
  */
 @Component
-class DcatApNoV1Parser(
-    @Value("\${fdk.parser.patterns.datasetURI}") val uriPattern: String
-) : BaseDatasetParser() {
+class DcatApNoV1Parser() : BaseDatasetParser() {
     /**
      * Gets the default language for DCAT-AP-NO v1.1.
      * 
@@ -80,13 +81,6 @@ class DcatApNoV1Parser(
     override fun getSourceFormat(): String = "DCAT-AP-NO"
 
     /**
-     * Gets the URI pattern for FDK records.
-     * 
-     * @return dataset URI pattern
-     */
-    override fun getFDKURIPattern(): String = uriPattern
-
-    /**
      * Gets the acceptable RDF types for datasets.
      * 
      * @return List containing DCAT.Dataset
@@ -100,17 +94,25 @@ class DcatApNoV1Parser(
      * and builds a complete Dataset object with all available metadata.
      * 
      * @param model The Jena RDF model containing the dataset
+     * @param iri The IRI of the dataset
+     * @param fdkId The FDK ID of the dataset
      * @return The parsed Dataset object
      * @throws IllegalArgumentException if the model is null or invalid
      * @throws UnsupportedOperationException if no valid FDK record is found
      */
-    override fun parse(model: Model): Dataset {
-        val recordResource = fdkRecord(model, getAcceptableTypes(), getFDKURIPattern())
-        val datasetResource = primaryTopicFromFdkRecord(recordResource, getAcceptableTypes())
+    override fun parse(model: Model, iri: String, fdkId: String?): Dataset {
+        if (getAcceptableTypes().none { model.containsTriple(iri, RDF.type.uri, URI.create(it.uri)) }) {
+            throw NoAcceptableTypesException("No acceptable types found for $iri")
+        }
+
+        val datasetResource = resourceOfIRI(model, iri)
 
         val builder = Dataset.newBuilder()
 
-        builder.addFdkData(recordResource, datasetResource)
+        if (fdkId != null) {
+            val recordResource = fdkRecord(datasetResource, fdkId)
+            builder.addFdkData(recordResource, datasetResource)
+        }
 
         builder.addCommonDatasetValues(datasetResource)
 

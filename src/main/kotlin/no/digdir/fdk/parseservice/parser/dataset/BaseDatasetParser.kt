@@ -9,7 +9,6 @@ import no.digdir.fdk.parseservice.extract.extractEurovoc
 import no.digdir.fdk.parseservice.extract.extractListOfReferenceDataCodes
 import no.digdir.fdk.parseservice.extract.extractListOfStrings
 import no.digdir.fdk.parseservice.extract.dataset.extractListOfSubjects
-import no.digdir.fdk.parseservice.extract.extractListOfTemporal
 import no.digdir.fdk.parseservice.extract.extractListOfUriWithLabel
 import no.digdir.fdk.parseservice.extract.extractLocalizedStringList
 import no.digdir.fdk.parseservice.extract.extractLocalizedStrings
@@ -23,7 +22,6 @@ import no.digdir.fdk.parseservice.extract.isLosURI
 import no.digdir.fdk.parseservice.extract.listResources
 import no.digdir.fdk.parseservice.vocabulary.ADMS
 import no.digdir.fdk.parseservice.vocabulary.EUAT
-import no.digdir.fdk.parseservice.vocabulary.SCHEMA
 import no.digdir.fdk.parseservice.parser.DatasetParserStrategy
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
@@ -58,11 +56,13 @@ abstract class BaseDatasetParser : DatasetParserStrategy {
      * version-specific parsing logic.
      * 
      * @param model The Jena RDF model containing the dataset
+     * @param iri The IRI of the dataset
+     * @param fdkId The FDK ID of the dataset
      * @return The parsed Dataset object
      * @throws IllegalArgumentException if the model is null or invalid
      * @throws UnsupportedOperationException if the model format is not supported
      */
-    abstract override fun parse(model: Model): Dataset
+    abstract override fun parse(model: Model, iri: String, fdkId: String?): Dataset
 
     /**
      * Gets the default language for this parser version.
@@ -84,16 +84,6 @@ abstract class BaseDatasetParser : DatasetParserStrategy {
      * @return The source format (e.g., "DCAT-AP-NO")
      */
     protected abstract fun getSourceFormat(): String
-
-    /**
-     * Gets the URI pattern used by relevant FDK records with harvest metadata.
-     * 
-     * This pattern is used to identify valid FDK catalog records
-     * in the RDF model.
-     * 
-     * @return The URI pattern string
-     */
-    protected abstract fun getFDKURIPattern(): String
 
     /**
      * Gets a list of acceptable RDF types for harvested datasets.

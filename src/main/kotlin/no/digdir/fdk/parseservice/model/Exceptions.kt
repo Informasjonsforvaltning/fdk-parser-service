@@ -4,6 +4,6 @@ class NoAcceptableFDKRecordsException(message: String) : Exception(message)
 
 class MultipleFDKRecordsException(message: String) : Exception(message)
 
-class NoPrimaryTopicOnFDKRecordException(message: String) : Exception(message)
+class NoAcceptableTypesException(message: String) : Exception(message)
 
-class MoAcceptableTopicsOnFDKRecordException(message: String) : Exception(message)
+class NoResourceFoundException(message: String) : Exception(message)
