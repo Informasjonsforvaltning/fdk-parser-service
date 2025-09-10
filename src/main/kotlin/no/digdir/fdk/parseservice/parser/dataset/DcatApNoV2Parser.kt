@@ -6,6 +6,7 @@ import no.digdir.fdk.parseservice.extract.containsTriple
 import no.digdir.fdk.parseservice.extract.dataset.extractInSeries
 import no.digdir.fdk.parseservice.extract.dataset.extractListOfDatasetsInSeries
 import no.digdir.fdk.parseservice.extract.dataset.extractListOfDistributionsV2
+import no.digdir.fdk.parseservice.extract.dataset.extractListOfQualifiedAttributions
 import no.digdir.fdk.parseservice.extract.dataset.extractQualityAnnotation
 import no.digdir.fdk.parseservice.extract.extractListOfTemporal
 import no.digdir.fdk.parseservice.extract.extractStringValue
@@ -141,7 +142,8 @@ class DcatApNoV2Parser() : BaseDatasetParser() {
         builder.setHasAvailabilityAnnotation(datasetResource.extractQualityAnnotation(DQVISO.Availability))
         builder.setHasAccuracyAnnotation(datasetResource.extractQualityAnnotation(DQVISO.Accuracy))
 
-        builder.setQualifiedAttributions(null)
+        builder.setQualifiedAttributions(datasetResource.extractListOfQualifiedAttributions())
+
         builder.setLegalBasisForProcessing(null)
         builder.setLegalBasisForRestriction(null)
         builder.setLegalBasisForAccess(null)
