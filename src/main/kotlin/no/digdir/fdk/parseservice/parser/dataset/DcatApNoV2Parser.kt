@@ -6,6 +6,7 @@ import no.digdir.fdk.parseservice.extract.containsTriple
 import no.digdir.fdk.parseservice.extract.dataset.extractInSeries
 import no.digdir.fdk.parseservice.extract.dataset.extractListOfDatasetsInSeries
 import no.digdir.fdk.parseservice.extract.dataset.extractListOfDistributionsV2
+import no.digdir.fdk.parseservice.extract.dataset.extractListOfLegalBasisV2
 import no.digdir.fdk.parseservice.extract.dataset.extractListOfQualifiedAttributions
 import no.digdir.fdk.parseservice.extract.dataset.extractQualityAnnotation
 import no.digdir.fdk.parseservice.extract.extractListOfTemporal
@@ -16,6 +17,7 @@ import no.digdir.fdk.parseservice.extract.fdk.resourceOfIRI
 import no.digdir.fdk.parseservice.model.LanguageCodes
 import no.digdir.fdk.parseservice.model.NoAcceptableTypesException
 import no.digdir.fdk.parseservice.vocabulary.ADMS
+import no.digdir.fdk.parseservice.vocabulary.CPSVNO
 import no.digdir.fdk.parseservice.vocabulary.DCAT3
 import no.digdir.fdk.parseservice.vocabulary.DQVISO
 import org.apache.jena.rdf.model.Model
@@ -144,9 +146,9 @@ class DcatApNoV2Parser() : BaseDatasetParser() {
 
         builder.setQualifiedAttributions(datasetResource.extractListOfQualifiedAttributions())
 
-        builder.setLegalBasisForProcessing(null)
-        builder.setLegalBasisForRestriction(null)
-        builder.setLegalBasisForAccess(null)
+        builder.setLegalBasisForProcessing(datasetResource.extractListOfLegalBasisV2(CPSVNO.ruleForDataProcessing))
+        builder.setLegalBasisForRestriction(datasetResource.extractListOfLegalBasisV2(CPSVNO.ruleForNonDisclosure))
+        builder.setLegalBasisForAccess(datasetResource.extractListOfLegalBasisV2(CPSVNO.ruleForDisclosure))
 
         if (model.containsTriple(datasetResource.uri, RDF.type.uri, URI.create(DCAT3.DatasetSeries.uri))) {
             builder.setSpecializedType(DatasetType.datasetSeries)
