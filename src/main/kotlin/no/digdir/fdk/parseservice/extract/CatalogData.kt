@@ -6,6 +6,7 @@ import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDF
+import java.net.URI
 
 private fun Catalog.hasData(): Boolean =
     uri != null || id != null || title != null || description != null || publisher != null
@@ -32,7 +33,7 @@ private fun Resource.getCatalogResource(): Resource? {
     val catalogs = model.listSubjectsWithProperty(RDF.type, DCAT.Catalog)
         .asSequence()
         .filter { it.isURIResource }
-        .filter { model.containsTriple(it.uri, DCAT.dataset.uri, uri, true) }
+        .filter { model.containsTriple(it.uri, DCAT.dataset.uri, URI.create(uri)) }
         .toList()
 
     return when {

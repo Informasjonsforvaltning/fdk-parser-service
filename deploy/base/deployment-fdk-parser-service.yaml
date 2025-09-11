@@ -22,6 +22,9 @@ spec:
     spec:
       containers:
         - name: fdk-parser-service
+          env:
+            - name: LOG_LEVEL
+              value: INFO
           image: fdk-parser-service
           imagePullPolicy: Always
           ports:

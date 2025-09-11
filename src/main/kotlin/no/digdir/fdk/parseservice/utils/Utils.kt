@@ -1,23 +1,22 @@
 package no.digdir.fdk.parseservice.utils
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.apache.avro.Schema
 import org.apache.avro.io.DatumWriter
 import org.apache.avro.io.Encoder
 import org.apache.avro.specific.SpecificDatumWriter
+import org.apache.jena.rdf.model.Model
+import org.apache.jena.riot.Lang
 import java.io.ByteArrayOutputStream
+import java.io.StringReader
 
 /**
- * Utility functions for data conversion and processing.
- * 
- * This object contains helper functions for converting between different
- * data formats, particularly Avro to JSON conversion.
- * 
- * @author FDK Team
- * @version 1.0.0
- * @since 1.0.0
+ * Reads a graph in Turtle format in to the jena Model.
  */
-object Utils {
-    // Utility functions can be added here in the future
+fun Model.readTurtle(turtleGraph: String) {
+    val reader = StringReader(turtleGraph)
+    read(reader, "", Lang.TURTLE.name)
 }
 
 /**
@@ -47,11 +46,12 @@ object Utils {
  * @throws Exception if serialization fails
  * @see FlatteningJsonEncoder
  */
-inline fun <reified T> avroToJson(avroObject: T, schema: Schema): String {
+inline fun <reified T> avroToJson(avroObject: T, schema: Schema): JsonNode {
+    val mapper = jacksonObjectMapper();
     val outputStream = ByteArrayOutputStream()
     val datumWriter: DatumWriter<T> = SpecificDatumWriter(schema)
     val encoder: Encoder = FlatteningJsonEncoder(schema, outputStream)
     datumWriter.write(avroObject, encoder)
     encoder.flush()
-    return String(outputStream.toByteArray())
+    return mapper.readTree(outputStream.toByteArray())
 }

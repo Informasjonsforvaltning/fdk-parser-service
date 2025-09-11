@@ -11,7 +11,9 @@ import kotlin.test.assertEquals
 
 @Tag("unit")
 class ExtractHarvestData {
-    val parser = DcatApNoV1Parser("http://test.fellesdatakatalog.digdir.no/datasets/")
+    val parser = DcatApNoV1Parser()
+    val datasetIRI = "https://testdirektoratet.no/model/dataset/0"
+    val fdkId = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
 
     @Test
     fun exceptionWhenGraphIsMissingCatalogRecord() {
@@ -32,38 +34,7 @@ class ExtractHarvestData {
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
 
-        assertThrows<Exception> { parser.parse(m) }
-    }
-
-    @Test
-    fun exceptionWhenGraphHasMultipleRecords() {
-        val turtle = """
-            @prefix dct:   <http://purl.org/dc/terms/> .
-            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
-            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
-            @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
-
-            <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
-                    a                  dcat:CatalogRecord ;
-                    dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
-                    foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
-
-            <https://testdirektoratet.no/model/dataset/0>
-                a                         dcat:Dataset .
-
-            <http://test.fellesdatakatalog.digdir.no/datasets/b1c680ca-62d7-34d5-aa4c-d39b5db033ae>
-                    a                  dcat:CatalogRecord ;
-                    dct:identifier     "b1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
-                    foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/1> .
-
-            <https://testdirektoratet.no/model/dataset/1>
-                a                         dcat:Dataset .
-        """.trimIndent()
-
-        val m = ModelFactory.createDefaultModel()
-        m.read(StringReader(turtle), null, "TURTLE")
-
-        assertThrows<Exception> { parser.parse(m) }
+        assertThrows<Exception> { parser.parse(m, datasetIRI, fdkId) }
     }
 
     @Test
@@ -82,7 +53,7 @@ class ExtractHarvestData {
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
 
-        assertThrows<Exception> { parser.parse(m) }
+        assertThrows<Exception> { parser.parse(m, datasetIRI, fdkId) }
     }
 
     @Test
@@ -105,33 +76,7 @@ class ExtractHarvestData {
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
 
-        assertThrows<Exception> { parser.parse(m) }
-    }
-
-    @Test
-    fun exceptionWhenCatalogRecordHasMultiplePrimaryTopics() {
-        val turtle = """
-            @prefix dct:   <http://purl.org/dc/terms/> .
-            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
-            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
-            @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
-
-            <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
-                    a                  dcat:CatalogRecord ;
-                    dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
-                    foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> , <https://testdirektoratet.no/model/dataset/1> .
-
-            <https://testdirektoratet.no/model/dataset/0>
-                a                         dcat:Dataset .
-
-            <https://testdirektoratet.no/model/dataset/1>
-                a                         dcat:Dataset .
-        """.trimIndent()
-
-        val m = ModelFactory.createDefaultModel()
-        m.read(StringReader(turtle), null, "TURTLE")
-
-        assertThrows<Exception> { parser.parse(m) }
+        assertThrows<Exception> { parser.parse(m, datasetIRI, fdkId) }
     }
 
     @Test
@@ -160,7 +105,7 @@ class ExtractHarvestData {
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
-        val parsed = parser.parse(m)
+        val parsed = parser.parse(m, datasetIRI, fdkId)
 
         assertEquals(expected, parsed.harvest)
     }

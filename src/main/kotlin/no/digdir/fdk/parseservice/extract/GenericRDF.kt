@@ -8,6 +8,7 @@ import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.rdf.model.Statement
+import java.net.URI
 
 /**
  * Extension function to get a single object statement for a given predicate.
@@ -145,12 +146,32 @@ fun Statement.extractStringLanguagePair(): Pair<LanguageCodes, String>? {
  * 
  * @param subj The subject URI
  * @param pred The predicate URI
- * @param obj The object value (string)
- * @param objectIsURI Whether the object is a URI (true) or literal (false)
+ * @param obj The URI object value
  * @return true if the triple exists, false otherwise
  */
-fun Model.containsTriple(subj: String, pred: String, obj: String, objectIsURI: Boolean): Boolean {
-    val askQuery = if (objectIsURI) "ASK { <$subj> <$pred> <$obj> }" else "ASK { <$subj> <$pred> $obj }"
+fun Model.containsTriple(subj: String, pred: String, obj: URI): Boolean {
+    val askQuery =  "ASK { <$subj> <$pred> <$obj> }"
+
+    return try {
+        val query = QueryFactory.create(askQuery)
+        QueryExecutionFactory.create(query, this).execAsk()
+    } catch (ex: Exception) {
+        false
+    }
+}
+
+/**
+ * Checks if a model contains a specific triple with string object.
+ *
+ * This function uses SPARQL ASK queries to check for the existence of a triple.
+ *
+ * @param subj The subject URI
+ * @param pred The predicate URI
+ * @param obj The string object value
+ * @return true if the triple exists, false otherwise
+ */
+fun Model.containsTriple(subj: String, pred: String, obj: String): Boolean {
+    val askQuery = "ASK { <$subj> <$pred> '$obj' }"
 
     return try {
         val query = QueryFactory.create(askQuery)

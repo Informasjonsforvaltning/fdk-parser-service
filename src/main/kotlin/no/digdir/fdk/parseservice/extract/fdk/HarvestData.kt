@@ -3,39 +3,37 @@ package no.digdir.fdk.parseservice.extract.fdk
 import no.digdir.fdk.model.HarvestMetaData
 import no.digdir.fdk.parseservice.extract.containsTriple
 import no.digdir.fdk.parseservice.extract.extractStringValue
-import no.digdir.fdk.parseservice.extract.isURIResource
 import no.digdir.fdk.parseservice.extract.singleObjectStatement
-import no.digdir.fdk.parseservice.model.MoAcceptableTopicsOnFDKRecordException
 import no.digdir.fdk.parseservice.model.MultipleFDKRecordsException
 import no.digdir.fdk.parseservice.model.NoAcceptableFDKRecordsException
-import no.digdir.fdk.parseservice.model.NoPrimaryTopicOnFDKRecordException
+import no.digdir.fdk.parseservice.model.NoResourceFoundException
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.sparql.vocabulary.FOAF
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDF
-
+import java.net.URI
 
 /**
  * Extracts a valid FDK record from an RDF model.
- * 
- * This function searches for DCAT CatalogRecord resources in the model and filters
+ *
+ * This function searches for DCAT CatalogRecord resources in the model that has
+ * the relevant resource as the primary topic and filters
  * them to find valid FDK records based on URI pattern and acceptable types.
- * 
- * @param model The Jena RDF model containing the graph
- * @param acceptableTypes A list of RDF types that are acceptable as primary topic for an FDK record
- * @param fdkURIPattern A pattern that FDK record URIs must contain
+ *
+ * @param resource The Jena RDF Resource containing the graph
+ * @param fdkId The relevant fdK ID
  * @return The valid FDK record resource
  * @throws Exception if no acceptable FDK records are found
  * @throws Exception if multiple FDK records are found
  * @see Model.listResourcesWithProperty
  * @see isValidFDKRecord
  */
-fun fdkRecord(model: Model, acceptableTypes: List<Resource>, fdkURIPattern: String): Resource {
-    val records = model.listResourcesWithProperty(RDF.type, DCAT.CatalogRecord)
+fun fdkRecord(resource: Resource, fdkId: String): Resource {
+    val records = resource.model.listResourcesWithProperty(FOAF.primaryTopic, resource)
         .asSequence()
-        .filter { isValidFDKRecord(it, acceptableTypes, fdkURIPattern) }
+        .filter { isValidFDKRecord(it, fdkId) }
         .toList()
 
     return when {
@@ -57,57 +55,34 @@ fun fdkIdFromRecord(recordResource: Resource) : String? {
 }
 
 /**
- * Extracts the primary topic resource from an FDK record.
- * 
- * This function extracts the primary topic (usually a dataset) from an FDK record
- * and validates that it is one of the acceptable types.
- * 
- * @param recordResource The Jena resource representing the FDK record
- * @param acceptableTypes A list of RDF types that are acceptable as primary topic
- * @return The primary topic resource
- * @throws Exception if no primary topic is found
- * @throws Exception if the primary topic is not one of the acceptable types
- * @see Resource.listProperties
- * @see Model.containsTriple
+ * Extracts the IRI of the primary topic from a record with identifier.
+ *
+ * @param id The identifier value of the relevant record
+ * @param model The Jena RDF model containing the graph
+ * @return The IRI of the primary topic in the record
  */
-fun primaryTopicFromFdkRecord(recordResource: Resource, acceptableTypes: List<Resource>): Resource {
-    val primaryTopic = recordResource.listProperties(FOAF.primaryTopic)
+fun topicUriOfRecordWithID(id: String, model: Model) : String? {
+    return model.listSubjectsWithProperty(DCTerms.identifier, id)
         .asSequence()
-        .filter { isURIResource(it) }
-        .map { it.resource }
-        .singleOrNull()
-        ?: throw NoPrimaryTopicOnFDKRecordException("No primary topic found on record")
-
-    if (acceptableTypes.none { recordResource.model.containsTriple(primaryTopic.uri, RDF.type.uri, it.uri, true) }) {
-        throw MoAcceptableTopicsOnFDKRecordException(
-            "Primary topic is not one of the acceptable types: ${
-                acceptableTypes.joinToString(
-                    ", "
-                ) { it.localName }
-            }"
-        )
-    }
-
-    return primaryTopic
+        .filter { it.isURIResource }
+        .firstOrNull()
+        ?.getPropertyResourceValue(FOAF.primaryTopic)
+        ?.uri
 }
 
 /**
- * Checks if a CatalogRecord has an acceptable primary topic.
- * 
- * This is a helper function used for filtering CatalogRecords found in the graph.
- * Most graphs will have at least one extra CatalogRecord that supplies metadata
- * about the harvested Catalog/Collection.
- * 
- * @param recordResource The Jena resource of the FDK record
- * @param acceptableTypes A list of RDF types that are acceptable as primary topic
- * @return true if the record has an acceptable primary topic, false otherwise
- * @see primaryTopicFromFdkRecord
+ * Extracts a resource by an identifying URI.
+ *
+ * @param model The Jena RDF model containing the graph
+ * @param iri The URI identifying the resource
+ * @return The resource identified by the IRI
+ * @throws Exception if no resource is found
+ * @see Model.getResource
  */
-private fun hasAcceptablePrimaryTopic(recordResource: Resource, acceptableTypes: List<Resource>): Boolean = try {
-    primaryTopicFromFdkRecord(recordResource, acceptableTypes)
-    true
-} catch (ex: Exception) {
-    false
+fun resourceOfIRI(model: Model, iri: String): Resource {
+    return model.getResource(iri)
+        ?.takeIf { it.isURIResource }
+        ?: throw NoResourceFoundException("No resource found with uri $iri")
 }
 
 /**
@@ -115,20 +90,19 @@ private fun hasAcceptablePrimaryTopic(recordResource: Resource, acceptableTypes:
  * 
  * This function validates that a CatalogRecord is a valid FDK record by checking:
  * - It is a URI resource (not a blank node)
+ * - It has RDF type dcat:CatalogRecord
  * - Its URI contains the FDK pattern
  * - It has an acceptable primary topic
  * 
  * @param recordResource The Jena resource of the FDK record
- * @param acceptableTypes A list of RDF types that are acceptable as primary topic
- * @param fdkURIPattern A pattern that FDK record URIs must contain
+ * @param fdkId The relevant FDK ID
  * @return true if the record is a valid FDK record, false otherwise
- * @see hasAcceptablePrimaryTopic
  */
-private fun isValidFDKRecord(recordResource: Resource, acceptableTypes: List<Resource>, fdkURIPattern: String): Boolean =
+private fun isValidFDKRecord(recordResource: Resource, fdkId: String): Boolean =
     when {
         !recordResource.isURIResource -> false // All FDK records are URI resources.
-        !recordResource.uri.contains(fdkURIPattern) -> false // Checks that the URI follows the FDK pattern.
-        !hasAcceptablePrimaryTopic(recordResource, acceptableTypes) -> false // Checks that it's possible to extract the primary topic from the record.
+        !recordResource.model.containsTriple(recordResource.uri, DCTerms.identifier.uri, fdkId) -> false // Checks that the record has the correct identifier value.
+        !recordResource.model.containsTriple(recordResource.uri, RDF.type.uri, URI.create(DCAT.CatalogRecord.uri)) -> false // All FDK records has type dcat:CatalogRecord.
         else -> true
     }
 
