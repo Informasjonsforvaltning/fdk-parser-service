@@ -71,6 +71,7 @@ class DatasetHandler(
             .setPublisher(prioritized.publisher ?: backup.publisher)
             .setDistribution(prioritized.distribution ?: backup.distribution)
             .setSample(prioritized.sample ?: backup.sample)
+            .setContactPoint(prioritized.contactPoint ?: backup.contactPoint)
             .setThemeUris(prioritized.themeUris ?: backup.themeUris)
             .setTheme(prioritized.theme ?: backup.theme)
             .setLosTheme(prioritized.losTheme ?: backup.losTheme)

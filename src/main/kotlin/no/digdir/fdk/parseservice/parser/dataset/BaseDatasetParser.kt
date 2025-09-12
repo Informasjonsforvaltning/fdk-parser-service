@@ -9,6 +9,7 @@ import no.digdir.fdk.parseservice.extract.extractEurovoc
 import no.digdir.fdk.parseservice.extract.extractListOfReferenceDataCodes
 import no.digdir.fdk.parseservice.extract.extractListOfStrings
 import no.digdir.fdk.parseservice.extract.dataset.extractListOfSubjects
+import no.digdir.fdk.parseservice.extract.extractListOfContactPoints
 import no.digdir.fdk.parseservice.extract.extractListOfUriWithLabel
 import no.digdir.fdk.parseservice.extract.extractLocalizedStringList
 import no.digdir.fdk.parseservice.extract.extractLocalizedStrings
@@ -104,6 +105,8 @@ abstract class BaseDatasetParser : DatasetParserStrategy {
         setAccessRights(datasetResource.extractReferenceDataCode(DCTerms.accessRights, DC_11.identifier, SKOS.prefLabel))
         setLanguage(datasetResource.extractListOfReferenceDataCodes(DCTerms.language, EUAT.authorityCode, SKOS.prefLabel))
         setKeyword(datasetResource.extractLocalizedStringList(DCAT.keyword))
+
+        setContactPoint(datasetResource.extractListOfContactPoints())
 
         val themeResources = datasetResource.listResources(DCAT.theme)
             ?.filter { it.isURIResource }

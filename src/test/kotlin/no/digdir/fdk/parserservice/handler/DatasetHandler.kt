@@ -152,6 +152,7 @@ class DatasetHandlerTest {
             }
           ],
           "sample": null,
+          "contactPoint": null,
           "themeUris": null,
           "theme": null,
           "losTheme": null,
