@@ -107,6 +107,17 @@
       "doc": "List of sample distributions for the dataset"
     },
     {
+      "name": "contactPoint",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.ContactPoint"
+        }
+      ],
+      "doc": "Dataset contact points information"
+    },
+    {
       "name": "themeUris",
       "type": [
         "null",

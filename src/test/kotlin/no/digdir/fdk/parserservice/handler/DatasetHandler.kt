@@ -21,6 +21,7 @@ class DatasetHandlerTest {
             @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
             @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
             @prefix schema:  <http://schema.org/> .
+            @prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
                 
             <https://testdirektoratet.no/model/distribution>
                 a                dcat:Distribution ;
@@ -61,6 +62,7 @@ class DatasetHandlerTest {
                 dct:temporal    [ a                   dct:PeriodOfTime ;
                                   schema:startDate    "2019-04-02"^^xsd:date ;
                                   schema:endDate      "2020-04-02"^^xsd:date ] ;
+                dcat:contactPoint [ vcard:hasEmail    "post@mail.com" ];
                 dcat:distribution   <https://testdirektoratet.no/model/distribution> .
         """.trimIndent()
 
@@ -152,6 +154,17 @@ class DatasetHandlerTest {
             }
           ],
           "sample": null,
+          "contactPoint": [
+            {
+                  "uri": null,
+                  "email": "post@mail.com",
+                  "fullname": null,
+                  "hasURL": null,
+                  "hasTelephone": null,
+                  "organizationName": null,
+                  "organizationUnit": null
+            }
+          ],
           "themeUris": null,
           "theme": null,
           "losTheme": null,
