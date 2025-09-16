@@ -9,7 +9,6 @@ import no.digdir.fdk.parseservice.extract.extractEurovoc
 import no.digdir.fdk.parseservice.extract.extractListOfReferenceDataCodes
 import no.digdir.fdk.parseservice.extract.extractListOfStrings
 import no.digdir.fdk.parseservice.extract.dataset.extractListOfSubjects
-import no.digdir.fdk.parseservice.extract.extractListOfTemporal
 import no.digdir.fdk.parseservice.extract.extractListOfUriWithLabel
 import no.digdir.fdk.parseservice.extract.extractLocalizedStringList
 import no.digdir.fdk.parseservice.extract.extractLocalizedStrings
@@ -23,9 +22,7 @@ import no.digdir.fdk.parseservice.extract.isLosURI
 import no.digdir.fdk.parseservice.extract.listResources
 import no.digdir.fdk.parseservice.vocabulary.ADMS
 import no.digdir.fdk.parseservice.vocabulary.EUAT
-import no.digdir.fdk.parseservice.vocabulary.SCHEMA
 import no.digdir.fdk.parseservice.parser.DatasetParserStrategy
-import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.sparql.vocabulary.FOAF
 import org.apache.jena.vocabulary.DCAT
@@ -51,18 +48,6 @@ import org.apache.jena.vocabulary.SKOS
  * @see DcatApNoV1Parser
  */
 abstract class BaseDatasetParser : DatasetParserStrategy {
-    /**
-     * Parses an RDF model into a Dataset object.
-     * 
-     * This method must be implemented by subclasses to provide
-     * version-specific parsing logic.
-     * 
-     * @param model The Jena RDF model containing the dataset
-     * @return The parsed Dataset object
-     * @throws IllegalArgumentException if the model is null or invalid
-     * @throws UnsupportedOperationException if the model format is not supported
-     */
-    abstract override fun parse(model: Model): Dataset
 
     /**
      * Gets the default language for this parser version.
@@ -84,16 +69,6 @@ abstract class BaseDatasetParser : DatasetParserStrategy {
      * @return The source format (e.g., "DCAT-AP-NO")
      */
     protected abstract fun getSourceFormat(): String
-
-    /**
-     * Gets the URI pattern used by relevant FDK records with harvest metadata.
-     * 
-     * This pattern is used to identify valid FDK catalog records
-     * in the RDF model.
-     * 
-     * @return The URI pattern string
-     */
-    protected abstract fun getFDKURIPattern(): String
 
     /**
      * Gets a list of acceptable RDF types for harvested datasets.
@@ -144,7 +119,6 @@ abstract class BaseDatasetParser : DatasetParserStrategy {
         setProvenance(datasetResource.extractReferenceDataCode(DCTerms.provenance, EUAT.authorityCode, SKOS.prefLabel))
         setSpatial(datasetResource.extractListOfReferenceDataCodes(DCTerms.spatial, DCTerms.identifier, DCTerms.title))
         setConformsTo(datasetResource.extractListOfUriWithLabel(DCTerms.conformsTo, DCTerms.source, DCTerms.title))
-        setTemporal(datasetResource.extractListOfTemporal(DCTerms.temporal, SCHEMA.startDate, SCHEMA.endDate))
         setSubject(datasetResource.extractListOfSubjects())
 
         setType(ResourceType.datasets)

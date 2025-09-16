@@ -17,6 +17,9 @@ fun Resource.extractListOfFormats(pred: Property): List<Format>? =
         .toList()
         .takeIf { it.isNotEmpty() }
 
+fun Resource.extractFormat(pred: Property): Format? =
+    singleObjectStatement(pred)?.buildFormat()
+
 private fun Resource.extractType(): FormatType {
     val rdfTypes = listProperties(RDF.type).asSequence()
         .filter { isResource(it) }
