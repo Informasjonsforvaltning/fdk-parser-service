@@ -3,6 +3,7 @@ package no.digdir.fdk.parseservice.extract.dataset
 import no.digdir.fdk.model.dataset.Subject
 import no.digdir.fdk.parseservice.extract.extractLocalizedStrings
 import no.digdir.fdk.parseservice.extract.extractStringValue
+import no.digdir.fdk.parseservice.extract.extractURIStringValue
 import no.digdir.fdk.parseservice.extract.listResources
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCTerms
@@ -19,7 +20,7 @@ private fun Subject.hasContent() = when {
 private fun Resource.buildSubject(): Subject? {
     val builder = Subject.newBuilder()
 
-    builder.setUri(if (isURIResource) uri else null)
+    builder.setUri(extractURIStringValue())
         .setIdentifier(extractStringValue(DCTerms.identifier))
         .setPrefLabel(extractLocalizedStrings(SKOS.prefLabel))
         .setDefinition(extractLocalizedStrings(SKOS.definition))

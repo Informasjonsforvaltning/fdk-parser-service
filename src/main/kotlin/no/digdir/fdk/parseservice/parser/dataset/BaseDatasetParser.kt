@@ -20,6 +20,7 @@ import no.digdir.fdk.parseservice.extract.extractStringValue
 import no.digdir.fdk.parseservice.extract.isEuDataThemeURI
 import no.digdir.fdk.parseservice.extract.isEurovocURI
 import no.digdir.fdk.parseservice.extract.isLosURI
+import no.digdir.fdk.parseservice.extract.isSkolemizedURI
 import no.digdir.fdk.parseservice.extract.listResources
 import no.digdir.fdk.parseservice.vocabulary.ADMS
 import no.digdir.fdk.parseservice.vocabulary.EUAT
@@ -109,7 +110,7 @@ abstract class BaseDatasetParser : DatasetParserStrategy {
         setContactPoint(datasetResource.extractListOfContactPoints())
 
         val themeResources = datasetResource.listResources(DCAT.theme)
-            ?.filter { it.isURIResource }
+            ?.filter { it.isURIResource && !isSkolemizedURI(it.uri) }
             ?.takeIf { it.isNotEmpty() }
 
         setThemeUris(themeResources?.map { it.uri })

@@ -25,7 +25,7 @@ private fun Resource.extractNonConceptType(): String? =
 private fun Statement.buildUriWithLabelAndType(uriPred: Property, labelPred: Property): UriWithLabelAndType? {
     val builder = UriWithLabelAndType.newBuilder()
     val uriValueFromPredicate = resource.extractStringValue(uriPred)
-    val uriValueFromResource = resource.takeIf { it.isURIResource }?.uri
+    val uriValueFromResource = resource.extractURIStringValue()
 
     return builder
         .setUri(uriValueFromPredicate ?: uriValueFromResource)

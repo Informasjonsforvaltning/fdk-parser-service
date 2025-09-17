@@ -18,7 +18,7 @@ fun Resource.extractCatalogData(): Catalog? {
     else {
         val builder = Catalog.newBuilder()
 
-        val catalog = builder.setUri(if (catalogResource.isURIResource) catalogResource.uri else null)
+        val catalog = builder.setUri(catalogResource.extractURIStringValue())
             .setId(catalogResource.extractStringValue(DCTerms.identifier))
             .setTitle(catalogResource.extractLocalizedStrings(DCTerms.title))
             .setDescription(catalogResource.extractLocalizedStrings(DCTerms.description))

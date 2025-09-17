@@ -1,13 +1,16 @@
 package no.digdir.fdk.parserservice.extract.dataset
 
+import no.digdir.fdk.model.ContactPoint
 import no.digdir.fdk.model.EuDataTheme
 import no.digdir.fdk.model.Eurovoc
 import no.digdir.fdk.model.LocalizedStrings
 import no.digdir.fdk.model.LosNode
 import no.digdir.fdk.model.ReferenceDataCode
 import no.digdir.fdk.model.ResourceType
+import no.digdir.fdk.model.UriWithLabelAndType
 import no.digdir.fdk.model.dataset.Dataset
 import no.digdir.fdk.model.dataset.DatasetType
+import no.digdir.fdk.model.dataset.Distribution
 import no.digdir.fdk.parseservice.parser.dataset.DcatApNoV1Parser
 import no.digdir.fdk.parseservice.parser.dataset.DcatApNoV2Parser
 import org.apache.jena.rdf.model.ModelFactory
@@ -446,6 +449,60 @@ class DatasetExtractionTest {
             assertEquals(expectedProvenance, result.provenance)
             assertEquals(expectedFrequency, result.accrualPeriodicity)
             assertEquals(expectedType, result.dctType)
+        }
+
+        @Test
+        fun extractsDatasetIgnoresSkolemizedURIs() {
+            val turtle = """
+                @prefix dcat:   <http://www.w3.org/ns/dcat#> .
+                @prefix dct:    <http://purl.org/dc/terms/> .
+                @prefix foaf:   <http://xmlns.com/foaf/0.1/> .
+                @prefix vcard:  <http://www.w3.org/2006/vcard/ns#> .
+
+                <https://data.norge.no/node/1702/.well-known/skolem/85cc8fc2-774d-3e54-8f93-deede7d8e9a9>
+                    a               vcard:Organization;
+                    vcard:hasEmail  <mailto:opendata@stavanger.kommune.no> .
+
+                <https://data.norge.no/node/1702/.well-known/skolem/c4d02116-eee3-3e6f-80b5-c986f1cc6aba>
+                    a                dcat:Distribution;
+                    dct:description  "Tilgjengelig i JSON-format"@nb;
+                    dct:license      <http://publications.europa.eu/resource/authority/licence/NLOD_2_0>;
+                    dcat:accessURL   <https://open.stavanger.kommune.no/dataset/stoy-havn-og-cruise>;
+                    dcat:mediaType   <https://www.iana.org/assignments/media-types/application/vnd.geo+json> .
+
+
+                <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+                    a                  dcat:CatalogRecord ;
+                    dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
+                    foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
+    
+                <https://testdirektoratet.no/model/dataset/0>
+                    a                       dcat:Dataset;
+                    dct:title               "Støy havn og cruise"@nb;
+                    dcat:contactPoint       <https://data.norge.no/node/1702/.well-known/skolem/85cc8fc2-774d-3e54-8f93-deede7d8e9a9> ;
+                    dcat:distribution       <https://data.norge.no/node/1702/.well-known/skolem/c4d02116-eee3-3e6f-80b5-c986f1cc6aba> .
+            """.trimIndent()
+
+            val expectedDistribution = Distribution().apply {
+                description = LocalizedStrings().apply { nb = "Tilgjengelig i JSON-format" }
+                accessURL = listOf("https://open.stavanger.kommune.no/dataset/stoy-havn-og-cruise")
+                license = listOf(UriWithLabelAndType().apply { uri = "http://publications.europa.eu/resource/authority/licence/NLOD_2_0" })
+            }
+
+            val expected = Dataset().apply {
+                id = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
+                uri = "https://testdirektoratet.no/model/dataset/0"
+                title = LocalizedStrings().apply { nb = "Støy havn og cruise" }
+                distribution = listOf(expectedDistribution)
+                contactPoint = listOf(ContactPoint().apply { email = "opendata@stavanger.kommune.no" })
+                type = ResourceType.datasets
+            }
+
+            val m = ModelFactory.createDefaultModel()
+            m.read(StringReader(turtle), null, "TURTLE")
+            val result = parser.parse(m, datasetIRI, fdkId)
+
+            assertEquals(expected, result)
         }
     }
 

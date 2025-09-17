@@ -38,7 +38,7 @@ private fun Resource.extractVcardEmail(): String? {
 private fun Resource.buildContactPoint(): ContactPoint? {
     val builder = ContactPoint.newBuilder()
 
-    builder.setUri(if (isURIResource) uri else null)
+    builder.setUri(extractURIStringValue())
         .setFullname(extractStringValue(VCARD4.fn))
         .setEmail(extractVcardEmail())
         .setHasURL(extractStringValue(VCARD4.hasURL))
