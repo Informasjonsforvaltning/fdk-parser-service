@@ -14,7 +14,7 @@ private fun Temporal.hasContent() = when {
 private fun Resource.buildTemporal(startPredicate: Property, endPredicate: Property): Temporal? {
     val builder = Temporal.newBuilder()
 
-    builder.setUri(if (isURIResource) uri else null)
+    builder.setUri(extractURIStringValue())
         .setStartDate(extractStringValue(startPredicate))
         .setEndDate(extractStringValue(endPredicate))
 

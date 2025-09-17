@@ -38,7 +38,7 @@ private fun Statement.buildFormat(): Format? {
 
     if (isResource(this)) {
         builder
-            .setUri(resource.takeIf { it.isURIResource }?.uri)
+            .setUri(resource.extractURIStringValue())
             .setName(resource.extractStringValue(DCTerms.title) ?: resource.extractStringValue(DC_11.identifier))
             .setCode(resource.extractStringValue(DCTerms.identifier) ?: resource.extractStringValue(DC_11.identifier))
             .setType(resource.extractType())

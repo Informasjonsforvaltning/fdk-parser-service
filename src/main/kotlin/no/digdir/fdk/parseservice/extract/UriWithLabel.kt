@@ -15,7 +15,7 @@ fun Resource.extractListOfUriWithLabel(pred: Property, uriPred: Property, labelP
 private fun Statement.buildUriWithLabel(uriPred: Property, labelPred: Property): UriWithLabel? {
     val builder = UriWithLabel.newBuilder()
     val uriValueFromPredicate = resource.extractStringValue(uriPred)
-    val uriValueFromResource = resource.takeIf { it.isURIResource }?.uri
+    val uriValueFromResource = resource.extractURIStringValue()
 
     return builder
         .setUri(uriValueFromPredicate ?: uriValueFromResource)

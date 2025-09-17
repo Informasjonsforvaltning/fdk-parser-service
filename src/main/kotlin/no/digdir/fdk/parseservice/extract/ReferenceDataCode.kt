@@ -14,7 +14,7 @@ private fun ReferenceDataCode.hasContent() = when {
 private fun Resource.buildReferenceDataCode(codePredicate: Property, labelPredicate: Property): ReferenceDataCode? {
     val builder = ReferenceDataCode.newBuilder()
 
-    builder.setUri(if (isURIResource) uri else null)
+    builder.setUri(extractURIStringValue())
         .setCode(extractStringValue(codePredicate))
         .setPrefLabel(extractLocalizedStrings(labelPredicate))
 

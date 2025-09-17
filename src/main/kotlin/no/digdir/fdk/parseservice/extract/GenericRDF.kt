@@ -65,6 +65,15 @@ fun Resource.listResources(pred: Property): List<Resource>? =
     }
 
 /**
+ * Extension function to extract string value from a resource.
+ *
+ * @return The string value, or null if the resource is not a URIResource or the URI is skolemized
+ */
+fun Resource.extractURIStringValue(): String? =
+    if (isURIResource) uri?.takeIf { !isSkolemizedURI(it) }
+    else null
+
+/**
  * Private extension function to extract string value from a statement.
  * 
  * This function handles both URI resources and literal values, returning
@@ -75,7 +84,7 @@ fun Resource.listResources(pred: Property): List<Resource>? =
 private fun Statement.extractStringValue(): String? {
     try {
         return when {
-            isURIResource(this) -> resource?.uri
+            isURIResource(this) -> resource.extractURIStringValue()
             else -> string
         }
     } catch (ex: Exception) {
@@ -223,3 +232,12 @@ fun isResource(stmt: Statement): Boolean = try {
 } catch (ex: Exception) {
     false
 }
+
+/**
+ * Checks if a URI is a product of skolemization.
+ *
+ * @param uri The URI to check
+ * @return true if the URI is a product of skolemization.
+ */
+fun isSkolemizedURI(uri: String?): Boolean =
+    uri?.contains("/.well-known/skolem/") == true

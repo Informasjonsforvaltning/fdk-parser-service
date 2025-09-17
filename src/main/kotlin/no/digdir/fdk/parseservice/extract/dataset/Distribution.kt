@@ -7,6 +7,7 @@ import no.digdir.fdk.parseservice.extract.extractListOfStrings
 import no.digdir.fdk.parseservice.extract.extractListOfUriWithLabel
 import no.digdir.fdk.parseservice.extract.extractListOfUriWithLabelAndType
 import no.digdir.fdk.parseservice.extract.extractLocalizedStrings
+import no.digdir.fdk.parseservice.extract.extractURIStringValue
 import no.digdir.fdk.parseservice.extract.listResources
 import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
@@ -32,7 +33,7 @@ private fun Distribution.hasContent() = when {
 }
 
 private fun Resource.addCommonDistributionValuesToBuilder(builder: Distribution.Builder) {
-    builder.setUri(if (isURIResource) uri else null)
+    builder.setUri(extractURIStringValue())
         .setTitle(extractLocalizedStrings(DCTerms.title))
         .setDescription(extractLocalizedStrings(DCTerms.description))
         .setAccessURL(extractListOfStrings(DCAT.accessURL))

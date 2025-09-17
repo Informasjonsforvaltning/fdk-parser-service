@@ -4,6 +4,7 @@ import no.digdir.fdk.model.dataset.InSeries
 import no.digdir.fdk.parseservice.extract.containsTriple
 import no.digdir.fdk.parseservice.extract.extractLocalizedStrings
 import no.digdir.fdk.parseservice.extract.extractStringValue
+import no.digdir.fdk.parseservice.extract.extractURIStringValue
 import no.digdir.fdk.parseservice.extract.singleResource
 import no.digdir.fdk.parseservice.vocabulary.DCAT3
 import org.apache.jena.rdf.model.Resource
@@ -25,7 +26,7 @@ fun Resource.extractInSeries(): InSeries? {
             .toList()
             .firstOrNull()
 
-        builder.setUri(seriesResource.uri)
+        builder.setUri(seriesResource.extractURIStringValue())
             .setId(seriesCatalogRecord?.extractStringValue(DCTerms.identifier))
             .setTitle(seriesResource.extractLocalizedStrings(DCTerms.title))
 

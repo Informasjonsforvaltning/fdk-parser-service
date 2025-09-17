@@ -29,7 +29,7 @@ private fun EuDataTheme.hasContent(): Boolean =
 fun Resource.extractEuDataTheme(): EuDataTheme? {
     val builder = EuDataTheme.newBuilder()
 
-    val themeURI = if (isURIResource) uri else null
+    val themeURI = extractURIStringValue()
 
     val theme = builder.setUri(themeURI)
         .setCode(codeFromThemeURI(themeURI))

@@ -27,7 +27,7 @@ fun Resource.extractOrganization(pred: Property): Organization? {
     else {
         val builder = Organization.newBuilder()
 
-        builder.setUri(if (orgResource.isURIResource) orgResource.uri else null)
+        builder.setUri(orgResource.extractURIStringValue())
             .setId(orgResource.extractStringValue(DCTerms.identifier))
             .setName(orgResource.extractStringValue(ROV.legalName))
             .setOrgPath(orgResource.extractStringValue(FDKORG.orgPath))
