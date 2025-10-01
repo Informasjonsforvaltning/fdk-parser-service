@@ -18,6 +18,37 @@ management:
   metrics:
     tags:
       application: fdk-parser-service
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    properties:
+      schema.registry.url: ${KAFKA_SCHEMA_REGISTRY:http://localhost:8081}
+      specific.avro.reader: true
+      auto.register.schemas: false
+      use.latest.version: true
+      value.subject.name.strategy: io.confluent.kafka.serializers.subject.RecordNameStrategy
+      key.subject.name.strategy: io.confluent.kafka.serializers.subject.RecordNameStrategy
+    consumer:
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+    producer:
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      compression-type: snappy
+    listener:
+      ack-mode: manual_immediate
+resilience4j:
+  circuitbreaker:
+    instances:
+      rdf-parse:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        permittedNumberOfCallsInHalfOpenState: 3
+        waitDurationInOpenState: 60000
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        ignoreExceptions:
+          - no.digdir.fdk.parseservice.exception.RecoverableParseException
 ---
 spring:
   config.activate.on-profile: develop
