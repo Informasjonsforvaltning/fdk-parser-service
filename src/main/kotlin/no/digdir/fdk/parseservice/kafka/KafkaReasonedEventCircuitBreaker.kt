@@ -2,8 +2,8 @@ package no.digdir.fdk.parseservice.kafka
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
 import io.micrometer.core.instrument.Metrics
-import no.digdir.fdk.parseservice.exception.RecoverableParseException
-import no.digdir.fdk.parseservice.exception.UnrecoverableParseException
+import no.digdir.fdk.parseservice.model.RecoverableParseException
+import no.digdir.fdk.parseservice.model.UnrecoverableParseException
 import no.digdir.fdk.parseservice.handler.DatasetHandler
 import no.fdk.dataset.DatasetEvent
 import no.fdk.dataset.DatasetEventType
@@ -40,7 +40,7 @@ open class KafkaReasonedEventCircuitBreaker(
                 }
             }
         } catch (e: RecoverableParseException) {
-            LOGGER.debug("Recoverable parsing error: " + e.message)
+            LOGGER.warn("Recoverable parsing error: " + e.message)
             Metrics.counter(
                 "rdf_parse_error",
                 "type", resourceType.toString().lowercase()

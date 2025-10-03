@@ -1,7 +1,7 @@
 package no.digdir.fdk.parseservice.kafka
 
-import no.digdir.fdk.parseservice.exception.RecoverableParseException
-import no.digdir.fdk.parseservice.exception.UnrecoverableParseException
+import no.digdir.fdk.parseservice.model.RecoverableParseException
+import no.digdir.fdk.parseservice.model.UnrecoverableParseException
 import org.apache.avro.specific.SpecificRecord
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.kafka.annotation.KafkaListener

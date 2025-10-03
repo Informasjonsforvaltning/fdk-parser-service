@@ -48,7 +48,7 @@ resilience4j:
         waitDurationInOpenState: 60000
         automaticTransitionFromOpenToHalfOpenEnabled: true
         ignoreExceptions:
-          - no.digdir.fdk.parseservice.exception.RecoverableParseException
+          - no.digdir.fdk.parseservice.model.RecoverableParseException
 ---
 spring:
   config.activate.on-profile: develop

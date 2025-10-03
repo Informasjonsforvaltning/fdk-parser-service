@@ -5,8 +5,8 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import no.digdir.fdk.parseservice.exception.RecoverableParseException
-import no.digdir.fdk.parseservice.exception.UnrecoverableParseException
+import no.digdir.fdk.parseservice.model.RecoverableParseException
+import no.digdir.fdk.parseservice.model.UnrecoverableParseException
 import no.digdir.fdk.parseservice.handler.DatasetHandler
 import no.digdir.fdk.parseservice.kafka.KafkaRdfParseEventProducer
 import no.digdir.fdk.parseservice.kafka.KafkaReasonedEventCircuitBreaker
