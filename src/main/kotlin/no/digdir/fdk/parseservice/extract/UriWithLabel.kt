@@ -13,13 +13,15 @@ fun Resource.extractListOfUriWithLabel(pred: Property, uriPred: Property, labelP
         .takeIf { it.isNotEmpty() }
 
 private fun Statement.buildUriWithLabel(uriPred: Property, labelPred: Property): UriWithLabel? {
-    val builder = UriWithLabel.newBuilder()
-    val uriValueFromPredicate = resource.extractStringValue(uriPred)
-    val uriValueFromResource = resource.extractURIStringValue()
+    if (isResource(this)) {
+        val builder = UriWithLabel.newBuilder()
+        val uriValueFromPredicate = resource.extractStringValue(uriPred)
+        val uriValueFromResource = resource.extractURIStringValue()
 
-    return builder
-        .setUri(uriValueFromPredicate ?: uriValueFromResource)
-        .setPrefLabel(resource.extractLocalizedStrings(labelPred))
-        .build()
-        .takeIf { it.uri != null || it.prefLabel != null }
+        return builder
+            .setUri(uriValueFromPredicate ?: uriValueFromResource)
+            .setPrefLabel(resource.extractLocalizedStrings(labelPred))
+            .build()
+            .takeIf { it.uri != null || it.prefLabel != null }
+    } else return null
 }
