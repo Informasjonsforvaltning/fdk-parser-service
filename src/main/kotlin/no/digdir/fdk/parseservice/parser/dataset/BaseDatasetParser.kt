@@ -2,6 +2,7 @@ package no.digdir.fdk.parseservice.parser.dataset
 
 import no.digdir.fdk.model.ResourceType
 import no.digdir.fdk.model.dataset.Dataset
+import no.digdir.fdk.parseservice.extract.dataset.extractListOfReferences
 import no.digdir.fdk.parseservice.extract.descriptionHtmlCleaner
 import no.digdir.fdk.parseservice.extract.extractCatalogData
 import no.digdir.fdk.parseservice.extract.extractEuDataTheme
@@ -106,6 +107,7 @@ abstract class BaseDatasetParser : DatasetParserStrategy {
         setAccessRights(datasetResource.extractReferenceDataCode(DCTerms.accessRights, DC_11.identifier, SKOS.prefLabel))
         setLanguage(datasetResource.extractListOfReferenceDataCodes(DCTerms.language, EUAT.authorityCode, SKOS.prefLabel))
         setKeyword(datasetResource.extractLocalizedStringList(DCAT.keyword))
+        setReferences(datasetResource.extractListOfReferences())
 
         setContactPoint(datasetResource.extractListOfContactPoints())
 

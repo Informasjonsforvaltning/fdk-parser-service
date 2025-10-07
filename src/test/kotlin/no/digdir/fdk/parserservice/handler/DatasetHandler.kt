@@ -192,6 +192,7 @@ class DatasetHandlerTest {
           "legalBasisForProcessing": null,
           "legalBasisForAccess": null,
           "conformsTo": null,
+          "references": null,
           "hasAccuracyAnnotation": null,
           "hasCompletenessAnnotation": null,
           "hasCurrentnessAnnotation": null,
