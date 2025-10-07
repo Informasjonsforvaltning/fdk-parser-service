@@ -93,6 +93,7 @@ class DatasetHandler(
             .setLegalBasisForProcessing(prioritized.legalBasisForProcessing ?: backup.legalBasisForProcessing)
             .setLegalBasisForRestriction(prioritized.legalBasisForRestriction ?: backup.legalBasisForRestriction)
             .setConformsTo(prioritized.conformsTo ?: backup.conformsTo)
+            .setReferences(prioritized.references ?: backup.references)
             .setHasAccuracyAnnotation(prioritized.hasAccuracyAnnotation ?: backup.hasAccuracyAnnotation)
             .setHasAvailabilityAnnotation(prioritized.hasAvailabilityAnnotation ?: backup.hasAvailabilityAnnotation)
             .setHasCompletenessAnnotation(prioritized.hasCompletenessAnnotation ?: backup.hasCompletenessAnnotation)

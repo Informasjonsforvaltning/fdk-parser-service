@@ -331,6 +331,17 @@
       "doc": "Established schemas to which the dataset conforms"
     },
     {
+      "name": "references",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.dataset.Reference"
+        }
+      ],
+      "doc": "References and relations to other datasets and resources"
+    },
+    {
       "name": "hasAccuracyAnnotation",
       "type": [
         "null",
