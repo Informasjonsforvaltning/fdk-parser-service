@@ -60,12 +60,12 @@ open class KafkaReasonedEventCircuitBreaker(
         val timeElapsed = measureTimedValue {
             LOGGER.debug("Parse dataset - id: $fdkId")
             val json = when (type) {
-                RdfParseResourceType.CONCEPT -> LOGGER.error("Parse of concepts not implemented")
-                RdfParseResourceType.DATA_SERVICE -> LOGGER.error("Parse of data services not implemented")
+                RdfParseResourceType.CONCEPT -> LOGGER.warn("Parse of concepts not implemented")
+                RdfParseResourceType.DATA_SERVICE -> LOGGER.warn("Parse of data services not implemented")
                 RdfParseResourceType.DATASET -> datasetHandler.parseDataset(fdkId, graph)
-                RdfParseResourceType.EVENT -> LOGGER.error("Parse of events not implemented")
-                RdfParseResourceType.INFORMATION_MODEL -> LOGGER.error("Parse of information models not implemented")
-                RdfParseResourceType.SERVICE -> LOGGER.error("Parse of services not implemented")
+                RdfParseResourceType.EVENT -> LOGGER.warn("Parse of events not implemented")
+                RdfParseResourceType.INFORMATION_MODEL -> LOGGER.warn("Parse of information models not implemented")
+                RdfParseResourceType.SERVICE -> LOGGER.warn("Parse of services not implemented")
             }
             producer.sendMessage(RdfParseEvent(type, fdkId, json.toString(), timestamp))
         }
