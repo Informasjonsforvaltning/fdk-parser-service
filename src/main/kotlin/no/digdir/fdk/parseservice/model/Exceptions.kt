@@ -1,11 +1,15 @@
 package no.digdir.fdk.parseservice.model
 
-class NoAcceptableFDKRecordsException(message: String) : Exception(message)
+open class RecoverableParseException(message: String) : Exception(message)
 
-class MultipleFDKRecordsException(message: String) : Exception(message)
+open class UnrecoverableParseException(message: String) : Exception(message)
 
-class NoAcceptableTypesException(message: String) : Exception(message)
+class NoAcceptableFDKRecordsException(message: String) : RecoverableParseException(message)
 
-class NoResourceFoundException(message: String) : Exception(message)
+class MultipleFDKRecordsException(message: String) : RecoverableParseException(message)
 
-class UnableToParseException(message: String) : Exception(message)
+class NoAcceptableTypesException(message: String) : RecoverableParseException(message)
+
+class NoResourceFoundException(message: String) : RecoverableParseException(message)
+
+class UnableToParseException(message: String) : UnrecoverableParseException(message)

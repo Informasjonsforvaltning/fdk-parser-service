@@ -23,14 +23,16 @@ private fun Resource.extractNonConceptType(): String? =
         ?.uri
 
 private fun Statement.buildUriWithLabelAndType(uriPred: Property, labelPred: Property): UriWithLabelAndType? {
-    val builder = UriWithLabelAndType.newBuilder()
-    val uriValueFromPredicate = resource.extractStringValue(uriPred)
-    val uriValueFromResource = resource.extractURIStringValue()
+    if (isResource(this)) {
+        val builder = UriWithLabelAndType.newBuilder()
+        val uriValueFromPredicate = resource.extractStringValue(uriPred)
+        val uriValueFromResource = resource.extractURIStringValue()
 
-    return builder
-        .setUri(uriValueFromPredicate ?: uriValueFromResource)
-        .setExtraType(resource.extractNonConceptType())
-        .setPrefLabel(resource.extractLocalizedStrings(labelPred))
-        .build()
-        .takeIf { it.uri != null || it.prefLabel != null }
+        return builder
+            .setUri(uriValueFromPredicate ?: uriValueFromResource)
+            .setExtraType(resource.extractNonConceptType())
+            .setPrefLabel(resource.extractLocalizedStrings(labelPred))
+            .build()
+            .takeIf { it.uri != null || it.prefLabel != null }
+    } else return null
 }

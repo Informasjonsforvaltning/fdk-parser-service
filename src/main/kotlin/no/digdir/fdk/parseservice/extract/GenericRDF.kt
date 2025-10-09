@@ -42,7 +42,7 @@ fun Resource.singleResource(pred: Property): Resource? =
     try{
         singleObjectStatement(pred)?.resource?.takeIf { it.isResource }
     } catch (ex: Exception) {
-        LOGGER.warn("Failed to extract ${pred.uri}, found on $uri, as resource", ex)
+        LOGGER.debug("Failed to extract ${pred.uri}, found on $uri, as resource", ex)
         null
     }
 
@@ -60,7 +60,7 @@ fun Resource.listResources(pred: Property): List<Resource>? =
     try{
         listProperties(pred).asSequence().map { it.resource }.filter { it.isResource }.toList()
     } catch (ex: Exception) {
-        LOGGER.warn("Failed to extract ${pred.uri}, found on $uri, as resource", ex)
+        LOGGER.debug("Failed to extract ${pred.uri}, found on $uri, as resource", ex)
         null
     }
 
@@ -88,7 +88,7 @@ private fun Statement.extractStringValue(): String? {
             else -> string
         }
     } catch (ex: Exception) {
-        LOGGER.warn("Failed to get string value from ${toString()}", ex)
+        LOGGER.debug("Failed to get string value from ${toString()}", ex)
         return null
     }
 }
@@ -143,7 +143,7 @@ fun Statement.extractStringLanguagePair(): Pair<LanguageCodes, String>? {
             else -> Pair(lang, str)
         }
     } catch (ex: Exception) {
-        LOGGER.warn("Failed to get string language pair from ${toString()}", ex)
+        LOGGER.debug("Failed to get string language pair from ${toString()}", ex)
         return null
     }
 }
