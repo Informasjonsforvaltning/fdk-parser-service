@@ -4,13 +4,14 @@ import io.kotest.assertions.json.shouldEqualJson
 import no.digdir.fdk.parseservice.parser.dataset.DcatApNoV1Parser
 import no.digdir.fdk.parseservice.handler.DatasetHandler
 import no.digdir.fdk.parseservice.parser.dataset.DcatApNoV2Parser
+import no.digdir.fdk.parseservice.parser.dataset.MobilityDcatApV3Parser
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 @Tag("unit")
 class DatasetHandlerTest {
-    val handler = DatasetHandler(DcatApNoV1Parser(), DcatApNoV2Parser())
+    val handler = DatasetHandler(DcatApNoV1Parser(), DcatApNoV2Parser(), MobilityDcatApV3Parser())
 
     @Test
     fun parseAndEncodeDataset() {
