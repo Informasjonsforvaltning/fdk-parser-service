@@ -8,6 +8,7 @@ import no.digdir.fdk.parseservice.model.NoAcceptableFDKRecordsException
 import no.digdir.fdk.parseservice.model.UnableToParseException
 import no.digdir.fdk.parseservice.parser.dataset.DcatApNoV1Parser
 import no.digdir.fdk.parseservice.parser.dataset.DcatApNoV2Parser
+import no.digdir.fdk.parseservice.parser.dataset.MobilityDcatApV3Parser
 import no.digdir.fdk.parseservice.utils.avroToJson
 import no.digdir.fdk.parseservice.utils.readTurtle
 import org.apache.jena.rdf.model.ModelFactory
@@ -16,7 +17,8 @@ import org.springframework.stereotype.Service
 @Service
 class DatasetHandler(
     private val v1Parser: DcatApNoV1Parser,
-    private val v2Parser: DcatApNoV2Parser
+    private val v2Parser: DcatApNoV2Parser,
+    private val mobilityParser: MobilityDcatApV3Parser
 ) {
 
     fun parseDataset(fdkId: String, graph: String): JsonNode {
@@ -35,18 +37,30 @@ class DatasetHandler(
                 val v2 = try {
                     v2Parser.parse(model, resourceIRI, fdkId)
                 } catch (e: Exception)  {
-                    LOGGER.warn("Failed to parse v1 for $fdkId", e)
+                    LOGGER.warn("Failed to parse v2 for $fdkId", e)
                     null
                 }
 
-                if (v1 == null && v2 == null) {
+                val mobility = try {
+                    mobilityParser.parse(model, resourceIRI, fdkId)
+                } catch (e: Exception)  {
+                    LOGGER.warn("Failed to parse mobility for $fdkId", e)
+                    null
+                }
+
+                if (v1 == null && v2 == null && mobility == null) {
                     throw UnableToParseException("Unable to parse any dataset version for $fdkId")
                 }
 
-                combineDatasetResults(
+                val combinedV1V2 = combineDatasetResults(
                     prioritized = v2 ?: Dataset(),
                     backup = v1 ?: Dataset()
                 )
+
+                if (combinedV1V2.isRelatedToTransportportal) combineDatasetResults(
+                    prioritized = mobility ?: Dataset(),
+                    backup = combinedV1V2
+                ) else combinedV1V2
             } else {
                 throw NoAcceptableFDKRecordsException("No dataset found with identifier '$fdkId'")
             }
