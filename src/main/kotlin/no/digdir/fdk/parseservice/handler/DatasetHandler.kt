@@ -57,10 +57,10 @@ class DatasetHandler(
                     backup = v1 ?: Dataset()
                 )
 
-                combineDatasetResults(
+                if (combinedV1V2.isRelatedToTransportportal) combineDatasetResults(
                     prioritized = mobility ?: Dataset(),
                     backup = combinedV1V2
-                )
+                ) else combinedV1V2
             } else {
                 throw NoAcceptableFDKRecordsException("No dataset found with identifier '$fdkId'")
             }
