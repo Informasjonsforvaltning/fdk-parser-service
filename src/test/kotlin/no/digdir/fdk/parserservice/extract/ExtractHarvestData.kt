@@ -1,7 +1,7 @@
 package no.digdir.fdk.parserservice.extract
 
 import no.digdir.fdk.model.HarvestMetaData
-import no.digdir.fdk.parseservice.parser.dataset.DcatApNoV1Parser
+import no.digdir.fdk.parserservice.parser.dataset.DcatApNoV1Parser
 import org.apache.jena.rdf.model.ModelFactory
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test

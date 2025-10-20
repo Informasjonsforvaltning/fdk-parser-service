@@ -1,17 +1,28 @@
 package no.digdir.fdk.parserservice.handler
 
 import io.kotest.assertions.json.shouldEqualJson
-import no.digdir.fdk.parseservice.parser.dataset.DcatApNoV1Parser
-import no.digdir.fdk.parseservice.handler.DatasetHandler
-import no.digdir.fdk.parseservice.parser.dataset.DcatApNoV2Parser
-import no.digdir.fdk.parseservice.parser.dataset.MobilityDcatApV3Parser
+import no.digdir.fdk.parserservice.parser.DatasetParserRegistry
+import no.digdir.fdk.parserservice.parser.DatasetParserStrategy
+import no.digdir.fdk.parserservice.parser.dataset.DcatApNoV1Parser
+import no.digdir.fdk.parserservice.parser.dataset.DcatApNoV2Parser
+import no.digdir.fdk.parserservice.parser.dataset.MobilityDcatApV3Parser
+import no.digdir.fdk.model.LocalizedStrings
+import org.apache.jena.rdf.model.Model
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 @Tag("unit")
 class DatasetHandlerTest {
-    val handler = DatasetHandler(DcatApNoV1Parser(), DcatApNoV2Parser(), MobilityDcatApV3Parser())
+    private val parserRegistry = DatasetParserRegistry()
+    private val handler = DatasetHandler(parserRegistry)
+    
+    init {
+        // Register parsers for testing
+        parserRegistry.registerParser(MobilityDcatApV3Parser(), priority = 200, name = "MOBILITY-DCAT-AP-V3")
+        parserRegistry.registerParser(DcatApNoV2Parser(), priority = 100, name = "DCAT-AP-NO-V2")
+        parserRegistry.registerParser(DcatApNoV1Parser(), priority = 50, name = "DCAT-AP-NO-V1")
+    }
 
     @Test
     fun parseAndEncodeDataset() {
@@ -329,6 +340,150 @@ class DatasetHandlerTest {
 
         val result = handler.parseDataset("a1c680ca-62d7-34d5-aa4c-d39b5db033ae", turtle)
         result.get("title").toString().shouldEqualJson(expected)
+    }
+
+    @Test
+    fun mobilityValueOverridesV2OnConflict() {
+        val localRegistry = DatasetParserRegistry()
+
+        val mobility = object : DatasetParserStrategy {
+            override fun parse(model: Model, iri: String) = no.digdir.fdk.model.dataset.Dataset.newBuilder()
+                .setId("id")
+                .setUri(iri)
+                .setIdentifier(null)
+                .setAdmsIdentifier(null)
+                .setHarvest(null)
+                .setCatalog(null)
+                .setTitle(LocalizedStrings(null, null, null, "MOB"))
+                .setDescription(null)
+                .setDescriptionFormatted(null)
+                .setPublisher(null)
+                .setDistribution(null)
+                .setSample(null)
+                .setContactPoint(null)
+                .setThemeUris(null)
+                .setTheme(null)
+                .setLosTheme(null)
+                .setEurovocThemes(null)
+                .setKeyword(null)
+                .setIssued(null)
+                .setModified(null)
+                .setDctType(null)
+                .setAccessRights(null)
+                .setLanguage(null)
+                .setPage(null)
+                .setLandingPage(null)
+                .setTemporal(null)
+                .setSubject(null)
+                .setSpatial(null)
+                .setProvenance(null)
+                .setAccrualPeriodicity(null)
+                .setLegalBasisForAccess(null)
+                .setLegalBasisForProcessing(null)
+                .setLegalBasisForRestriction(null)
+                .setConformsTo(null)
+                .setReferences(null)
+                .setHasAccuracyAnnotation(null)
+                .setHasAvailabilityAnnotation(null)
+                .setHasCompletenessAnnotation(null)
+                .setHasCurrentnessAnnotation(null)
+                .setHasRelevanceAnnotation(null)
+                .setQualifiedAttributions(null)
+                .setIsOpenData(false)
+                .setIsAuthoritative(false)
+                .setIsRelatedToTransportportal(false)
+                .setInSeries(null)
+                .setPrev(null)
+                .setLast(null)
+                .setDatasetsInSeries(null)
+                .setType(null)
+                .setSpecializedType(null)
+                .build()
+            override fun parse(model: Model, iri: String, fdkId: String) = parse(model, iri)
+        }
+
+        val v2 = object : DatasetParserStrategy {
+            override fun parse(model: Model, iri: String) = no.digdir.fdk.model.dataset.Dataset.newBuilder()
+                .setId("id")
+                .setUri(iri)
+                .setIdentifier(null)
+                .setAdmsIdentifier(null)
+                .setHarvest(null)
+                .setCatalog(null)
+                .setTitle(LocalizedStrings(null, null, null, "V2"))
+                .setDescription(null)
+                .setDescriptionFormatted(null)
+                .setPublisher(null)
+                .setDistribution(null)
+                .setSample(null)
+                .setContactPoint(null)
+                .setThemeUris(null)
+                .setTheme(null)
+                .setLosTheme(null)
+                .setEurovocThemes(null)
+                .setKeyword(null)
+                .setIssued(null)
+                .setModified(null)
+                .setDctType(null)
+                .setAccessRights(null)
+                .setLanguage(null)
+                .setPage(null)
+                .setLandingPage(null)
+                .setTemporal(null)
+                .setSubject(null)
+                .setSpatial(null)
+                .setProvenance(null)
+                .setAccrualPeriodicity(null)
+                .setLegalBasisForAccess(null)
+                .setLegalBasisForProcessing(null)
+                .setLegalBasisForRestriction(null)
+                .setConformsTo(null)
+                .setReferences(null)
+                .setHasAccuracyAnnotation(null)
+                .setHasAvailabilityAnnotation(null)
+                .setHasCompletenessAnnotation(null)
+                .setHasCurrentnessAnnotation(null)
+                .setHasRelevanceAnnotation(null)
+                .setQualifiedAttributions(null)
+                .setIsOpenData(false)
+                .setIsAuthoritative(false)
+                .setIsRelatedToTransportportal(false)
+                .setInSeries(null)
+                .setPrev(null)
+                .setLast(null)
+                .setDatasetsInSeries(null)
+                .setType(null)
+                .setSpecializedType(null)
+                .build()
+            override fun parse(model: Model, iri: String, fdkId: String) = parse(model, iri)
+        }
+
+        localRegistry.registerParser(mobility, 200, "mob")
+        localRegistry.registerParser(v2, 100, "v2")
+
+        val localHandler = DatasetHandler(localRegistry)
+
+        val graph = """
+            @prefix dct:   <http://purl.org/dc/terms/> .
+            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+            <http://test.fellesdatakatalog.digdir.no/datasets/id>
+              a dcat:CatalogRecord ;
+              dct:identifier "id" ;
+              foaf:primaryTopic <http://example.org/ds> .
+            <http://example.org/ds> a dcat:Dataset .
+        """.trimIndent()
+
+        val json = localHandler.parseDataset("id", graph)
+
+        val expectedTitle = """{
+            "en": "MOB",
+            "nb": null,
+            "nn": null,
+            "no": null
+        }""".trimIndent()
+
+        json.get("title").toString().shouldEqualJson(expectedTitle)
     }
 
 }

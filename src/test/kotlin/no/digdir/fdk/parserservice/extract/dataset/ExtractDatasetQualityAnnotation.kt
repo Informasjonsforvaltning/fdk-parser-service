@@ -2,8 +2,7 @@ package no.digdir.fdk.parserservice.extract.dataset
 
 import no.digdir.fdk.model.LocalizedStrings
 import no.digdir.fdk.model.dataset.QualityAnnotation
-import no.digdir.fdk.parseservice.extract.dataset.extractQualityAnnotation
-import no.digdir.fdk.parseservice.vocabulary.DQVISO
+import no.digdir.fdk.parserservice.vocabulary.DQVISO
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.RDF

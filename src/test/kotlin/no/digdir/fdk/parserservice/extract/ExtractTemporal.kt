@@ -1,8 +1,7 @@
 package no.digdir.fdk.parserservice.extract
 
 import no.digdir.fdk.model.Temporal
-import no.digdir.fdk.parseservice.extract.extractListOfTemporal
-import no.digdir.fdk.parseservice.vocabulary.SCHEMA
+import no.digdir.fdk.parserservice.vocabulary.SCHEMA
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms

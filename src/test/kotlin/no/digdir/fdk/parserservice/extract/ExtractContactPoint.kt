@@ -2,7 +2,6 @@ package no.digdir.fdk.parserservice.extract
 
 import no.digdir.fdk.model.ContactPoint
 import no.digdir.fdk.model.LocalizedStrings
-import no.digdir.fdk.parseservice.extract.extractListOfContactPoints
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.RDF

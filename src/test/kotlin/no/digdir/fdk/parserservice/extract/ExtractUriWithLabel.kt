@@ -2,7 +2,6 @@ package no.digdir.fdk.parserservice.extract
 
 import no.digdir.fdk.model.LocalizedStrings
 import no.digdir.fdk.model.UriWithLabel
-import no.digdir.fdk.parseservice.extract.extractListOfUriWithLabel
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms
@@ -10,7 +9,6 @@ import org.apache.jena.vocabulary.RDF
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
-import org.junit.jupiter.api.assertNull
 import java.io.StringReader
 import kotlin.test.assertEquals
 

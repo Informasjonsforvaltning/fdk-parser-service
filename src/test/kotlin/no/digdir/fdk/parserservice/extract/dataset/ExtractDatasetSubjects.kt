@@ -2,7 +2,6 @@ package no.digdir.fdk.parserservice.extract.dataset
 
 import no.digdir.fdk.model.LocalizedStrings
 import no.digdir.fdk.model.dataset.Subject
-import no.digdir.fdk.parseservice.extract.dataset.extractListOfSubjects
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.RDF

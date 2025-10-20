@@ -4,7 +4,6 @@ import no.digdir.fdk.model.LocalizedStrings
 import no.digdir.fdk.model.ReferenceDataCode
 import no.digdir.fdk.model.UriWithLabel
 import no.digdir.fdk.model.dataset.Reference
-import no.digdir.fdk.parseservice.extract.dataset.extractListOfReferences
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.RDF

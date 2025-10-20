@@ -2,8 +2,7 @@ package no.digdir.fdk.parserservice.extract.dataset
 
 import no.digdir.fdk.model.LocalizedStrings
 import no.digdir.fdk.model.UriWithLabelAndType
-import no.digdir.fdk.parseservice.extract.dataset.extractListOfLegalBasisV2
-import no.digdir.fdk.parseservice.vocabulary.CPSVNO
+import no.digdir.fdk.parserservice.vocabulary.CPSVNO
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.RDF
