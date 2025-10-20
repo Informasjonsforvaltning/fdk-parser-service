@@ -3,7 +3,6 @@ package no.digdir.fdk.parserservice.extract
 import no.digdir.fdk.model.Catalog
 import no.digdir.fdk.model.LocalizedStrings
 import no.digdir.fdk.model.Organization
-import no.digdir.fdk.parseservice.extract.extractCatalogData
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.RDF

@@ -11,8 +11,8 @@ import no.digdir.fdk.model.UriWithLabelAndType
 import no.digdir.fdk.model.dataset.Dataset
 import no.digdir.fdk.model.dataset.DatasetType
 import no.digdir.fdk.model.dataset.Distribution
-import no.digdir.fdk.parseservice.parser.dataset.DcatApNoV1Parser
-import no.digdir.fdk.parseservice.parser.dataset.DcatApNoV2Parser
+import no.digdir.fdk.parserservice.parser.dataset.DcatApNoV1Parser
+import no.digdir.fdk.parserservice.parser.dataset.DcatApNoV2Parser
 import org.apache.jena.rdf.model.ModelFactory
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag

@@ -7,8 +7,6 @@ import no.digdir.fdk.model.UriWithLabel
 import no.digdir.fdk.model.UriWithLabelAndType
 import no.digdir.fdk.model.dataset.AccessService
 import no.digdir.fdk.model.dataset.Distribution
-import no.digdir.fdk.parseservice.extract.dataset.extractListOfDistributionsV1
-import no.digdir.fdk.parseservice.extract.dataset.extractListOfDistributionsV2
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.sparql.vocabulary.FOAF
 import org.apache.jena.vocabulary.DCAT
