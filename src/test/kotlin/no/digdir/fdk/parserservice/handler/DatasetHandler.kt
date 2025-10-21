@@ -7,6 +7,7 @@ import no.digdir.fdk.parserservice.parser.dataset.DcatApNoV1Parser
 import no.digdir.fdk.parserservice.parser.dataset.DcatApNoV2Parser
 import no.digdir.fdk.parserservice.parser.dataset.MobilityDcatApV3Parser
 import no.digdir.fdk.model.LocalizedStrings
+import no.digdir.fdk.model.dataset.Dataset
 import org.apache.jena.rdf.model.Model
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -347,114 +348,20 @@ class DatasetHandlerTest {
         val localRegistry = DatasetParserRegistry()
 
         val mobility = object : DatasetParserStrategy {
-            override fun parse(model: Model, iri: String) = no.digdir.fdk.model.dataset.Dataset.newBuilder()
-                .setId("id")
-                .setUri(iri)
-                .setIdentifier(null)
-                .setAdmsIdentifier(null)
-                .setHarvest(null)
-                .setCatalog(null)
-                .setTitle(LocalizedStrings(null, null, null, "MOB"))
-                .setDescription(null)
-                .setDescriptionFormatted(null)
-                .setPublisher(null)
-                .setDistribution(null)
-                .setSample(null)
-                .setContactPoint(null)
-                .setThemeUris(null)
-                .setTheme(null)
-                .setLosTheme(null)
-                .setEurovocThemes(null)
-                .setKeyword(null)
-                .setIssued(null)
-                .setModified(null)
-                .setDctType(null)
-                .setAccessRights(null)
-                .setLanguage(null)
-                .setPage(null)
-                .setLandingPage(null)
-                .setTemporal(null)
-                .setSubject(null)
-                .setSpatial(null)
-                .setProvenance(null)
-                .setAccrualPeriodicity(null)
-                .setLegalBasisForAccess(null)
-                .setLegalBasisForProcessing(null)
-                .setLegalBasisForRestriction(null)
-                .setConformsTo(null)
-                .setReferences(null)
-                .setHasAccuracyAnnotation(null)
-                .setHasAvailabilityAnnotation(null)
-                .setHasCompletenessAnnotation(null)
-                .setHasCurrentnessAnnotation(null)
-                .setHasRelevanceAnnotation(null)
-                .setQualifiedAttributions(null)
-                .setIsOpenData(false)
-                .setIsAuthoritative(false)
-                .setIsRelatedToTransportportal(false)
-                .setInSeries(null)
-                .setPrev(null)
-                .setLast(null)
-                .setDatasetsInSeries(null)
-                .setType(null)
-                .setSpecializedType(null)
-                .build()
+            override fun parse(model: Model, iri: String) = Dataset().apply {
+                id = "id"
+                uri = iri
+                title = LocalizedStrings().apply { en = "MOB" }
+            }
             override fun parse(model: Model, iri: String, fdkId: String) = parse(model, iri)
         }
 
         val v2 = object : DatasetParserStrategy {
-            override fun parse(model: Model, iri: String) = no.digdir.fdk.model.dataset.Dataset.newBuilder()
-                .setId("id")
-                .setUri(iri)
-                .setIdentifier(null)
-                .setAdmsIdentifier(null)
-                .setHarvest(null)
-                .setCatalog(null)
-                .setTitle(LocalizedStrings(null, null, null, "V2"))
-                .setDescription(null)
-                .setDescriptionFormatted(null)
-                .setPublisher(null)
-                .setDistribution(null)
-                .setSample(null)
-                .setContactPoint(null)
-                .setThemeUris(null)
-                .setTheme(null)
-                .setLosTheme(null)
-                .setEurovocThemes(null)
-                .setKeyword(null)
-                .setIssued(null)
-                .setModified(null)
-                .setDctType(null)
-                .setAccessRights(null)
-                .setLanguage(null)
-                .setPage(null)
-                .setLandingPage(null)
-                .setTemporal(null)
-                .setSubject(null)
-                .setSpatial(null)
-                .setProvenance(null)
-                .setAccrualPeriodicity(null)
-                .setLegalBasisForAccess(null)
-                .setLegalBasisForProcessing(null)
-                .setLegalBasisForRestriction(null)
-                .setConformsTo(null)
-                .setReferences(null)
-                .setHasAccuracyAnnotation(null)
-                .setHasAvailabilityAnnotation(null)
-                .setHasCompletenessAnnotation(null)
-                .setHasCurrentnessAnnotation(null)
-                .setHasRelevanceAnnotation(null)
-                .setQualifiedAttributions(null)
-                .setIsOpenData(false)
-                .setIsAuthoritative(false)
-                .setIsRelatedToTransportportal(false)
-                .setInSeries(null)
-                .setPrev(null)
-                .setLast(null)
-                .setDatasetsInSeries(null)
-                .setType(null)
-                .setSpecializedType(null)
-                .build()
+            override fun parse(model: Model, iri: String) = Dataset().apply {
+                id = "id"
+                uri = iri
+                title = LocalizedStrings().apply { en = "V2" }
+            }
             override fun parse(model: Model, iri: String, fdkId: String) = parse(model, iri)
         }
 
