@@ -1,6 +1,5 @@
 package no.digdir.fdk.parserservice.kafka
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -20,6 +19,7 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.test.context.ActiveProfiles
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import kotlin.test.assertEquals
@@ -33,7 +33,7 @@ class KafkaReasonedEventConsumerTest {
     private val kafkaRdfParseEventProducer = KafkaRdfParseEventProducer(kafkaTemplate)
     private val circuitBreaker = KafkaReasonedEventCircuitBreaker(kafkaRdfParseEventProducer, datasetHandler)
     private val kafkaReasonedEventConsumer = KafkaReasonedEventConsumer(circuitBreaker)
-    private val mapper = ObjectMapper()
+    private val mapper = jacksonObjectMapper()
 
     @Test
     fun `listen should produce a rdf parse event`() {

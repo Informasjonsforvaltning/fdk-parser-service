@@ -1,17 +1,15 @@
 package no.digdir.fdk.parserservice.handler
 
-import com.fasterxml.jackson.databind.JsonNode
 import no.digdir.fdk.model.dataset.Dataset
-import no.digdir.fdk.parserservice.LOGGER
 import no.digdir.fdk.parserservice.extract.fdk.topicUriOfRecordWithID
 import no.digdir.fdk.parserservice.model.NoAcceptableFDKRecordsException
-import no.digdir.fdk.parserservice.model.UnableToParseException
 import no.digdir.fdk.parserservice.parser.DatasetParserRegistry
 import no.digdir.fdk.parserservice.utils.avroToJson
 import no.digdir.fdk.parserservice.utils.DatasetMerger
 import no.digdir.fdk.parserservice.utils.readTurtle
 import org.apache.jena.rdf.model.ModelFactory
 import org.springframework.stereotype.Service
+import tools.jackson.databind.JsonNode
 
 @Service
 class DatasetHandler(

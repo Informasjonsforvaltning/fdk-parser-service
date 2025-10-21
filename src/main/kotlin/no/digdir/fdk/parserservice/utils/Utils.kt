@@ -1,13 +1,13 @@
 package no.digdir.fdk.parserservice.utils
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.apache.avro.Schema
 import org.apache.avro.io.DatumWriter
 import org.apache.avro.io.Encoder
 import org.apache.avro.specific.SpecificDatumWriter
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.riot.Lang
+import tools.jackson.databind.JsonNode
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import java.io.ByteArrayOutputStream
 import java.io.StringReader
 
