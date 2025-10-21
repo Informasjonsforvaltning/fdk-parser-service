@@ -18,9 +18,12 @@ class DatasetMergerTest {
     fun `should merge datasets with priority order`() {
         val highPriority = minimal("high-priority-id", "http://high")
         val lowPriority = minimal("low-priority-id", "http://low")
+            .apply { title = LocalizedStrings().apply { en = "Title only available in low" } }
 
         val result = DatasetMerger.merge(listOf(highPriority, lowPriority))
         assertEquals("high-priority-id", result.id)
+        assertEquals("http://high", result.uri)
+        assertEquals("Title only available in low", result.title.en)
     }
 
     @Test

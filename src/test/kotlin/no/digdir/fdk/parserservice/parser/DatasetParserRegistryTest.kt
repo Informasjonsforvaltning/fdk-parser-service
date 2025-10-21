@@ -14,11 +14,10 @@ import kotlin.test.assertTrue
 class DatasetParserRegistryTest {
 
     private fun minimalDataset(id: String, uri: String): Dataset =
-        Dataset()
-            .apply {
-                this.id = id
-                this.uri = uri
-            }
+        Dataset().apply {
+            this.id = id
+            this.uri = uri
+        }
 
     @Test
     fun `should register parsers and execute in priority order`() {
