@@ -21,7 +21,7 @@ import jakarta.annotation.PostConstruct
  * @since 1.0.0
  */
 @Configuration
-class DatasetParserConfiguration(
+open class DatasetParserConfiguration(
     private val parserRegistry: DatasetParserRegistry,
     private val v1Parser: DcatApNoV1Parser,
     private val v2Parser: DcatApNoV2Parser,
