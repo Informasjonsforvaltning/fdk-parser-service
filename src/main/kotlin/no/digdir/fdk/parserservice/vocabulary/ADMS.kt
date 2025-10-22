@@ -40,6 +40,11 @@ class ADMS {
          * of the asset being described.
          */
         val sample: Property = ResourceFactory.createProperty("${uri}sample")
+
+        /**
+         * Property for asset status.
+         */
+        val status: Property = ResourceFactory.createProperty("${uri}status")
     }
 
 }

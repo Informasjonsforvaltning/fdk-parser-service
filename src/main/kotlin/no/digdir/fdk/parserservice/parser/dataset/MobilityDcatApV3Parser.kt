@@ -2,6 +2,8 @@ package no.digdir.fdk.parserservice.parser.dataset
 
 import no.digdir.fdk.model.dataset.Dataset
 import no.digdir.fdk.parserservice.extract.containsTriple
+import no.digdir.fdk.parserservice.extract.dataset.extractListOfMobilityDistributions
+import no.digdir.fdk.parserservice.extract.dataset.extractListOfMobilitySampleData
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfQualifiedAttributions
 import no.digdir.fdk.parserservice.extract.dataset.extractQualityAnnotation
 import no.digdir.fdk.parserservice.extract.extractListOfReferenceDataCodes
@@ -55,8 +57,8 @@ class MobilityDcatApV3Parser() : BaseDatasetParser() {
         builder.setMobilityTheme(datasetResource.extractListOfReferenceDataCodes(MobilityDCAT.mobilityTheme, "/", SKOS.prefLabel))
         builder.setTemporal(datasetResource.extractListOfTemporal(DCTerms.temporal, DCAT.startDate, DCAT.endDate))
 
-        builder.setDistribution(null)
-        builder.setSample(null)
+        builder.setDistribution(datasetResource.extractListOfMobilityDistributions())
+        builder.setSample(datasetResource.extractListOfMobilitySampleData())
 
         builder.setHasRelevanceAnnotation(datasetResource.extractQualityAnnotation(DQVISO.Relevance))
         builder.setHasCurrentnessAnnotation(datasetResource.extractQualityAnnotation(DQVISO.Currentness))

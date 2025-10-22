@@ -120,6 +120,30 @@
         }
       ],
       "doc": "Access services of the distribution"
+    },
+    {
+      "name": "status",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "The status of the distribution in the context of maturity lifecycle."
+    },
+    {
+      "name": "mobilityDataStandard",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "The mobility data standard, as applied for the delivered content within the distribution."
+    },
+    {
+      "name": "rights",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.RightsStatement"
+      ],
+      "doc": "A statement that specifies rights associated with the distribution."
     }
   ]
 }

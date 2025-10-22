@@ -163,7 +163,10 @@ class DatasetHandlerTest {
               ],
               "compressFormat": null,
               "packageFormat": null,
-              "accessService": null
+              "accessService": null,
+              "status": null,
+              "mobilityDataStandard": null,
+              "rights": null
             }
           ],
           "sample": null,
@@ -305,7 +308,10 @@ class DatasetHandlerTest {
               ],
               "compressFormat": null,
               "packageFormat": null,
-              "accessService": null
+              "accessService": null,
+              "status": null,
+              "mobilityDataStandard": null,
+              "rights": null
             }
         ]""".trimIndent()
 
