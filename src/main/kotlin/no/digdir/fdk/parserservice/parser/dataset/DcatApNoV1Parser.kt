@@ -126,6 +126,7 @@ class DcatApNoV1Parser() : BaseDatasetParser() {
         builder.setSample(datasetResource.extractListOfDistributionsV1(ADMS.sample))
 
         // The following properties are not implemented in DCAT-AP-NO v1.1
+        builder.setMobilityTheme(null)
         builder.setHasRelevanceAnnotation(null)
         builder.setHasCurrentnessAnnotation(null)
         builder.setHasCompletenessAnnotation(null)

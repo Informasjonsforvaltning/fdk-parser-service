@@ -160,6 +160,9 @@ class DcatApNoV2Parser() : BaseDatasetParser() {
             builder.setDatasetsInSeries(null)
         }
 
+        // The following properties are not implemented in DCAT-AP-NO v2.2
+        builder.setMobilityTheme(null)
+
         return builder.build()
     }
 }

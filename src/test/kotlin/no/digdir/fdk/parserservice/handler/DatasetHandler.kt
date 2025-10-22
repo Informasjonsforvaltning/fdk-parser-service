@@ -182,6 +182,7 @@ class DatasetHandlerTest {
           "theme": null,
           "losTheme": null,
           "eurovocThemes": null,
+          "mobilityTheme": null,
           "keyword": null,
           "issued": "2018-01-11T10:50:10.111Z",
           "modified": "2020-02-22T12:52:20.222Z",

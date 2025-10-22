@@ -4,6 +4,7 @@ import no.digdir.fdk.model.dataset.Dataset
 import no.digdir.fdk.parserservice.extract.containsTriple
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfQualifiedAttributions
 import no.digdir.fdk.parserservice.extract.dataset.extractQualityAnnotation
+import no.digdir.fdk.parserservice.extract.extractListOfReferenceDataCodes
 import no.digdir.fdk.parserservice.extract.extractListOfTemporal
 import no.digdir.fdk.parserservice.extract.fdk.addFdkData
 import no.digdir.fdk.parserservice.extract.fdk.fdkRecord
@@ -11,11 +12,13 @@ import no.digdir.fdk.parserservice.extract.fdk.resourceOfIRI
 import no.digdir.fdk.parserservice.model.LanguageCodes
 import no.digdir.fdk.parserservice.model.NoAcceptableTypesException
 import no.digdir.fdk.parserservice.vocabulary.DQVISO
+import no.digdir.fdk.parserservice.vocabulary.MobilityDCAT
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDF
+import org.apache.jena.vocabulary.SKOS
 import org.springframework.stereotype.Component
 import java.net.URI
 
@@ -49,6 +52,7 @@ class MobilityDcatApV3Parser() : BaseDatasetParser() {
 
         builder.addCommonDatasetValues(datasetResource)
 
+        builder.setMobilityTheme(datasetResource.extractListOfReferenceDataCodes(MobilityDCAT.mobilityTheme, "/", SKOS.prefLabel))
         builder.setTemporal(datasetResource.extractListOfTemporal(DCTerms.temporal, DCAT.startDate, DCAT.endDate))
 
         builder.setDistribution(null)

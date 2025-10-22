@@ -43,6 +43,7 @@ object DatasetMerger {
             .setTheme(datasets.firstNonNull { it.theme })
             .setLosTheme(datasets.firstNonNull { it.losTheme })
             .setEurovocThemes(datasets.firstNonNull { it.eurovocThemes })
+            .setMobilityTheme(datasets.firstNonNull { it.mobilityTheme })
             .setKeyword(datasets.firstNonNull { it.keyword })
             .setIssued(datasets.firstNonNull { it.issued })
             .setModified(datasets.firstNonNull { it.modified })
