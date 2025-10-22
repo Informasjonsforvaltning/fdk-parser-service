@@ -3,6 +3,7 @@ package no.digdir.fdk.parserservice.extract.dataset
 import no.digdir.fdk.model.Format
 import no.digdir.fdk.model.FormatType
 import no.digdir.fdk.model.LocalizedStrings
+import no.digdir.fdk.model.RightsStatement
 import no.digdir.fdk.model.UriWithLabel
 import no.digdir.fdk.model.UriWithLabelAndType
 import no.digdir.fdk.model.dataset.AccessService
@@ -346,6 +347,106 @@ class ExtractDatasetDistributions {
             val result = subject.extractListOfDistributionsV2(DCAT.distribution)!!.first()
 
             assertTrue(result.accessService.containsAll(expected))
+        }
+    }
+
+    @Nested
+    internal inner class MobilityV3 {
+
+        @Test
+        fun extractMobilityDistribution() {
+            val turtle = """
+                @prefix dct: <http://purl.org/dc/terms/> .
+                @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+                @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+                @prefix adms:  <http://www.w3.org/ns/adms#> .
+                @prefix mobilitydcatap:  <https://w3id.org/mobilitydcat-ap#> .
+
+                <https://testdirektoratet.no/model/dataset/0>
+                    a                   dcat:Dataset ;
+                    dcat:distribution   <https://testdirektoratet.no/model/distribution> .
+
+                <https://testdirektoratet.no/model/distribution>
+                    a                dcat:Distribution ;
+                    dcat:accessURL   <https://testdirektoratet.no/access> ;
+                    dct:title        "Distribution"@en ;
+                    adms:status      <http://publications.europa.eu/resource/authority/distribution-status/COMPLETED> ;
+                    adms:sample      <https://testdirektoratet.no/sample> ;
+                    mobilitydcatap:mobilityDataStandard <https://w3id.org/mobilitydcat-ap/mobility-data-standard/other> ;
+                    dct:rights       <https://testdirektoratet.no/rights> .
+
+                <https://testdirektoratet.no/rights>
+                    dct:type        <https://w3id.org/mobilitydcat-ap/conditions-for-access-and-usage/free-of-charge> ;
+                    dct:description "Rights description"@en .
+            """.trimIndent()
+
+            val m = ModelFactory.createDefaultModel()
+            m.read(StringReader(turtle), null, "TURTLE")
+            val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
+
+            val expected = listOf(
+                Distribution().apply {
+                    uri = "https://testdirektoratet.no/model/distribution"
+                    accessURL = listOf("https://testdirektoratet.no/access")
+                    title = LocalizedStrings().apply { en = "Distribution" }
+                    status = "http://publications.europa.eu/resource/authority/distribution-status/COMPLETED"
+                    mobilityDataStandard = "https://w3id.org/mobilitydcat-ap/mobility-data-standard/other"
+                    rights = RightsStatement().apply {
+                        type = "https://w3id.org/mobilitydcat-ap/conditions-for-access-and-usage/free-of-charge"
+                        description = LocalizedStrings().apply { en = "Rights description" }
+                    }
+                }
+            )
+
+            assertEquals(expected, subject.extractListOfMobilityDistributions())
+        }
+
+        @Test
+        fun extractMobilitySampleData() {
+            val turtle = """
+                @prefix dct: <http://purl.org/dc/terms/> .
+                @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+                @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+                @prefix adms:  <http://www.w3.org/ns/adms#> .
+                @prefix mobilitydcatap:  <https://w3id.org/mobilitydcat-ap#> .
+
+                <https://testdirektoratet.no/model/dataset/0>
+                    a                   dcat:Dataset ;
+                    dcat:distribution   <https://testdirektoratet.no/model/distribution> .
+
+                <https://testdirektoratet.no/model/distribution>
+                    a                dcat:Distribution ;
+                    dcat:accessURL   <https://testdirektoratet.no/access> ;
+                    dct:title        "Distribution"@en ;
+                    adms:status      <http://publications.europa.eu/resource/authority/distribution-status/COMPLETED> ;
+                    adms:sample      <https://testdirektoratet.no/sample> ;
+                    mobilitydcatap:mobilityDataStandard <https://w3id.org/mobilitydcat-ap/mobility-data-standard/other> ;
+                    dct:rights       <https://testdirektoratet.no/rights> .
+
+                <https://testdirektoratet.no/rights>
+                    dct:type        <https://w3id.org/mobilitydcat-ap/conditions-for-access-and-usage/free-of-charge> ;
+                    dct:description "Rights description"@en .
+            """.trimIndent()
+
+            val m = ModelFactory.createDefaultModel()
+            m.read(StringReader(turtle), null, "TURTLE")
+            val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
+
+            val expected = listOf(
+                Distribution().apply {
+                    uri = "https://testdirektoratet.no/model/distribution"
+                    accessURL = listOf("https://testdirektoratet.no/sample")
+                    title = LocalizedStrings().apply { en = "Distribution" }
+                    status = "http://publications.europa.eu/resource/authority/distribution-status/COMPLETED"
+                    mobilityDataStandard = "https://w3id.org/mobilitydcat-ap/mobility-data-standard/other"
+                    rights = RightsStatement().apply {
+                        type = "https://w3id.org/mobilitydcat-ap/conditions-for-access-and-usage/free-of-charge"
+                        description = LocalizedStrings().apply { en = "Rights description" }
+                    }
+                }
+            )
+
+            assertEquals(expected, subject.extractListOfMobilitySampleData())
         }
     }
 }

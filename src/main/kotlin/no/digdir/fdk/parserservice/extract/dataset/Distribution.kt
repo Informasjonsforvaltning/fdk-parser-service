@@ -7,8 +7,12 @@ import no.digdir.fdk.parserservice.extract.extractListOfStrings
 import no.digdir.fdk.parserservice.extract.extractListOfUriWithLabel
 import no.digdir.fdk.parserservice.extract.extractListOfUriWithLabelAndType
 import no.digdir.fdk.parserservice.extract.extractLocalizedStrings
+import no.digdir.fdk.parserservice.extract.extractRightsStatement
+import no.digdir.fdk.parserservice.extract.extractStringValue
 import no.digdir.fdk.parserservice.extract.extractURIStringValue
 import no.digdir.fdk.parserservice.extract.listResources
+import no.digdir.fdk.parserservice.vocabulary.ADMS
+import no.digdir.fdk.parserservice.vocabulary.MobilityDCAT
 import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.sparql.vocabulary.FOAF
@@ -36,7 +40,6 @@ private fun Resource.addCommonDistributionValuesToBuilder(builder: Distribution.
     builder.setUri(extractURIStringValue())
         .setTitle(extractLocalizedStrings(DCTerms.title))
         .setDescription(extractLocalizedStrings(DCTerms.description))
-        .setAccessURL(extractListOfStrings(DCAT.accessURL))
         .setDownloadURL(extractListOfStrings(DCAT.downloadURL))
         .setLicense(extractListOfUriWithLabelAndType(DCTerms.license, DCTerms.source, SKOS.prefLabel))
         .setConformsTo(extractListOfUriWithLabel(DCTerms.conformsTo, DCTerms.source, DCTerms.title))
@@ -48,12 +51,16 @@ private fun Resource.buildDistributionV1(): Distribution? {
 
     addCommonDistributionValuesToBuilder(builder)
 
-    builder.setFdkFormat(extractListOfFormats(DCTerms.format))
+    builder.setAccessURL(extractListOfStrings(DCAT.accessURL))
+        .setFdkFormat(extractListOfFormats(DCTerms.format))
 
     // The following properties are not implemented in DCAT-AP-NO v1.1
     builder.setCompressFormat(null)
         .setPackageFormat(null)
         .setAccessService(null)
+        .setMobilityDataStandard(null)
+        .setStatus(null)
+        .setRights(null)
 
     return builder.build().takeIf { it.hasContent() }
 }
@@ -67,12 +74,56 @@ private fun Resource.buildDistributionV2(): Distribution? {
     val mediaTypes = extractListOfFormats(DCAT.mediaType) ?: emptyList()
     val allFormats = formats + mediaTypes
 
-    builder.setFdkFormat(allFormats.takeIf { it.isNotEmpty() })
+    builder.setAccessURL(extractListOfStrings(DCAT.accessURL))
+        .setFdkFormat(allFormats.takeIf { it.isNotEmpty() })
         .setCompressFormat(extractFormat(DCAT.compressFormat))
         .setPackageFormat(extractFormat(DCAT.packageFormat))
         .setAccessService(extractListOfAccessServices())
 
+    // The following properties are not implemented in DCAT-AP-NO v2.2
+    builder.setMobilityDataStandard(null)
+        .setStatus(null)
+        .setRights(null)
+
     return builder.build().takeIf { it.hasContent() }
+}
+
+private fun Resource.addCommonMobilityDistributionValuesToBuilder(builder: Distribution.Builder) {
+    addCommonDistributionValuesToBuilder(builder)
+
+    val formats = extractListOfFormats(DCTerms.format) ?: emptyList()
+    val mediaTypes = extractListOfFormats(DCAT.mediaType) ?: emptyList()
+    val allFormats = formats + mediaTypes
+
+    builder.setFdkFormat(allFormats.takeIf { it.isNotEmpty() })
+        .setCompressFormat(extractFormat(DCAT.compressFormat))
+        .setPackageFormat(extractFormat(DCAT.packageFormat))
+        .setAccessService(extractListOfAccessServices())
+        .setMobilityDataStandard(extractStringValue(MobilityDCAT.mobilityDataStandard))
+        .setStatus(extractStringValue(ADMS.status))
+        .setRights(extractRightsStatement())
+}
+
+private fun Resource.buildDistributionMobility(): Distribution? {
+    val builder = Distribution.newBuilder()
+
+    addCommonMobilityDistributionValuesToBuilder(builder)
+
+    builder.setAccessURL(extractListOfStrings(DCAT.accessURL))
+
+    return builder.build().takeIf { it.hasContent() }
+}
+
+private fun Resource.buildMobilitySampleData(): Distribution? {
+    val sampleURLs = extractListOfStrings(ADMS.sample)
+
+    return if (sampleURLs != null) {
+        val builder = Distribution.newBuilder()
+        builder.setAccessURL(sampleURLs)
+
+        addCommonMobilityDistributionValuesToBuilder(builder)
+        builder.build().takeIf { it.hasContent() }
+    } else null
 }
 
 fun Resource.extractListOfDistributionsV1(mainPredicate: Property): List<Distribution>? =
@@ -83,4 +134,14 @@ fun Resource.extractListOfDistributionsV1(mainPredicate: Property): List<Distrib
 fun Resource.extractListOfDistributionsV2(mainPredicate: Property): List<Distribution>? =
     listResources(mainPredicate)
         ?.mapNotNull { it.buildDistributionV2() }
+        ?.takeIf { it.isNotEmpty() }
+
+fun Resource.extractListOfMobilityDistributions(): List<Distribution>? =
+    listResources(DCAT.distribution)
+        ?.mapNotNull { it.buildDistributionMobility() }
+        ?.takeIf { it.isNotEmpty() }
+
+fun Resource.extractListOfMobilitySampleData(): List<Distribution>? =
+    listResources(DCAT.distribution)
+        ?.mapNotNull { it.buildMobilitySampleData() }
         ?.takeIf { it.isNotEmpty() }

@@ -1,0 +1,23 @@
+{
+  "type": "record",
+  "name": "RightsStatement",
+  "namespace": "no.digdir.fdk.model",
+  "doc": "A statement about the intellectual property rights (IPR) held in or over a resource, a legal document giving official permission to do something with a resource, or a statement about access rights.",
+  "fields": [
+    {
+      "name": "type",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    {
+      "name": "description",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "The text of the Rights Statement."
+    }
+  ]
+}
