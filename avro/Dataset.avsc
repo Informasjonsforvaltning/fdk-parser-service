@@ -162,6 +162,17 @@
       "doc": "List of EUROVOC themes for the dataset"
     },
     {
+      "name": "mobilityTheme",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.ReferenceDataCode"
+        }
+      ],
+      "doc": "List of mobility themes for the dataset"
+    },
+    {
       "name": "keyword",
       "type": [
         "null",
