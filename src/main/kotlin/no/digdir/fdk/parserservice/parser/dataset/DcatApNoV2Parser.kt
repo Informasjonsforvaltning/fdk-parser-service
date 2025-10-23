@@ -66,7 +66,7 @@ import java.net.URI
  * @version 1.0.0
  * @since 1.0.0
  */
-@Component
+@Component(value = "DatasetDcatApNoV2Parser")
 class DcatApNoV2Parser() : BaseDatasetParser() {
     /**
      * Gets the default language for DCAT-AP-NO v2.2.

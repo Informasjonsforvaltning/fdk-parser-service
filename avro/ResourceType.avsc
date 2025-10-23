@@ -4,6 +4,7 @@
   "namespace": "no.digdir.fdk.model",
   "doc": "Types for resources in FDK",
   "symbols": [
-    "datasets"
+    "datasets",
+    "dataservices"
   ]
 }
