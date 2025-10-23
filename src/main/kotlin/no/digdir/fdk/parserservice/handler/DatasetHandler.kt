@@ -16,6 +16,20 @@ class DatasetHandler(
     private val parserRegistry: DatasetParserRegistry
 ) {
 
+    /**
+     * Parses a dataset from RDF graph data and returns it as JSON.
+     *
+     * This method processes a Turtle-formatted RDF graph containing dataset
+     * information and converts it to a JSON representation using the registered
+     * dataset parsers. It attempts to parse the dataset with all available
+     * parsers in priority order and merges the results.
+     *
+     * @param fdkId The FDK identifier for the dataset
+     * @param graph The Turtle-formatted RDF graph containing the dataset
+     * @return JSON representation of the parsed dataset
+     * @throws NoAcceptableFDKRecordsException if no dataset is found with the given identifier
+     * @throws IllegalStateException if no parsers can successfully parse the dataset
+     */
     fun parseDataset(fdkId: String, graph: String): JsonNode {
         val model = ModelFactory.createDefaultModel()
         val dataset: Dataset = try {
