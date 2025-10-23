@@ -1,6 +1,6 @@
 package no.digdir.fdk.parserservice.parser
 
-import no.digdir.fdk.model.dataset.Dataset
+import no.digdir.fdk.model.dataservice.DataService
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.ModelFactory
 import org.junit.jupiter.api.Tag
@@ -10,20 +10,20 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 /**
- * Test class for DatasetParserRegistry.
+ * Test class for DataServiceParserRegistry.
  */
 @Tag("unit")
-class DatasetParserRegistryTest {
+class DataServiceParserRegistryTest {
 
-    private fun minimalDataset(id: String, uri: String): Dataset =
-        Dataset().apply {
+    private fun minimalDataService(id: String, uri: String): DataService =
+        DataService().apply {
             this.id = id
             this.uri = uri
         }
 
     @Test
     fun `should register parsers and execute in priority order`() {
-        val registry = DatasetParserRegistry()
+        val registry = DataServiceParserRegistry()
         
         // Create mock parsers
         val lowPriorityParser = createMockParser("low-priority", 50)
@@ -43,7 +43,7 @@ class DatasetParserRegistryTest {
 
     @Test
     fun `should parse with all parsers and return results in priority order`() {
-        val registry = DatasetParserRegistry()
+        val registry = DataServiceParserRegistry()
         
         // Create mock parsers that succeed
         val parser1 = createMockParser("result1", 100)
@@ -53,7 +53,7 @@ class DatasetParserRegistryTest {
         registry.registerParser(parser2, 50, "Parser 2")
         
         val model = ModelFactory.createDefaultModel()
-        val results = registry.parseWithAllParsers(model, "http://example.org/dataset", "test-id")
+        val results = registry.parseWithAllParsers(model, "http://example.org/data-service", "test-id")
         
         assertEquals(2, results.size)
         assertEquals("result1", results[0].id)
@@ -62,14 +62,14 @@ class DatasetParserRegistryTest {
 
     @Test
     fun `should handle parser failures gracefully`() {
-        val registry = DatasetParserRegistry()
+        val registry = DataServiceParserRegistry()
         
         // Create parsers where one fails
-        val failingParser = object : DatasetParserStrategy {
-            override fun parse(model: Model, iri: String): Dataset {
+        val failingParser = object : DataServiceParserStrategy {
+            override fun parse(model: Model, iri: String): DataService {
                 throw RuntimeException("Parser failed")
             }
-            override fun parse(model: Model, iri: String, fdkId: String): Dataset {
+            override fun parse(model: Model, iri: String, fdkId: String): DataService {
                 throw RuntimeException("Parser failed")
             }
         }
@@ -80,7 +80,7 @@ class DatasetParserRegistryTest {
         registry.registerParser(succeedingParser, 50, "Succeeding Parser")
         
         val model = ModelFactory.createDefaultModel()
-        val results = registry.parseWithAllParsers(model, "http://example.org/dataset", "test-id")
+        val results = registry.parseWithAllParsers(model, "http://example.org/data-service", "test-id")
         
         assertEquals(1, results.size)
         assertEquals("success", results[0].id)
@@ -88,57 +88,33 @@ class DatasetParserRegistryTest {
 
     @Test
     fun `should throw exception when no parsers succeed`() {
-        val registry = DatasetParserRegistry()
-        
-        val failingParser = object : DatasetParserStrategy {
-            override fun parse(model: Model, iri: String): Dataset {
+        val registry = DataServiceParserRegistry()
+
+        val failingParser = object : DataServiceParserStrategy {
+            override fun parse(model: Model, iri: String): DataService {
                 throw RuntimeException("Parser failed")
             }
-            override fun parse(model: Model, iri: String, fdkId: String): Dataset {
+            override fun parse(model: Model, iri: String, fdkId: String): DataService {
                 throw RuntimeException("Parser failed")
             }
         }
-        
+
         registry.registerParser(failingParser, 100, "Failing Parser")
         
         val model = ModelFactory.createDefaultModel()
         assertThrows<IllegalStateException> {
-            registry.parseWithAllParsers(model, "http://example.org/dataset", "test-id")
+            registry.parseWithAllParsers(model, "http://example.org/data-service", "test-id")
         }
     }
 
-    private fun createMockParser(id: String, priority: Int): DatasetParserStrategy {
-        return object : DatasetParserStrategy {
-            override fun parse(model: Model, iri: String): Dataset {
-                return minimalDataset(id, iri)
+    private fun createMockParser(id: String, priority: Int): DataServiceParserStrategy {
+        return object : DataServiceParserStrategy {
+            override fun parse(model: Model, iri: String): DataService {
+                return minimalDataService(id, iri)
             }
-            override fun parse(model: Model, iri: String, fdkId: String): Dataset {
-                return minimalDataset(id, iri)
+            override fun parse(model: Model, iri: String, fdkId: String): DataService {
+                return minimalDataService(id, iri)
             }
         }
-    }
-
-    @Test
-    fun `results are returned in parser priority order`() {
-        val registry = DatasetParserRegistry()
-
-        val lowPriority = object : DatasetParserStrategy {
-            override fun parse(model: Model, iri: String): Dataset = minimalDataset("LOW", iri)
-            override fun parse(model: Model, iri: String, fdkId: String): Dataset = minimalDataset("LOW", iri)
-        }
-        val highPriority = object : DatasetParserStrategy {
-            override fun parse(model: Model, iri: String): Dataset = minimalDataset("HIGH", iri)
-            override fun parse(model: Model, iri: String, fdkId: String): Dataset = minimalDataset("HIGH", iri)
-        }
-
-        registry.registerParser(lowPriority, priority = 50, name = "low")
-        registry.registerParser(highPriority, priority = 200, name = "high")
-
-        val model = ModelFactory.createDefaultModel()
-        val results = registry.parseWithAllParsers(model, "http://example.org/ds", "fdk-id")
-
-        assertEquals(2, results.size)
-        assertEquals("HIGH", results[0].id)
-        assertEquals("LOW", results[1].id)
     }
 }

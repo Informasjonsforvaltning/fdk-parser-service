@@ -1,0 +1,271 @@
+{
+  "type": "record",
+  "name": "DataService",
+  "namespace": "no.digdir.fdk.model.dataservice",
+  "doc": "Internal Data.norge.no model for data service",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string",
+      "doc": "Unique FDK identifier for the data service"
+    },
+    {
+      "name": "uri",
+      "type": "string",
+      "doc": "Subject URI for the data service in the harvested source"
+    },
+    {
+      "name": "identifier",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "List of data service identifiers from dct:identifier"
+    },
+    {
+      "name": "title",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual title of the data service"
+    },
+    {
+      "name": "description",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual description of the data service"
+    },
+    {
+      "name": "descriptionFormatted",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual description of the data service, where harvested formatting is intact"
+    },
+    {
+      "name": "publisher",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.Organization"
+      ],
+      "doc": "Organization that publishes the data service"
+    },
+    {
+      "name": "accessRights",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.ReferenceDataCode"
+      ],
+      "doc": "Access rights for the data service"
+    },
+    {
+      "name": "themeUris",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "List of theme URIs associated with the data service"
+    },
+    {
+      "name": "theme",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.EuDataTheme"
+        }
+      ],
+      "doc": "EU Data Themes associated with the data service"
+    },
+    {
+      "name": "losTheme",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.LosNode"
+        }
+      ],
+      "doc": "LOS themes associated with the data service"
+    },
+    {
+      "name": "eurovocThemes",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.Eurovoc"
+        }
+      ],
+      "doc": "EUROVOC themes associated with the data service"
+    },
+    {
+      "name": "keyword",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.LocalizedStrings"
+        }
+      ],
+      "doc": "Keywords associated with the data service"
+    },
+    {
+      "name": "contactPoint",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.ContactPoint"
+        }
+      ],
+      "doc": "Contact points for the data service"
+    },
+    {
+      "name": "issued",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Date when the data service was issued, format: 'YYYY-MM-DD'"
+    },
+    {
+      "name": "modified",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Date when the data service was last modified, format: 'YYYY-MM-DD'"
+    },
+    {
+      "name": "landingPage",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "Landing pages for the data service"
+    },
+    {
+      "name": "language",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.ReferenceDataCode"
+        }
+      ],
+      "doc": "Languages supported by the data service"
+    },
+    {
+      "name": "harvest",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.HarvestMetaData"
+      ],
+      "doc": "Metadata about the harvest of the data service to FDK"
+    },
+    {
+      "name": "catalog",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.Catalog"
+      ],
+      "doc": "Catalog information for the data service"
+    },
+    {
+      "name": "dctType",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "DCT type of the data service"
+    },
+    {
+      "name": "endpointDescription",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "Description of the services available via the endpoints"
+    },
+    {
+      "name": "endpointURL",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "Primary endpoint for the data service"
+    },
+    {
+      "name": "fdkFormat",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.Format"
+        }
+      ],
+      "doc": "Formats supported by the data service"
+    },
+    {
+      "name": "servesDataset",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "URIs of datasets served by this data service"
+    },
+    {
+      "name": "conformsTo",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.UriWithLabel"
+        }
+      ],
+      "doc": "Standards that the data service conforms to"
+    },
+    {
+      "name": "page",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "Pages or documents that describes the data service"
+    },
+    {
+      "name": "type",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.ResourceType"
+      ],
+      "doc": "Resource type"
+    }
+  ]
+}

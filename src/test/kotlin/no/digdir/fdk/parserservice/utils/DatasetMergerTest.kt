@@ -2,10 +2,12 @@ package no.digdir.fdk.parserservice.utils
 
 import no.digdir.fdk.model.LocalizedStrings
 import no.digdir.fdk.model.dataset.Dataset
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
+@Tag("unit")
 class DatasetMergerTest {
 
     private fun minimal(id: String, uri: String): Dataset =

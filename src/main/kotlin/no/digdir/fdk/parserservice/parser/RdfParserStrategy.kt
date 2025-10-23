@@ -1,5 +1,6 @@
 package no.digdir.fdk.parserservice.parser
 
+import no.digdir.fdk.model.dataservice.DataService
 import no.digdir.fdk.model.dataset.Dataset
 import org.apache.jena.rdf.model.Model
 
@@ -44,9 +45,20 @@ interface RdfParserStrategy<T> {
  * Type alias for dataset-specific RDF parsing strategies.
  * 
  * This alias provides a more specific interface for parsers that handle
- * dataset resources according to DCAT-AP-NO specifications.
+ * dataset resources according to different specifications.
  * 
  * @see RdfParserStrategy
  * @see Dataset
  */
 typealias DatasetParserStrategy = RdfParserStrategy<Dataset>
+
+/**
+ * Type alias for 'data service'-specific RDF parsing strategies.
+ *
+ * This alias provides a more specific interface for parsers that handle
+ * data service resources according to different specifications.
+ *
+ * @see RdfParserStrategy
+ * @see DataService
+ */
+typealias DataServiceParserStrategy = RdfParserStrategy<DataService>
