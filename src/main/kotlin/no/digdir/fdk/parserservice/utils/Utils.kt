@@ -12,7 +12,14 @@ import java.io.ByteArrayOutputStream
 import java.io.StringReader
 
 /**
- * Reads a graph in Turtle format in to the jena Model.
+ * Reads a graph in Turtle format into the Jena Model.
+ *
+ * This extension function parses a Turtle-formatted RDF graph string
+ * and loads it into the current Jena Model instance. It handles the
+ * conversion from Turtle syntax to the internal Jena representation.
+ *
+ * @param turtleGraph The Turtle-formatted RDF graph as a string
+ * @see Model.read
  */
 fun Model.readTurtle(turtleGraph: String) {
     val reader = StringReader(turtleGraph)
