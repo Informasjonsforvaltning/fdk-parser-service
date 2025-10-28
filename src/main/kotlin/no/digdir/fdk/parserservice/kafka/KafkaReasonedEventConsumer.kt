@@ -2,6 +2,7 @@ package no.digdir.fdk.parserservice.kafka
 
 import no.digdir.fdk.parserservice.model.RecoverableParseException
 import no.digdir.fdk.parserservice.model.UnrecoverableParseException
+import no.fdk.dataservice.DataServiceEvent
 import no.fdk.dataset.DatasetEvent
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.specific.SpecificRecord
@@ -19,13 +20,44 @@ class KafkaReasonedEventConsumer(
     private val circuitBreaker: KafkaReasonedEventCircuitBreaker
 ) {
     @KafkaListener(
+        topics = ["data-service-events"],
+        groupId = "fdk-parser-service",
+        concurrency = "4",
+        containerFactory = "kafkaListenerContainerFactory",
+        id = "data-service-event-consumer"
+    )
+    fun dataServiceListener(record: ConsumerRecord<String, Object>, ack: Acknowledgment) {
+        LOGGER.debug("Received data service message - offset: " + record.offset())
+        try {
+            when (val message = runCatching { record.value() }.getOrNull()) {
+                is SpecificRecord -> {
+                    val dataServiceEvent = try {
+                        message as DataServiceEvent
+                    } catch (ex: Exception) {
+                        LOGGER.error("Error parsing data service message", ex)
+                        throw UnrecoverableParseException("Error parsing data service message")
+                    }
+                    circuitBreaker.processDataService(dataServiceEvent)
+                }
+                is GenericRecord -> circuitBreaker.processGeneric(message)
+                else -> LOGGER.warn("Unknown message type: {}", message?.getClass())
+            }
+            ack.acknowledge()
+        } catch (e: RecoverableParseException) {
+            ack.acknowledge()
+        } catch (e: UnrecoverableParseException) {
+            ack.nack(Duration.ZERO)
+        }
+    }
+
+    @KafkaListener(
         topics = ["dataset-events"],
         groupId = "fdk-parser-service",
         concurrency = "4",
         containerFactory = "kafkaListenerContainerFactory",
-        id = "rdf-parse"
+        id = "dataset-event-consumer"
     )
-    fun listen(record: ConsumerRecord<String, Object>, ack: Acknowledgment) {
+    fun datasetListener(record: ConsumerRecord<String, Object>, ack: Acknowledgment) {
         LOGGER.debug("Received dataset message - offset: " + record.offset())
         try {
             when (val message = runCatching { record.value() }.getOrNull()) {

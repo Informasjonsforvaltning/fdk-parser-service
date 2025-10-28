@@ -4,9 +4,12 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import no.digdir.fdk.parserservice.handler.DataServiceHandler
 import no.digdir.fdk.parserservice.model.RecoverableParseException
 import no.digdir.fdk.parserservice.model.UnrecoverableParseException
 import no.digdir.fdk.parserservice.handler.DatasetHandler
+import no.fdk.dataservice.DataServiceEvent
+import no.fdk.dataservice.DataServiceEventType
 import no.fdk.dataset.DatasetEvent
 import no.fdk.dataset.DatasetEventType
 import no.fdk.rdf.parse.RdfParseEvent
@@ -28,15 +31,16 @@ import kotlin.test.assertEquals
 @Tag("unit")
 class KafkaReasonedEventConsumerTest {
     private val datasetHandler: DatasetHandler = mockk()
+    private val dataServiceHandler: DataServiceHandler = mockk()
     private val kafkaTemplate: KafkaTemplate<String, RdfParseEvent> = mockk()
     private val ack: Acknowledgment = mockk()
     private val kafkaRdfParseEventProducer = KafkaRdfParseEventProducer(kafkaTemplate)
-    private val circuitBreaker = KafkaReasonedEventCircuitBreaker(kafkaRdfParseEventProducer, datasetHandler)
+    private val circuitBreaker = KafkaReasonedEventCircuitBreaker(kafkaRdfParseEventProducer, dataServiceHandler, datasetHandler)
     private val kafkaReasonedEventConsumer = KafkaReasonedEventConsumer(circuitBreaker)
     private val mapper = jacksonObjectMapper()
 
     @Test
-    fun `listen should produce a rdf parse event`() {
+    fun `dataset listener should produce a rdf parse event`() {
         val parsedJson = "{\"data\":\"my-parsed-rdf\"}"
         every { datasetHandler.parseDataset(any(), any()) } returns mapper.readTree(parsedJson)
         every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
@@ -44,7 +48,7 @@ class KafkaReasonedEventConsumerTest {
         every { ack.nack(Duration.ZERO) } returns Unit
 
         val datasetEvent = DatasetEvent(DatasetEventType.DATASET_REASONED, "my-id", "uri", System.currentTimeMillis())
-        kafkaReasonedEventConsumer.listen(
+        kafkaReasonedEventConsumer.datasetListener(
             record = ConsumerRecord("dataset-events", 0, 0, "my-id", datasetEvent as Object),
             ack = ack
         )
@@ -64,7 +68,7 @@ class KafkaReasonedEventConsumerTest {
     }
 
     @Test
-    fun `listen should acknowledge when a recoverable exception occurs`() {
+    fun `dataset listener should acknowledge when a recoverable exception occurs`() {
         every {
             datasetHandler.parseDataset(any(), any())
         } throws RecoverableParseException("Error parsing RDF: invalid rdf")
@@ -72,7 +76,7 @@ class KafkaReasonedEventConsumerTest {
         every { ack.nack(Duration.ZERO) } returns Unit
 
         val datasetEvent = DatasetEvent(DatasetEventType.DATASET_REASONED, "my-id", "uri", System.currentTimeMillis())
-        kafkaReasonedEventConsumer.listen(
+        kafkaReasonedEventConsumer.datasetListener(
             record = ConsumerRecord("dataset-events", 0, 0, "my-id", datasetEvent as Object),
             ack = ack
         )
@@ -84,12 +88,12 @@ class KafkaReasonedEventConsumerTest {
     }
 
     @Test
-    fun `listen should not acknowledge when a unrecoverable exception occurs`() {
+    fun `dataset listener should not acknowledge when a unrecoverable exception occurs`() {
         every { datasetHandler.parseDataset(any(), any()) } throws UnrecoverableParseException("Error parsing RDF")
         every { ack.nack(Duration.ZERO) } returns Unit
 
         val datasetEvent = DatasetEvent(DatasetEventType.DATASET_REASONED, "my-id", "uri", System.currentTimeMillis())
-        kafkaReasonedEventConsumer.listen(
+        kafkaReasonedEventConsumer.datasetListener(
             record = ConsumerRecord("dataset-events", 0, 0, "my-id", datasetEvent as Object),
             ack = ack
         )
@@ -140,4 +144,83 @@ class KafkaReasonedEventConsumerTest {
         }
     }
 
+    @Test
+    fun `data service listener should produce a rdf parse event`() {
+        val parsedJson = "{\"data\":\"my-parsed-rdf\"}"
+        every { dataServiceHandler.parseDataService(any(), any()) } returns mapper.readTree(parsedJson)
+        every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
+        every { ack.acknowledge() } returns Unit
+        every { ack.nack(Duration.ZERO) } returns Unit
+
+        val dataServiceEvent = DataServiceEvent(DataServiceEventType.DATA_SERVICE_REASONED, "my-id", "uri", System.currentTimeMillis())
+        kafkaReasonedEventConsumer.dataServiceListener(
+            record = ConsumerRecord("data-service-events", 0, 0, "my-id", dataServiceEvent as Object),
+            ack = ack
+        )
+
+        verify {
+            kafkaTemplate.send(withArg {
+                assertEquals("rdf-parse-events", it)
+            }, withArg {
+                assertEquals(dataServiceEvent.fdkId, it.fdkId)
+                assertEquals(RdfParseResourceType.DATA_SERVICE, it.resourceType)
+                assertEquals(parsedJson, it.data)
+                assertEquals(dataServiceEvent.timestamp, it.timestamp)
+            })
+            ack.acknowledge()
+        }
+        confirmVerified(kafkaTemplate, ack)
+    }
+
+    @Test
+    fun `data service listener should acknowledge when a recoverable exception occurs`() {
+        every { dataServiceHandler.parseDataService(any(), any()) } throws RecoverableParseException("Error parsing RDF: invalid rdf")
+        every { ack.acknowledge() } returns Unit
+        every { ack.nack(Duration.ZERO) } returns Unit
+
+        val dataServiceEvent = DataServiceEvent(DataServiceEventType.DATA_SERVICE_REASONED, "my-id", "uri", System.currentTimeMillis())
+        kafkaReasonedEventConsumer.dataServiceListener(
+            record = ConsumerRecord("data-service-events", 0, 0, "my-id", dataServiceEvent as Object),
+            ack = ack
+        )
+
+        verify(exactly = 0) { kafkaTemplate.send(any(), any()) }
+        verify(exactly = 1) { ack.acknowledge() }
+        verify(exactly = 0) { ack.nack(Duration.ZERO) }
+        confirmVerified(kafkaTemplate, ack)
+    }
+
+    @Test
+    fun `data service listener should not acknowledge when a unrecoverable exception occurs`() {
+        every { dataServiceHandler.parseDataService(any(), any()) } throws UnrecoverableParseException("Error parsing RDF")
+        every { ack.nack(Duration.ZERO) } returns Unit
+
+        val dataServiceEvent = DataServiceEvent(DataServiceEventType.DATA_SERVICE_REASONED, "my-id", "uri", System.currentTimeMillis())
+        kafkaReasonedEventConsumer.dataServiceListener(
+            record = ConsumerRecord("data-service-events", 0, 0, "my-id", dataServiceEvent as Object),
+            ack = ack
+        )
+
+        verify(exactly = 0) { kafkaTemplate.send(any(), any()) }
+        verify(exactly = 0) { ack.acknowledge() }
+        verify(exactly = 1) { ack.nack(Duration.ZERO) }
+        confirmVerified(kafkaTemplate, ack)
+    }
+
+    @Test
+    fun `processDataService should handle valid data service reasoned event`() {
+        val event = mockk<DataServiceEvent>()
+        every { event.type } returns DataServiceEventType.DATA_SERVICE_REASONED
+        every { event.fdkId } returns "fdk-id"
+        every { event.graph } returns "graph"
+        every { event.timestamp } returns 12345L
+        every { dataServiceHandler.parseDataService(any(), any()) } returns mapper.readTree("{\"ok\":true}")
+        every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
+
+        circuitBreaker.processDataService(event)
+
+        verify {
+            kafkaTemplate.send(any(), match { it.fdkId == "fdk-id" && it.resourceType == RdfParseResourceType.DATA_SERVICE })
+        }
+    }
 }
