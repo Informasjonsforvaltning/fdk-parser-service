@@ -7,6 +7,7 @@ import no.digdir.fdk.parserservice.extract.extractListOfStrings
 import no.digdir.fdk.parserservice.extract.extractListOfUriWithLabel
 import no.digdir.fdk.parserservice.extract.extractListOfUriWithLabelAndType
 import no.digdir.fdk.parserservice.extract.extractLocalizedStrings
+import no.digdir.fdk.parserservice.extract.extractReferenceDataCode
 import no.digdir.fdk.parserservice.extract.extractRightsStatement
 import no.digdir.fdk.parserservice.extract.extractStringValue
 import no.digdir.fdk.parserservice.extract.extractURIStringValue
@@ -18,6 +19,7 @@ import org.apache.jena.rdf.model.Resource
 import org.apache.jena.sparql.vocabulary.FOAF
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms
+import org.apache.jena.vocabulary.DC_11
 import org.apache.jena.vocabulary.SKOS
 
 private fun Distribution.hasContent() = when {
@@ -99,8 +101,8 @@ private fun Resource.addCommonMobilityDistributionValuesToBuilder(builder: Distr
         .setCompressFormat(extractFormat(DCAT.compressFormat))
         .setPackageFormat(extractFormat(DCAT.packageFormat))
         .setAccessService(extractListOfAccessServices())
-        .setMobilityDataStandard(extractStringValue(MobilityDCAT.mobilityDataStandard))
-        .setStatus(extractStringValue(ADMS.status))
+        .setMobilityDataStandard(extractReferenceDataCode(MobilityDCAT.mobilityDataStandard, "/", SKOS.prefLabel))
+        .setStatus(extractReferenceDataCode(ADMS.status, DC_11.identifier, SKOS.prefLabel))
         .setRights(extractRightsStatement())
 }
 

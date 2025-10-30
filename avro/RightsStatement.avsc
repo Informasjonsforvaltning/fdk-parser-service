@@ -7,7 +7,7 @@
     {
       "name": "type",
       "type": [
-        "string",
+        "no.digdir.fdk.model.ReferenceDataCode",
         "null"
       ]
     },

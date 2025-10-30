@@ -63,6 +63,22 @@ fun Resource.extractReferenceDataCode(
         ?.buildReferenceDataCode(codePredicate, labelPredicate)
 
 /**
+ * Extracts values for a resource originating from fdk-reference-data, missing a code predicate.
+ *
+ * @param mainPredicate The predicate that points to the reference data from the originating resource
+ * @param codeSeparator The separator used to split the code from the URI
+ * @param labelPredicate The predicate for the label value
+ * @return ReferenceDataCode if any exists, null otherwise
+ */
+fun Resource.extractReferenceDataCode(
+    mainPredicate: Property,
+    codeSeparator: String?,
+    labelPredicate: Property
+): ReferenceDataCode? =
+    singleResource(mainPredicate)
+        ?.buildReferenceDataCode(codeSeparator, labelPredicate)
+
+/**
  * Extracts values for a list of resources originating from fdk-reference-data.
  *
  * @param mainPredicate The predicate that points to the reference data from the originating resource

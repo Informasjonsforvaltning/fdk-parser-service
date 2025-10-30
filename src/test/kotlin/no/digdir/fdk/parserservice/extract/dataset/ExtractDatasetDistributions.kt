@@ -3,6 +3,7 @@ package no.digdir.fdk.parserservice.extract.dataset
 import no.digdir.fdk.model.Format
 import no.digdir.fdk.model.FormatType
 import no.digdir.fdk.model.LocalizedStrings
+import no.digdir.fdk.model.ReferenceDataCode
 import no.digdir.fdk.model.RightsStatement
 import no.digdir.fdk.model.UriWithLabel
 import no.digdir.fdk.model.UriWithLabelAndType
@@ -356,6 +357,7 @@ class ExtractDatasetDistributions {
         @Test
         fun extractMobilityDistribution() {
             val turtle = """
+                @prefix dc:   <http://purl.org/dc/elements/1.1/> .
                 @prefix dct: <http://purl.org/dc/terms/> .
                 @prefix dcat:  <http://www.w3.org/ns/dcat#> .
                 @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
@@ -374,6 +376,13 @@ class ExtractDatasetDistributions {
                     adms:sample      <https://testdirektoratet.no/sample> ;
                     mobilitydcatap:mobilityDataStandard <https://w3id.org/mobilitydcat-ap/mobility-data-standard/other> ;
                     dct:rights       <https://testdirektoratet.no/rights> .
+
+                <https://w3id.org/mobilitydcat-ap/mobility-data-standard/other>
+                    skos:prefLabel "Other"@en .
+
+                <http://publications.europa.eu/resource/authority/distribution-status/COMPLETED>
+                    dc:identifier   "COMPLETED";
+                    skos:prefLabel  "completed"@en , "ferdigstilt"@nb , "ferdigstilt"@no , "ferdigstilt"@nn .
 
                 <https://testdirektoratet.no/rights>
                     dct:type        <https://w3id.org/mobilitydcat-ap/conditions-for-access-and-usage/free-of-charge> ;
@@ -389,10 +398,26 @@ class ExtractDatasetDistributions {
                     uri = "https://testdirektoratet.no/model/distribution"
                     accessURL = listOf("https://testdirektoratet.no/access")
                     title = LocalizedStrings().apply { en = "Distribution" }
-                    status = "http://publications.europa.eu/resource/authority/distribution-status/COMPLETED"
-                    mobilityDataStandard = "https://w3id.org/mobilitydcat-ap/mobility-data-standard/other"
+                    status = ReferenceDataCode().apply {
+                        uri = "http://publications.europa.eu/resource/authority/distribution-status/COMPLETED"
+                        code = "COMPLETED"
+                        prefLabel = LocalizedStrings().apply {
+                            en = "completed"
+                            nb = "ferdigstilt"
+                            no = "ferdigstilt"
+                            nn = "ferdigstilt"
+                        }
+                    }
+                    mobilityDataStandard = ReferenceDataCode().apply {
+                        uri = "https://w3id.org/mobilitydcat-ap/mobility-data-standard/other"
+                        code = "other"
+                        prefLabel = LocalizedStrings().apply { en = "Other" }
+                    }
                     rights = RightsStatement().apply {
-                        type = "https://w3id.org/mobilitydcat-ap/conditions-for-access-and-usage/free-of-charge"
+                        type = ReferenceDataCode().apply {
+                            uri = "https://w3id.org/mobilitydcat-ap/conditions-for-access-and-usage/free-of-charge"
+                            code = "free-of-charge"
+                        }
                         description = LocalizedStrings().apply { en = "Rights description" }
                     }
                 }
@@ -404,6 +429,7 @@ class ExtractDatasetDistributions {
         @Test
         fun extractMobilitySampleData() {
             val turtle = """
+                @prefix dc:   <http://purl.org/dc/elements/1.1/> .
                 @prefix dct: <http://purl.org/dc/terms/> .
                 @prefix dcat:  <http://www.w3.org/ns/dcat#> .
                 @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
@@ -423,6 +449,13 @@ class ExtractDatasetDistributions {
                     mobilitydcatap:mobilityDataStandard <https://w3id.org/mobilitydcat-ap/mobility-data-standard/other> ;
                     dct:rights       <https://testdirektoratet.no/rights> .
 
+                <https://w3id.org/mobilitydcat-ap/mobility-data-standard/other>
+                    skos:prefLabel "Other"@en .
+
+                <http://publications.europa.eu/resource/authority/distribution-status/COMPLETED>
+                    dc:identifier   "COMPLETED";
+                    skos:prefLabel  "completed"@en , "ferdigstilt"@nb , "ferdigstilt"@no , "ferdigstilt"@nn .
+
                 <https://testdirektoratet.no/rights>
                     dct:type        <https://w3id.org/mobilitydcat-ap/conditions-for-access-and-usage/free-of-charge> ;
                     dct:description "Rights description"@en .
@@ -437,10 +470,26 @@ class ExtractDatasetDistributions {
                     uri = "https://testdirektoratet.no/model/distribution"
                     accessURL = listOf("https://testdirektoratet.no/sample")
                     title = LocalizedStrings().apply { en = "Distribution" }
-                    status = "http://publications.europa.eu/resource/authority/distribution-status/COMPLETED"
-                    mobilityDataStandard = "https://w3id.org/mobilitydcat-ap/mobility-data-standard/other"
+                    status = ReferenceDataCode().apply {
+                        uri = "http://publications.europa.eu/resource/authority/distribution-status/COMPLETED"
+                        code = "COMPLETED"
+                        prefLabel = LocalizedStrings().apply {
+                            en = "completed"
+                            nb = "ferdigstilt"
+                            no = "ferdigstilt"
+                            nn = "ferdigstilt"
+                        }
+                    }
+                    mobilityDataStandard = ReferenceDataCode().apply {
+                        uri = "https://w3id.org/mobilitydcat-ap/mobility-data-standard/other"
+                        code = "other"
+                        prefLabel = LocalizedStrings().apply { en = "Other" }
+                    }
                     rights = RightsStatement().apply {
-                        type = "https://w3id.org/mobilitydcat-ap/conditions-for-access-and-usage/free-of-charge"
+                        type = ReferenceDataCode().apply {
+                            uri = "https://w3id.org/mobilitydcat-ap/conditions-for-access-and-usage/free-of-charge"
+                            code = "free-of-charge"
+                        }
                         description = LocalizedStrings().apply { en = "Rights description" }
                     }
                 }
