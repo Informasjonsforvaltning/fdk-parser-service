@@ -125,7 +125,7 @@
       "name": "status",
       "type": [
         "null",
-        "string"
+        "no.digdir.fdk.model.ReferenceDataCode"
       ],
       "doc": "The status of the distribution in the context of maturity lifecycle."
     },
@@ -133,7 +133,7 @@
       "name": "mobilityDataStandard",
       "type": [
         "null",
-        "string"
+        "no.digdir.fdk.model.ReferenceDataCode"
       ],
       "doc": "The mobility data standard, as applied for the delivered content within the distribution."
     },
