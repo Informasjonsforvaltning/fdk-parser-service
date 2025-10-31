@@ -1,0 +1,140 @@
+{
+  "type": "record",
+  "name": "ModelElement",
+  "namespace": "no.digdir.fdk.model.informationmodel",
+  "doc": "Model element in an information model",
+  "fields": [
+    {
+      "name": "uri",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "URI of the model element"
+    },
+    {
+      "name": "identifier",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Identifier of the model element"
+    },
+    {
+      "name": "title",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "default": null,
+      "doc": "Title of the model element"
+    },
+    {
+      "name": "description",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "default": null,
+      "doc": "Description of the model element"
+    },
+    {
+      "name": "subject",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Subject of the model element"
+    },
+    {
+      "name": "hasProperty",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "default": null,
+      "doc": "List of properties the element has"
+    },
+    {
+      "name": "belongsToModule",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Module the element belongs to"
+    },
+    {
+      "name": "elementTypes",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "default": null,
+      "doc": "Types of the element"
+    },
+    {
+      "name": "codeListReference",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Reference to a code list"
+    },
+    {
+      "name": "codes",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "ModelCodeElement"
+        }
+      ],
+      "default": null,
+      "doc": "Code elements"
+    },
+    {
+      "name": "typeDefinitionReference",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Reference to a type definition"
+    },
+    {
+      "name": "fractionDigits",
+      "type": ["null", "int"],
+      "default": null,
+      "doc": "Number of fraction digits"
+    },
+    {
+      "name": "length",
+      "type": ["null", "int"],
+      "default": null,
+      "doc": "Length constraint"
+    },
+    {
+      "name": "maxInclusive",
+      "type": ["null", "double"],
+      "default": null,
+      "doc": "Maximum inclusive value"
+    },
+    {
+      "name": "maxLength",
+      "type": ["null", "int"],
+      "default": null,
+      "doc": "Maximum length constraint"
+    },
+    {
+      "name": "minInclusive",
+      "type": ["null", "double"],
+      "default": null,
+      "doc": "Minimum inclusive value"
+    },
+    {
+      "name": "minLength",
+      "type": ["null", "int"],
+      "default": null,
+      "doc": "Minimum length constraint"
+    },
+    {
+      "name": "pattern",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Pattern constraint"
+    },
+    {
+      "name": "totalDigits",
+      "type": ["null", "int"],
+      "default": null,
+      "doc": "Total number of digits"
+    }
+  ]
+}

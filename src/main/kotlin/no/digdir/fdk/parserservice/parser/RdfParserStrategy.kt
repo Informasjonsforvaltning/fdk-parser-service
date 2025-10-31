@@ -2,16 +2,17 @@ package no.digdir.fdk.parserservice.parser
 
 import no.digdir.fdk.model.dataservice.DataService
 import no.digdir.fdk.model.dataset.Dataset
+import no.digdir.fdk.model.informationmodel.InformationModel
 import org.apache.jena.rdf.model.Model
 
 /**
  * Strategy interface for parsing RDF models into domain objects.
- * 
+ *
  * This interface defines the contract for RDF parsing strategies, allowing
  * different implementations to handle various RDF formats and schemas.
- * 
+ *
  * @param T The type of domain object to be parsed from the RDF model
- * 
+ *
  * @author FDK Team
  * @version 1.0.0
  * @since 1.0.0
@@ -19,7 +20,7 @@ import org.apache.jena.rdf.model.Model
 interface RdfParserStrategy<T> {
     /**
      * Parses an RDF model into a domain object of type T.
-     * 
+     *
      * @param model The Jena RDF model to be parsed
      * @param iri The IRI of the resource to be parsed
      * @return The parsed domain object
@@ -43,10 +44,10 @@ interface RdfParserStrategy<T> {
 
 /**
  * Type alias for dataset-specific RDF parsing strategies.
- * 
+ *
  * This alias provides a more specific interface for parsers that handle
  * dataset resources according to different specifications.
- * 
+ *
  * @see RdfParserStrategy
  * @see Dataset
  */
@@ -62,3 +63,14 @@ typealias DatasetParserStrategy = RdfParserStrategy<Dataset>
  * @see DataService
  */
 typealias DataServiceParserStrategy = RdfParserStrategy<DataService>
+
+/**
+ * Type alias for 'information model'-specific RDF parsing strategies.
+ *
+ * This alias provides a more specific interface for parsers that handle
+ * information model resources according to different specifications.
+ *
+ * @see RdfParserStrategy
+ * @see InformationModel
+ */
+typealias InformationModelParserStrategy = RdfParserStrategy<InformationModel>

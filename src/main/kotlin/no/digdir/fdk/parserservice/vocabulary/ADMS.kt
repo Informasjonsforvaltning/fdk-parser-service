@@ -45,6 +45,11 @@ class ADMS {
          * Property for asset status.
          */
         val status: Property = ResourceFactory.createProperty("${uri}status")
+
+        /**
+         * Property for version notes.
+         */
+        val versionNotes: Property = ResourceFactory.createProperty("${uri}versionNotes")
     }
 
 }

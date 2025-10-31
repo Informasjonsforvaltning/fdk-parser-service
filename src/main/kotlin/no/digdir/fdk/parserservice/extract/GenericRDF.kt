@@ -104,6 +104,36 @@ fun Resource.extractStringValue(pred: Property): String? =
     singleObjectStatement(pred)?.extractStringValue()
 
 /**
+ * Extension function to extract a single integer value for a given predicate.
+ *
+ * @param pred The property predicate to search for
+ * @return The integer value, or null if not found or not a valid integer
+ * @see Resource.singleObjectStatement
+ */
+fun Resource.extractIntegerValue(pred: Property): Int? =
+    try {
+        singleObjectStatement(pred)?.int
+    } catch (ex: Exception) {
+        LOGGER.debug("Failed to extract integer value for ${pred.uri} from $uri", ex)
+        null
+    }
+
+/**
+ * Extension function to extract a single double value for a given predicate.
+ *
+ * @param pred The property predicate to search for
+ * @return The double value, or null if not found or not a valid double
+ * @see Resource.singleObjectStatement
+ */
+fun Resource.extractDoubleValue(pred: Property): Double? =
+    try {
+        singleObjectStatement(pred)?.double
+    } catch (ex: Exception) {
+        LOGGER.debug("Failed to extract double value for ${pred.uri} from $uri", ex)
+        null
+    }
+
+/**
  * Extension function to extract a list of string values for a given predicate.
  * 
  * This function extracts all string values from statements with the given predicate.
