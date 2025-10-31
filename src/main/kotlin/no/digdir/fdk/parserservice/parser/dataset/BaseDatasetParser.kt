@@ -117,9 +117,9 @@ abstract class BaseDatasetParser : DatasetParserStrategy {
                 ?.takeIf { it.isNotEmpty() }
 
         setThemeUris(themeResources?.map { it.uri })
-        setTheme(themeResources?.filter { isEuDataThemeURI(it.uri) }?.map { it.extractEuDataTheme() })
-        setLosTheme(themeResources?.filter { isLosURI(it.uri) }?.map { it.extractLosNode() })
-        setEurovocThemes(themeResources?.filter { isEurovocURI(it.uri) }?.map { it.extractEurovoc() })
+        setTheme(themeResources?.filter { isEuDataThemeURI(it.uri) }?.mapNotNull { it.extractEuDataTheme() }?.takeIf { it.isNotEmpty() })
+        setLosTheme(themeResources?.filter { isLosURI(it.uri) }?.mapNotNull { it.extractLosNode() }?.takeIf { it.isNotEmpty() })
+        setEurovocThemes(themeResources?.filter { isEurovocURI(it.uri) }?.mapNotNull { it.extractEurovoc() }?.takeIf { it.isNotEmpty() })
 
         setAccrualPeriodicity(datasetResource.extractReferenceDataCode(DCTerms.accrualPeriodicity, DC_11.identifier, SKOS.prefLabel))
         setDctType(datasetResource.extractReferenceDataCode(DCTerms.type, DC_11.identifier, SKOS.prefLabel))

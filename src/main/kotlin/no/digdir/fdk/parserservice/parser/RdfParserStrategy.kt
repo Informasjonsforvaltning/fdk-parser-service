@@ -2,6 +2,7 @@ package no.digdir.fdk.parserservice.parser
 
 import no.digdir.fdk.model.dataservice.DataService
 import no.digdir.fdk.model.dataset.Dataset
+import no.digdir.fdk.model.informationmodel.InformationModel
 import org.apache.jena.rdf.model.Model
 
 /**
@@ -69,3 +70,14 @@ typealias DatasetParserStrategy = RdfParserStrategy<Dataset>
  * @see DataService
  */
 typealias DataServiceParserStrategy = RdfParserStrategy<DataService>
+
+/**
+ * Type alias for 'information model'-specific RDF parsing strategies.
+ *
+ * This alias provides a more specific interface for parsers that handle
+ * information model resources according to different specifications.
+ *
+ * @see RdfParserStrategy
+ * @see InformationModel
+ */
+typealias InformationModelParserStrategy = RdfParserStrategy<InformationModel>

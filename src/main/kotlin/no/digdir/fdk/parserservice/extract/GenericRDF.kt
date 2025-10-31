@@ -8,6 +8,7 @@ import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.rdf.model.Statement
+import org.apache.jena.vocabulary.DCTerms
 import java.net.URI
 
 /**
@@ -81,6 +82,30 @@ fun Resource.extractURIStringValue(): String? =
     }
 
 /**
+ * Extension function to extract the string value of either the resource URI or dct:identifier.
+ *
+ * @return The string value of either the resource URI or dct:identifier
+ */
+fun Resource.extractUriOrIdentifier(): String? = extractURIStringValue() ?: extractStringValue(DCTerms.identifier)
+
+/**
+ * Extension function to extract URI or identifier value of the resources from a predicate.
+ *
+ * @return The string value of either the resource URI or dct:identifier
+ */
+fun Resource.extractUriOrIdentifier(pred: Property): String? = singleResource(pred)?.extractUriOrIdentifier()
+
+/**
+ * Extension function to extract a list of URIs or identifiers of the resources from a predicate.
+ *
+ * @return List of URI or identifier values
+ */
+fun Resource.extractListOfUriOrIdentifier(pred: Property): List<String>? =
+    listResources(pred)
+        ?.mapNotNull { it.extractUriOrIdentifier() }
+        ?.takeIf { it.isNotEmpty() }
+
+/**
  * Private extension function to extract string value from a statement.
  *
  * This function handles both URI resources and literal values, returning
@@ -108,6 +133,36 @@ private fun Statement.extractStringValue(): String? {
  * @see Resource.singleObjectStatement
  */
 fun Resource.extractStringValue(pred: Property): String? = singleObjectStatement(pred)?.extractStringValue()
+
+/**
+ * Extension function to extract a single integer value for a given predicate.
+ *
+ * @param pred The property predicate to search for
+ * @return The integer value, or null if not found or not a valid integer
+ * @see Resource.singleObjectStatement
+ */
+fun Resource.extractIntegerValue(pred: Property): Int? =
+    try {
+        singleObjectStatement(pred)?.int
+    } catch (ex: Exception) {
+        LOGGER.debug("Failed to extract integer value for ${pred.uri} from $uri", ex)
+        null
+    }
+
+/**
+ * Extension function to extract a single double value for a given predicate.
+ *
+ * @param pred The property predicate to search for
+ * @return The double value, or null if not found or not a valid double
+ * @see Resource.singleObjectStatement
+ */
+fun Resource.extractDoubleValue(pred: Property): Double? =
+    try {
+        singleObjectStatement(pred)?.double
+    } catch (ex: Exception) {
+        LOGGER.debug("Failed to extract double value for ${pred.uri} from $uri", ex)
+        null
+    }
 
 /**
  * Extension function to extract a list of string values for a given predicate.

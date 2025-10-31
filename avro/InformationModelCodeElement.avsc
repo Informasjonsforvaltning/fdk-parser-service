@@ -1,0 +1,129 @@
+{
+  "type": "record",
+  "name": "InformationModelCodeElement",
+  "namespace": "no.digdir.fdk.model.informationmodel",
+  "doc": "Model code element in an information model",
+  "fields": [
+    {
+      "name": "uri",
+      "type": ["null", "string"],
+      "doc": "URI of the code element"
+    },
+    {
+      "name": "identifier",
+      "type": ["null", "string"],
+      "doc": "Identifier of the code element"
+    },
+    {
+      "name": "prefLabel",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Preferred label of the code element"
+    },
+    {
+      "name": "inScheme",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "Schemes the code element belongs to"
+    },
+    {
+      "name": "subject",
+      "type": ["null", "string"],
+      "doc": "Subject of the code element"
+    },
+    {
+      "name": "notation",
+      "type": ["null", "string"],
+      "doc": "Notation of the code element"
+    },
+    {
+      "name": "topConceptOf",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "Top concept of references"
+    },
+    {
+      "name": "definition",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "Definitions of the code element"
+    },
+    {
+      "name": "example",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "Examples for the code element"
+    },
+    {
+      "name": "exclusionNote",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Exclusion note for the code element"
+    },
+    {
+      "name": "previousElement",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "References to previous elements"
+    },
+    {
+      "name": "hiddenLabel",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Hidden label of the code element"
+    },
+    {
+      "name": "inclusionNote",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Inclusion note for the code element"
+    },
+    {
+      "name": "note",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Note about the code element"
+    },
+    {
+      "name": "nextElement",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "References to next elements"
+    },
+    {
+      "name": "scopeNote",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Scope note for the code element"
+    },
+    {
+      "name": "altLabel",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Alternative label of the code element"
+    }
+  ]
+}
