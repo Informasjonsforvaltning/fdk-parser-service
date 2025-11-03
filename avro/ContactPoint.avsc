@@ -13,12 +13,20 @@
       "doc": "URI for the contact point"
     },
     {
+      "name": "formattedName",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual name of the contact point"
+    },
+    {
       "name": "fullname",
       "type": [
         "null",
         "string"
       ],
-      "doc": "Name of the contact point"
+      "doc": "[DEPRECATED] Name of the contact point"
     },
     {
       "name": "email",
@@ -50,7 +58,7 @@
         "null",
         "no.digdir.fdk.model.LocalizedStrings"
       ],
-      "doc": "Multilingual name of the associated organization"
+      "doc": "[DEPRECATED] Multilingual name of the associated organization"
     },
     {
       "name": "organizationUnit",
@@ -58,7 +66,7 @@
         "null",
         "no.digdir.fdk.model.LocalizedStrings"
       ],
-      "doc": "Multilingual title of the associated organization unit"
+      "doc": "[DEPRECATED] Multilingual title of the associated organization unit"
     }
   ]
 }

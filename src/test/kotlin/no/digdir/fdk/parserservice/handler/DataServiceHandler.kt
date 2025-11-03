@@ -84,6 +84,7 @@ class DataServiceHandlerTest {
             "contactPoint": [
                 {
                   "uri": null,
+                  "formattedName": null,
                   "fullname": null,
                   "email": "post@mail.com",
                   "hasURL": null,

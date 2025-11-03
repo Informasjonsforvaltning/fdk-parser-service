@@ -174,6 +174,7 @@ class DatasetHandlerTest {
             {
                   "uri": null,
                   "email": "post@mail.com",
+                  "formattedName": null,
                   "fullname": null,
                   "hasURL": null,
                   "hasTelephone": null,

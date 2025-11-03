@@ -39,6 +39,7 @@ private fun Resource.buildContactPoint(): ContactPoint? {
     val builder = ContactPoint.newBuilder()
 
     builder.setUri(extractURIStringValue())
+        .setFormattedName(extractLocalizedStrings(VCARD4.fn))
         .setFullname(extractStringValue(VCARD4.fn))
         .setEmail(extractVcardEmail())
         .setHasURL(extractStringValue(VCARD4.hasURL))
