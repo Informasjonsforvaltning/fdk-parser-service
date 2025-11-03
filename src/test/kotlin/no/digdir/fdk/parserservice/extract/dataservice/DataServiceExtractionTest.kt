@@ -177,7 +177,7 @@ class DataServiceExtractionTest {
 
             <http://test.fellesdatakatalog.digdir.no/data-service/test#contact>
                 a                         vcard:Organization ;
-                vcard:fn                  "Test Contact" ;
+                vcard:fn                  "Test Contact"@en ;
                 vcard:hasEmail            <mailto:test@example.com> ;
                 vcard:hasTelephone        <tel:+4712345678> .
         """.trimIndent()
@@ -190,6 +190,7 @@ class DataServiceExtractionTest {
 
         val expected = listOf(ContactPoint().apply {
             uri = "http://test.fellesdatakatalog.digdir.no/data-service/test#contact"
+            formattedName = LocalizedStrings().apply { en = "Test Contact" }
             fullname = "Test Contact"
             email = "test@example.com"
             hasTelephone = "+4712345678"

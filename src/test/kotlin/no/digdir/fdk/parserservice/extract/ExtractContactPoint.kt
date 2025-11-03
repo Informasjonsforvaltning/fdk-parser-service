@@ -84,6 +84,7 @@ class ExtractContactPoint {
             },
             ContactPoint().apply {
                 uri = "https://testdirektoratet.no/kontakt/testmann"
+                formattedName = LocalizedStrings().apply { no = "Test Mann" }
                 fullname = "Test Mann"
                 email = "testmann@mail.com"
                 hasTelephone = "12345678"
