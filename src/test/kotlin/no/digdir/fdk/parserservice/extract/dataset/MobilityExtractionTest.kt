@@ -12,8 +12,6 @@ import kotlin.test.assertEquals
 
 @Tag("unit")
 class MobilityExtractionTest {
-
-
     @Nested
     internal inner class V1 {
         val datasetIRI = "https://testdirektoratet.no/model/dataset/0"
@@ -22,35 +20,40 @@ class MobilityExtractionTest {
 
         @Test
         fun extractMobilityTheme() {
-            val turtle = """
-            @prefix dct:   <http://purl.org/dc/terms/> .
-            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
-            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
-            @prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
-            @prefix mobilitydcatap:   <https://w3id.org/mobilitydcat-ap#> .
+            val turtle =
+                """
+                @prefix dct:   <http://purl.org/dc/terms/> .
+                @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+                @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+                @prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
+                @prefix mobilitydcatap:   <https://w3id.org/mobilitydcat-ap#> .
 
-            <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
-                a                  dcat:CatalogRecord ;
-                dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
-                foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
+                <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+                    a                  dcat:CatalogRecord ;
+                    dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
+                    foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
 
-            <https://testdirektoratet.no/model/dataset/0>
-                a                               dcat:Dataset ;
-                mobilitydcatap:mobilityTheme    <https://w3id.org/mobilitydcat-ap/mobility-theme/bike-hiring-availability> .
+                <https://testdirektoratet.no/model/dataset/0>
+                    a                               dcat:Dataset ;
+                    mobilitydcatap:mobilityTheme    <https://w3id.org/mobilitydcat-ap/mobility-theme/bike-hiring-availability> .
 
-            <https://w3id.org/mobilitydcat-ap/mobility-theme/bike-hiring-availability>
-                a               <http://www.w3.org/2004/02/skos/core#Concept> ;
-                skos:inScheme   <https://w3id.org/mobilitydcat-ap/mobility-theme> ;
-                skos:prefLabel  "Bike-hiring Availability"@en .
-        """.trimIndent()
+                <https://w3id.org/mobilitydcat-ap/mobility-theme/bike-hiring-availability>
+                    a               <http://www.w3.org/2004/02/skos/core#Concept> ;
+                    skos:inScheme   <https://w3id.org/mobilitydcat-ap/mobility-theme> ;
+                    skos:prefLabel  "Bike-hiring Availability"@en .
+                """.trimIndent()
 
-            val expectedMobilityTheme = listOf(ReferenceDataCode().also { theme ->
-                theme.uri = "https://w3id.org/mobilitydcat-ap/mobility-theme/bike-hiring-availability"
-                theme.code = "bike-hiring-availability"
-                theme.prefLabel = LocalizedStrings().also { label ->
-                    label.en = "Bike-hiring Availability"
-                }
-            })
+            val expectedMobilityTheme =
+                listOf(
+                    ReferenceDataCode().also { theme ->
+                        theme.uri = "https://w3id.org/mobilitydcat-ap/mobility-theme/bike-hiring-availability"
+                        theme.code = "bike-hiring-availability"
+                        theme.prefLabel =
+                            LocalizedStrings().also { label ->
+                                label.en = "Bike-hiring Availability"
+                            }
+                    },
+                )
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")

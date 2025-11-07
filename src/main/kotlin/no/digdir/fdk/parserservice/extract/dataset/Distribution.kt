@@ -9,7 +9,6 @@ import no.digdir.fdk.parserservice.extract.extractListOfUriWithLabelAndType
 import no.digdir.fdk.parserservice.extract.extractLocalizedStrings
 import no.digdir.fdk.parserservice.extract.extractReferenceDataCode
 import no.digdir.fdk.parserservice.extract.extractRightsStatement
-import no.digdir.fdk.parserservice.extract.extractStringValue
 import no.digdir.fdk.parserservice.extract.extractURIStringValue
 import no.digdir.fdk.parserservice.extract.listResources
 import no.digdir.fdk.parserservice.vocabulary.ADMS
@@ -22,24 +21,26 @@ import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.DC_11
 import org.apache.jena.vocabulary.SKOS
 
-private fun Distribution.hasContent() = when {
-    uri != null -> true
-    title != null -> true
-    description != null -> true
-    accessURL != null -> true
-    downloadURL != null -> true
-    license != null -> true
-    conformsTo != null -> true
-    page != null -> true
-    fdkFormat != null -> true
-    compressFormat != null -> true
-    packageFormat != null -> true
-    accessService != null -> true
-    else -> false
-}
+private fun Distribution.hasContent() =
+    when {
+        uri != null -> true
+        title != null -> true
+        description != null -> true
+        accessURL != null -> true
+        downloadURL != null -> true
+        license != null -> true
+        conformsTo != null -> true
+        page != null -> true
+        fdkFormat != null -> true
+        compressFormat != null -> true
+        packageFormat != null -> true
+        accessService != null -> true
+        else -> false
+    }
 
 private fun Resource.addCommonDistributionValuesToBuilder(builder: Distribution.Builder) {
-    builder.setUri(extractURIStringValue())
+    builder
+        .setUri(extractURIStringValue())
         .setTitle(extractLocalizedStrings(DCTerms.title))
         .setDescription(extractLocalizedStrings(DCTerms.description))
         .setDownloadURL(extractListOfStrings(DCAT.downloadURL))
@@ -53,11 +54,13 @@ private fun Resource.buildDistributionV1(): Distribution? {
 
     addCommonDistributionValuesToBuilder(builder)
 
-    builder.setAccessURL(extractListOfStrings(DCAT.accessURL))
+    builder
+        .setAccessURL(extractListOfStrings(DCAT.accessURL))
         .setFdkFormat(extractListOfFormats(DCTerms.format))
 
     // The following properties are not implemented in DCAT-AP-NO v1.1
-    builder.setCompressFormat(null)
+    builder
+        .setCompressFormat(null)
         .setPackageFormat(null)
         .setAccessService(null)
         .setMobilityDataStandard(null)
@@ -76,14 +79,16 @@ private fun Resource.buildDistributionV2(): Distribution? {
     val mediaTypes = extractListOfFormats(DCAT.mediaType) ?: emptyList()
     val allFormats = formats + mediaTypes
 
-    builder.setAccessURL(extractListOfStrings(DCAT.accessURL))
+    builder
+        .setAccessURL(extractListOfStrings(DCAT.accessURL))
         .setFdkFormat(allFormats.takeIf { it.isNotEmpty() })
         .setCompressFormat(extractFormat(DCAT.compressFormat))
         .setPackageFormat(extractFormat(DCAT.packageFormat))
         .setAccessService(extractListOfAccessServices())
 
     // The following properties are not implemented in DCAT-AP-NO v2.2
-    builder.setMobilityDataStandard(null)
+    builder
+        .setMobilityDataStandard(null)
         .setStatus(null)
         .setRights(null)
 
@@ -97,7 +102,8 @@ private fun Resource.addCommonMobilityDistributionValuesToBuilder(builder: Distr
     val mediaTypes = extractListOfFormats(DCAT.mediaType) ?: emptyList()
     val allFormats = formats + mediaTypes
 
-    builder.setFdkFormat(allFormats.takeIf { it.isNotEmpty() })
+    builder
+        .setFdkFormat(allFormats.takeIf { it.isNotEmpty() })
         .setCompressFormat(extractFormat(DCAT.compressFormat))
         .setPackageFormat(extractFormat(DCAT.packageFormat))
         .setAccessService(extractListOfAccessServices())
@@ -125,7 +131,9 @@ private fun Resource.buildMobilitySampleData(): Distribution? {
 
         addCommonMobilityDistributionValuesToBuilder(builder)
         builder.build().takeIf { it.hasContent() }
-    } else null
+    } else {
+        null
+    }
 }
 
 fun Resource.extractListOfDistributionsV1(mainPredicate: Property): List<Distribution>? =

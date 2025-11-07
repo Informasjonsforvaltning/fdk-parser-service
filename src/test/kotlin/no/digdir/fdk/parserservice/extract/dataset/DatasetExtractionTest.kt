@@ -23,8 +23,6 @@ import kotlin.test.assertTrue
 
 @Tag("unit")
 class DatasetExtractionTest {
-
-
     @Nested
     internal inner class V1 {
         val datasetIRI = "https://testdirektoratet.no/model/dataset/0"
@@ -33,45 +31,49 @@ class DatasetExtractionTest {
 
         @Test
         fun extractsTitleAndDescriptionCorrectly() {
-            val turtle = """
-            @prefix dct:   <http://purl.org/dc/terms/> .
-            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
-            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
-            @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+            val turtle =
+                """
+                @prefix dct:   <http://purl.org/dc/terms/> .
+                @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+                @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+                @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 
-            <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
-                a                  dcat:CatalogRecord ;
-                dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
-                foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
+                <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+                    a                  dcat:CatalogRecord ;
+                    dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
+                    foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
 
-            <https://testdirektoratet.no/model/dataset/0>
-                a                         dcat:Dataset ;
-                dct:title                 "title nb"@nb , "title nn"@nn , "title en"@en , "title no"@no ;
-                dct:description           "description nb"@nb , "description nn"@nn , "description en"@en , "description no"@no .
-        """.trimIndent()
+                <https://testdirektoratet.no/model/dataset/0>
+                    a                         dcat:Dataset ;
+                    dct:title                 "title nb"@nb , "title nn"@nn , "title en"@en , "title no"@no ;
+                    dct:description           "description nb"@nb , "description nn"@nn , "description en"@en , "description no"@no .
+                """.trimIndent()
 
-            val expectedTitle = LocalizedStrings().also { title ->
-                title.nb = "title nb"
-                title.nn = "title nn"
-                title.en = "title en"
-                title.no = "title no"
-            }
+            val expectedTitle =
+                LocalizedStrings().also { title ->
+                    title.nb = "title nb"
+                    title.nn = "title nn"
+                    title.en = "title en"
+                    title.no = "title no"
+                }
 
-            val expectedDescription = LocalizedStrings().also { description ->
-                description.nb = "description nb"
-                description.nn = "description nn"
-                description.en = "description en"
-                description.no = "description no"
-            }
+            val expectedDescription =
+                LocalizedStrings().also { description ->
+                    description.nb = "description nb"
+                    description.nn = "description nn"
+                    description.en = "description en"
+                    description.no = "description no"
+                }
 
-            val expected = Dataset().also { dataset ->
-                dataset.id = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
-                dataset.uri = "https://testdirektoratet.no/model/dataset/0"
-                dataset.title = expectedTitle
-                dataset.descriptionFormatted = expectedDescription
-                dataset.description = expectedDescription
-                dataset.type = ResourceType.datasets
-            }
+            val expected =
+                Dataset().also { dataset ->
+                    dataset.id = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
+                    dataset.uri = "https://testdirektoratet.no/model/dataset/0"
+                    dataset.title = expectedTitle
+                    dataset.descriptionFormatted = expectedDescription
+                    dataset.description = expectedDescription
+                    dataset.type = ResourceType.datasets
+                }
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
@@ -82,37 +84,41 @@ class DatasetExtractionTest {
 
         @Test
         fun descriptionExtractHandlesFormatting() {
-            val turtle = """
-            @prefix dct:   <http://purl.org/dc/terms/> .
-            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
-            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
-            @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+            val turtle =
+                """
+                @prefix dct:   <http://purl.org/dc/terms/> .
+                @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+                @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+                @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 
-            <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
-                a                  dcat:CatalogRecord ;
-                dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
-                foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
+                <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+                    a                  dcat:CatalogRecord ;
+                    dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
+                    foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
 
-            <https://testdirektoratet.no/model/dataset/0>
-                a                         dcat:Dataset ;
-                dct:description           "<div>description</div>"@nb .
-        """.trimIndent()
+                <https://testdirektoratet.no/model/dataset/0>
+                    a                         dcat:Dataset ;
+                    dct:description           "<div>description</div>"@nb .
+                """.trimIndent()
 
-            val expectedFormattedDescription = LocalizedStrings().also { description ->
-                description.nb = "<div>description</div>"
-            }
+            val expectedFormattedDescription =
+                LocalizedStrings().also { description ->
+                    description.nb = "<div>description</div>"
+                }
 
-            val expectedDescription = LocalizedStrings().also { description ->
-                description.nb = "description"
-            }
+            val expectedDescription =
+                LocalizedStrings().also { description ->
+                    description.nb = "description"
+                }
 
-            val expected = Dataset().also { dataset ->
-                dataset.id = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
-                dataset.uri = "https://testdirektoratet.no/model/dataset/0"
-                dataset.descriptionFormatted = expectedFormattedDescription
-                dataset.description = expectedDescription
-                dataset.type = ResourceType.datasets
-            }
+            val expected =
+                Dataset().also { dataset ->
+                    dataset.id = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
+                    dataset.uri = "https://testdirektoratet.no/model/dataset/0"
+                    dataset.descriptionFormatted = expectedFormattedDescription
+                    dataset.description = expectedDescription
+                    dataset.type = ResourceType.datasets
+                }
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
@@ -123,33 +129,35 @@ class DatasetExtractionTest {
 
         @Test
         fun extractBooleansSuppliedByHarvestToFDK() {
-            val turtle = """
-            @prefix dct:   <http://purl.org/dc/terms/> .
-            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
-            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
-            @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
-            @prefix fdk:   <https://raw.githubusercontent.com/Informasjonsforvaltning/fdk-reasoning-service/main/src/main/resources/ontology/fdk.owl#> .
+            val turtle =
+                """
+                @prefix dct:   <http://purl.org/dc/terms/> .
+                @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+                @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+                @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+                @prefix fdk:   <https://raw.githubusercontent.com/Informasjonsforvaltning/fdk-reasoning-service/main/src/main/resources/ontology/fdk.owl#> .
 
-            <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
-                a                  dcat:CatalogRecord ;
-                dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
-                foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
+                <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+                    a                  dcat:CatalogRecord ;
+                    dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
+                    foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
 
-            <https://testdirektoratet.no/model/dataset/0>
-                a                               dcat:Dataset ;
-                fdk:isOpenData                  'true'^^xsd:boolean ;
-                fdk:isAuthoritative             'true'^^xsd:boolean ;
-                fdk:isRelatedToTransportportal  'true'^^xsd:boolean .
-        """.trimIndent()
+                <https://testdirektoratet.no/model/dataset/0>
+                    a                               dcat:Dataset ;
+                    fdk:isOpenData                  'true'^^xsd:boolean ;
+                    fdk:isAuthoritative             'true'^^xsd:boolean ;
+                    fdk:isRelatedToTransportportal  'true'^^xsd:boolean .
+                """.trimIndent()
 
-            val expected = Dataset().also { dataset ->
-                dataset.id = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
-                dataset.uri = "https://testdirektoratet.no/model/dataset/0"
-                dataset.isRelatedToTransportportal = true
-                dataset.isAuthoritative = true
-                dataset.isOpenData = true
-                dataset.type = ResourceType.datasets
-            }
+            val expected =
+                Dataset().also { dataset ->
+                    dataset.id = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
+                    dataset.uri = "https://testdirektoratet.no/model/dataset/0"
+                    dataset.isRelatedToTransportportal = true
+                    dataset.isAuthoritative = true
+                    dataset.isOpenData = true
+                    dataset.type = ResourceType.datasets
+                }
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
@@ -160,30 +168,32 @@ class DatasetExtractionTest {
 
         @Test
         fun extractModifiedAndIssued() {
-            val turtle = """
-            @prefix dct:   <http://purl.org/dc/terms/> .
-            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
-            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
-            @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+            val turtle =
+                """
+                @prefix dct:   <http://purl.org/dc/terms/> .
+                @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+                @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+                @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 
-            <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
-                a                  dcat:CatalogRecord ;
-                dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
-                foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
+                <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+                    a                  dcat:CatalogRecord ;
+                    dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
+                    foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
 
-            <https://testdirektoratet.no/model/dataset/0>
-                a                  dcat:Dataset ;
-                dct:issued         "2018-01-11T10:50:10.111Z"^^xsd:dateTime ;
-                dct:modified       "2020-02-22T12:52:20.222Z"^^xsd:dateTime .
-        """.trimIndent()
+                <https://testdirektoratet.no/model/dataset/0>
+                    a                  dcat:Dataset ;
+                    dct:issued         "2018-01-11T10:50:10.111Z"^^xsd:dateTime ;
+                    dct:modified       "2020-02-22T12:52:20.222Z"^^xsd:dateTime .
+                """.trimIndent()
 
-            val expected = Dataset().also { dataset ->
-                dataset.id = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
-                dataset.uri = "https://testdirektoratet.no/model/dataset/0"
-                dataset.issued = "2018-01-11T10:50:10.111Z"
-                dataset.modified = "2020-02-22T12:52:20.222Z"
-                dataset.type = ResourceType.datasets
-            }
+            val expected =
+                Dataset().also { dataset ->
+                    dataset.id = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
+                    dataset.uri = "https://testdirektoratet.no/model/dataset/0"
+                    dataset.issued = "2018-01-11T10:50:10.111Z"
+                    dataset.modified = "2020-02-22T12:52:20.222Z"
+                    dataset.type = ResourceType.datasets
+                }
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
@@ -194,22 +204,23 @@ class DatasetExtractionTest {
 
         @Test
         fun extractDctAndAdmsIdentifiers() {
-            val turtle = """
-            @prefix dct:   <http://purl.org/dc/terms/> .
-            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
-            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
-            @prefix adms:  <http://www.w3.org/ns/adms#> .
+            val turtle =
+                """
+                @prefix dct:   <http://purl.org/dc/terms/> .
+                @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+                @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+                @prefix adms:  <http://www.w3.org/ns/adms#> .
 
-            <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
-                a                  dcat:CatalogRecord ;
-                dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
-                foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
+                <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+                    a                  dcat:CatalogRecord ;
+                    dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
+                    foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
 
-            <https://testdirektoratet.no/model/dataset/0>
-                a                  dcat:Dataset ;
-                dct:identifier     <https://dct-uri.no> , "dct-string" ;
-                adms:identifier    <https://adms-uri.no> , "adms-string" .
-        """.trimIndent()
+                <https://testdirektoratet.no/model/dataset/0>
+                    a                  dcat:Dataset ;
+                    dct:identifier     <https://dct-uri.no> , "dct-string" ;
+                    adms:identifier    <https://adms-uri.no> , "adms-string" .
+                """.trimIndent()
 
             val expectedDCT = listOf("dct-string", "https://dct-uri.no")
             val expectedADMS = listOf("adms-string", "https://adms-uri.no")
@@ -224,21 +235,22 @@ class DatasetExtractionTest {
 
         @Test
         fun extractPagesAndLandingPages() {
-            val turtle = """
-            @prefix dct:   <http://purl.org/dc/terms/> .
-            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
-            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+            val turtle =
+                """
+                @prefix dct:   <http://purl.org/dc/terms/> .
+                @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+                @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
 
-            <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
-                a                  dcat:CatalogRecord ;
-                dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
-                foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
+                <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+                    a                  dcat:CatalogRecord ;
+                    dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
+                    foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
 
-            <https://testdirektoratet.no/model/dataset/0>
-                a                  dcat:Dataset ;
-                foaf:page          <https://page0.no> , <https://page1.no> ;
-                dcat:landingPage   <https://landing0.no> , <https://landing1.no> .
-        """.trimIndent()
+                <https://testdirektoratet.no/model/dataset/0>
+                    a                  dcat:Dataset ;
+                    foaf:page          <https://page0.no> , <https://page1.no> ;
+                    dcat:landingPage   <https://landing0.no> , <https://landing1.no> .
+                """.trimIndent()
 
             val expectedPage = listOf("https://page0.no", "https://page1.no")
             val expectedLandingPage = listOf("https://landing0.no", "https://landing1.no")
@@ -253,26 +265,28 @@ class DatasetExtractionTest {
 
         @Test
         fun extractKeywords() {
-            val turtle = """
-            @prefix dct:   <http://purl.org/dc/terms/> .
-            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
-            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+            val turtle =
+                """
+                @prefix dct:   <http://purl.org/dc/terms/> .
+                @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+                @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
 
-            <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
-                a                  dcat:CatalogRecord ;
-                dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
-                foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
+                <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+                    a                  dcat:CatalogRecord ;
+                    dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
+                    foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
 
-            <https://testdirektoratet.no/model/dataset/0>
-                a                  dcat:Dataset ;
-                dcat:keyword       "keyword0"@en , "keyword1"@en , "keyword2"@nn .
-        """.trimIndent()
+                <https://testdirektoratet.no/model/dataset/0>
+                    a                  dcat:Dataset ;
+                    dcat:keyword       "keyword0"@en , "keyword1"@en , "keyword2"@nn .
+                """.trimIndent()
 
-            val expectedKeywords = listOf(
-                LocalizedStrings().also { it.en = "keyword0" },
-                LocalizedStrings().also { it.en = "keyword1" },
-                LocalizedStrings().also { it.nn = "keyword2" }
-            )
+            val expectedKeywords =
+                listOf(
+                    LocalizedStrings().also { it.en = "keyword0" },
+                    LocalizedStrings().also { it.en = "keyword1" },
+                    LocalizedStrings().also { it.nn = "keyword2" },
+                )
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
@@ -284,71 +298,85 @@ class DatasetExtractionTest {
 
         @Test
         fun extractThemes() {
-            val turtle = """
-            @prefix dct:   <http://purl.org/dc/terms/> .
-            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
-            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
-            @prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
+            val turtle =
+                """
+                @prefix dct:   <http://purl.org/dc/terms/> .
+                @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+                @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+                @prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
 
-            <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
-                a                  dcat:CatalogRecord ;
-                dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
-                foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
+                <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+                    a                  dcat:CatalogRecord ;
+                    dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
+                    foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
 
-            <https://testdirektoratet.no/model/dataset/0>
-                a                  dcat:Dataset ;
-                dcat:theme         <http://publications.europa.eu/resource/authority/data-theme/TECH> ,
-                                   <http://eurovoc.europa.eu/1338> , <https://psi.norge.no/los/tema/naring> .
+                <https://testdirektoratet.no/model/dataset/0>
+                    a                  dcat:Dataset ;
+                    dcat:theme         <http://publications.europa.eu/resource/authority/data-theme/TECH> ,
+                                       <http://eurovoc.europa.eu/1338> , <https://psi.norge.no/los/tema/naring> .
 
-            <http://publications.europa.eu/resource/authority/data-theme/TECH>
-                skos:prefLabel	"Vitskap og teknologi"@nn ;
-                skos:prefLabel	"Science and technology"@en ;
-                skos:prefLabel	"Vitenskap og teknologi"@nb ;
-                skos:prefLabel	"Vitenskap og teknologi"@no .
+                <http://publications.europa.eu/resource/authority/data-theme/TECH>
+                    skos:prefLabel	"Vitskap og teknologi"@nn ;
+                    skos:prefLabel	"Science and technology"@en ;
+                    skos:prefLabel	"Vitenskap og teknologi"@nb ;
+                    skos:prefLabel	"Vitenskap og teknologi"@no .
 
-            <http://eurovoc.europa.eu/1338>
-                skos:prefLabel  "India"@en ;
-                <https://fellesdatakatalog.digdir.no/ontology/internal/themePath> "8367/1338" .
+                <http://eurovoc.europa.eu/1338>
+                    skos:prefLabel  "India"@en ;
+                    <https://fellesdatakatalog.digdir.no/ontology/internal/themePath> "8367/1338" .
 
-            <https://psi.norge.no/los/tema/naring>
-                skos:prefLabel     "Business"@en , "Næring"@nb , "Næring"@nn ;
-                <https://fellesdatakatalog.digdir.no/ontology/internal/themePath> "naring" .
-        """.trimIndent()
+                <https://psi.norge.no/los/tema/naring>
+                    skos:prefLabel     "Business"@en , "Næring"@nb , "Næring"@nn ;
+                    <https://fellesdatakatalog.digdir.no/ontology/internal/themePath> "naring" .
+                """.trimIndent()
 
-            val expectedUris = listOf(
-                "http://eurovoc.europa.eu/1338",
-                "http://publications.europa.eu/resource/authority/data-theme/TECH",
-                "https://psi.norge.no/los/tema/naring"
-            )
-            val expectedDataTheme = listOf(EuDataTheme().also { theme ->
-                theme.uri = "http://publications.europa.eu/resource/authority/data-theme/TECH"
-                theme.code = "TECH"
-                theme.title = LocalizedStrings().also { title ->
-                    title.no = "Vitenskap og teknologi"
-                    title.nb = "Vitenskap og teknologi"
-                    title.nn = "Vitskap og teknologi"
-                    title.en = "Science and technology"
-                }
-            })
-            val expectedLos = listOf(LosNode().also { theme ->
-                theme.uri = "https://psi.norge.no/los/tema/naring"
-                theme.code = "naring"
-                theme.losPaths = listOf("naring")
-                theme.isTema = true
-                theme.name = LocalizedStrings().also { name ->
-                    name.nb = "Næring"
-                    name.nn = "Næring"
-                    name.en = "Business"
-                }
-            })
-            val expectedEurovoc = listOf(Eurovoc().also { theme ->
-                theme.uri = "http://eurovoc.europa.eu/1338"
-                theme.code = "1338"
-                theme.eurovocPaths = listOf("8367/1338")
-                theme.label = LocalizedStrings().also { label ->
-                    label.en = "India"
-                }
-            })
+            val expectedUris =
+                listOf(
+                    "http://eurovoc.europa.eu/1338",
+                    "http://publications.europa.eu/resource/authority/data-theme/TECH",
+                    "https://psi.norge.no/los/tema/naring",
+                )
+            val expectedDataTheme =
+                listOf(
+                    EuDataTheme().also { theme ->
+                        theme.uri = "http://publications.europa.eu/resource/authority/data-theme/TECH"
+                        theme.code = "TECH"
+                        theme.title =
+                            LocalizedStrings().also { title ->
+                                title.no = "Vitenskap og teknologi"
+                                title.nb = "Vitenskap og teknologi"
+                                title.nn = "Vitskap og teknologi"
+                                title.en = "Science and technology"
+                            }
+                    },
+                )
+            val expectedLos =
+                listOf(
+                    LosNode().also { theme ->
+                        theme.uri = "https://psi.norge.no/los/tema/naring"
+                        theme.code = "naring"
+                        theme.losPaths = listOf("naring")
+                        theme.isTema = true
+                        theme.name =
+                            LocalizedStrings().also { name ->
+                                name.nb = "Næring"
+                                name.nn = "Næring"
+                                name.en = "Business"
+                            }
+                    },
+                )
+            val expectedEurovoc =
+                listOf(
+                    Eurovoc().also { theme ->
+                        theme.uri = "http://eurovoc.europa.eu/1338"
+                        theme.code = "1338"
+                        theme.eurovocPaths = listOf("8367/1338")
+                        theme.label =
+                            LocalizedStrings().also { label ->
+                                label.en = "India"
+                            }
+                    },
+                )
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
@@ -362,84 +390,95 @@ class DatasetExtractionTest {
 
         @Test
         fun extractTypeFrequencyProvenanceAndSpatial() {
-            val turtle = """
-            @prefix dct:   <http://purl.org/dc/terms/> .
-            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
-            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
-            @prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
-            @prefix at:    <http://publications.europa.eu/ontology/authority/> .
-            @prefix dc:   <http://purl.org/dc/elements/1.1/> .
+            val turtle =
+                """
+                @prefix dct:   <http://purl.org/dc/terms/> .
+                @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+                @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+                @prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
+                @prefix at:    <http://publications.europa.eu/ontology/authority/> .
+                @prefix dc:   <http://purl.org/dc/elements/1.1/> .
 
-            <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
-                a                  dcat:CatalogRecord ;
-                dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
-                foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
+                <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+                    a                  dcat:CatalogRecord ;
+                    dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
+                    foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
 
-            <https://testdirektoratet.no/model/dataset/0>
-                a                      dcat:Dataset ;
-                dct:spatial            <https://data.geonorge.no/administrativeEnheter/fylke/id/34> ;
-                dct:provenance         <http://data.brreg.no/datakatalog/provinens/nasjonal> ;
-                dct:accrualPeriodicity <http://publications.europa.eu/resource/authority/frequency/ANNUAL> ;
-                dct:type               <http://publications.europa.eu/resource/authority/dataset-type/TEST_DATA> .
+                <https://testdirektoratet.no/model/dataset/0>
+                    a                      dcat:Dataset ;
+                    dct:spatial            <https://data.geonorge.no/administrativeEnheter/fylke/id/34> ;
+                    dct:provenance         <http://data.brreg.no/datakatalog/provinens/nasjonal> ;
+                    dct:accrualPeriodicity <http://publications.europa.eu/resource/authority/frequency/ANNUAL> ;
+                    dct:type               <http://publications.europa.eu/resource/authority/dataset-type/TEST_DATA> .
 
-            <https://data.geonorge.no/administrativeEnheter/fylke/id/34>
-                a               dct:Location;
-                dct:identifier  "34";
-                dct:title       "Innlandet" .
+                <https://data.geonorge.no/administrativeEnheter/fylke/id/34>
+                    a               dct:Location;
+                    dct:identifier  "34";
+                    dct:title       "Innlandet" .
 
-            <http://data.brreg.no/datakatalog/provinens/nasjonal>
-                a                  skos:Concept;
-                at:authority-code      "NASJONAL";
-                skos:prefLabel     "Autoritativ kilde"@nn , "Autoritativ kilde"@nb , "Authoritativ source"@en .
+                <http://data.brreg.no/datakatalog/provinens/nasjonal>
+                    a                  skos:Concept;
+                    at:authority-code      "NASJONAL";
+                    skos:prefLabel     "Autoritativ kilde"@nn , "Autoritativ kilde"@nb , "Authoritativ source"@en .
 
-            <http://publications.europa.eu/resource/authority/frequency/ANNUAL>
-                dc:identifier  "ANNUAL";
-                skos:prefLabel  "annual"@en , "årleg"@nn , "årlig"@nb , "årlig"@no .
+                <http://publications.europa.eu/resource/authority/frequency/ANNUAL>
+                    dc:identifier  "ANNUAL";
+                    skos:prefLabel  "annual"@en , "årleg"@nn , "årlig"@nb , "årlig"@no .
 
-            <http://publications.europa.eu/resource/authority/dataset-type/TEST_DATA>
-                dc:identifier   "TEST_DATA" ;
-                skos:prefLabel  "Testdata"@nn , "Test data"@en , "Testdata"@no , "Testdata"@nb .
-        """.trimIndent()
+                <http://publications.europa.eu/resource/authority/dataset-type/TEST_DATA>
+                    dc:identifier   "TEST_DATA" ;
+                    skos:prefLabel  "Testdata"@nn , "Test data"@en , "Testdata"@no , "Testdata"@nb .
+                """.trimIndent()
 
-            val expectedSpatial = listOf(ReferenceDataCode().apply {
-                uri = "https://data.geonorge.no/administrativeEnheter/fylke/id/34"
-                code = "34"
-                prefLabel = LocalizedStrings().apply {
-                    no = "Innlandet"
+            val expectedSpatial =
+                listOf(
+                    ReferenceDataCode().apply {
+                        uri = "https://data.geonorge.no/administrativeEnheter/fylke/id/34"
+                        code = "34"
+                        prefLabel =
+                            LocalizedStrings().apply {
+                                no = "Innlandet"
+                            }
+                    },
+                )
+
+            val expectedProvenance =
+                ReferenceDataCode().apply {
+                    uri = "http://data.brreg.no/datakatalog/provinens/nasjonal"
+                    code = "NASJONAL"
+                    prefLabel =
+                        LocalizedStrings().apply {
+                            nb = "Autoritativ kilde"
+                            nn = "Autoritativ kilde"
+                            en = "Authoritativ source"
+                        }
                 }
-            })
 
-            val expectedProvenance = ReferenceDataCode().apply {
-                uri = "http://data.brreg.no/datakatalog/provinens/nasjonal"
-                code = "NASJONAL"
-                prefLabel = LocalizedStrings().apply {
-                    nb = "Autoritativ kilde"
-                    nn = "Autoritativ kilde"
-                    en = "Authoritativ source"
+            val expectedFrequency =
+                ReferenceDataCode().apply {
+                    uri = "http://publications.europa.eu/resource/authority/frequency/ANNUAL"
+                    code = "ANNUAL"
+                    prefLabel =
+                        LocalizedStrings().apply {
+                            no = "årlig"
+                            nb = "årlig"
+                            nn = "årleg"
+                            en = "annual"
+                        }
                 }
-            }
 
-            val expectedFrequency = ReferenceDataCode().apply {
-                uri = "http://publications.europa.eu/resource/authority/frequency/ANNUAL"
-                code = "ANNUAL"
-                prefLabel = LocalizedStrings().apply {
-                    no = "årlig"
-                    nb = "årlig"
-                    nn = "årleg"
-                    en = "annual"
+            val expectedType =
+                ReferenceDataCode().apply {
+                    uri = "http://publications.europa.eu/resource/authority/dataset-type/TEST_DATA"
+                    code = "TEST_DATA"
+                    prefLabel =
+                        LocalizedStrings().apply {
+                            no = "Testdata"
+                            nb = "Testdata"
+                            nn = "Testdata"
+                            en = "Test data"
+                        }
                 }
-            }
-
-            val expectedType = ReferenceDataCode().apply {
-                uri = "http://publications.europa.eu/resource/authority/dataset-type/TEST_DATA"
-                code = "TEST_DATA"
-                prefLabel = LocalizedStrings().apply {
-                    no = "Testdata"
-                    nb = "Testdata"
-                    nn = "Testdata"
-                    en = "Test data"
-                }
-            }
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
@@ -453,7 +492,8 @@ class DatasetExtractionTest {
 
         @Test
         fun extractsDatasetIgnoresSkolemizedURIs() {
-            val turtle = """
+            val turtle =
+                """
                 @prefix dcat:   <http://www.w3.org/ns/dcat#> .
                 @prefix dct:    <http://purl.org/dc/terms/> .
                 @prefix foaf:   <http://xmlns.com/foaf/0.1/> .
@@ -475,28 +515,31 @@ class DatasetExtractionTest {
                     a                  dcat:CatalogRecord ;
                     dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
                     foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
-    
+                
                 <https://testdirektoratet.no/model/dataset/0>
                     a                       dcat:Dataset;
                     dct:title               "Støy havn og cruise"@nb;
                     dcat:contactPoint       <https://data.norge.no/node/1702/.well-known/skolem/85cc8fc2-774d-3e54-8f93-deede7d8e9a9> ;
                     dcat:distribution       <https://data.norge.no/node/1702/.well-known/skolem/c4d02116-eee3-3e6f-80b5-c986f1cc6aba> .
-            """.trimIndent()
+                """.trimIndent()
 
-            val expectedDistribution = Distribution().apply {
-                description = LocalizedStrings().apply { nb = "Tilgjengelig i JSON-format" }
-                accessURL = listOf("https://open.stavanger.kommune.no/dataset/stoy-havn-og-cruise")
-                license = listOf(UriWithLabelAndType().apply { uri = "http://publications.europa.eu/resource/authority/licence/NLOD_2_0" })
-            }
+            val expectedDistribution =
+                Distribution().apply {
+                    description = LocalizedStrings().apply { nb = "Tilgjengelig i JSON-format" }
+                    accessURL = listOf("https://open.stavanger.kommune.no/dataset/stoy-havn-og-cruise")
+                    license =
+                        listOf(UriWithLabelAndType().apply { uri = "http://publications.europa.eu/resource/authority/licence/NLOD_2_0" })
+                }
 
-            val expected = Dataset().apply {
-                id = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
-                uri = "https://testdirektoratet.no/model/dataset/0"
-                title = LocalizedStrings().apply { nb = "Støy havn og cruise" }
-                distribution = listOf(expectedDistribution)
-                contactPoint = listOf(ContactPoint().apply { email = "opendata@stavanger.kommune.no" })
-                type = ResourceType.datasets
-            }
+            val expected =
+                Dataset().apply {
+                    id = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
+                    uri = "https://testdirektoratet.no/model/dataset/0"
+                    title = LocalizedStrings().apply { nb = "Støy havn og cruise" }
+                    distribution = listOf(expectedDistribution)
+                    contactPoint = listOf(ContactPoint().apply { email = "opendata@stavanger.kommune.no" })
+                    type = ResourceType.datasets
+                }
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
@@ -505,7 +548,6 @@ class DatasetExtractionTest {
             assertEquals(expected, result)
         }
     }
-
 
     @Nested
     internal inner class V2 {
@@ -515,38 +557,40 @@ class DatasetExtractionTest {
 
         @Test
         fun extractDatasetSeries() {
-            val turtle = """
-            @prefix dct:   <http://purl.org/dc/terms/> .
-            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
-            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
-            @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+            val turtle =
+                """
+                @prefix dct:   <http://purl.org/dc/terms/> .
+                @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+                @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+                @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 
-            <http://test.fellesdatakatalog.digdir.no/datasets/b1c680cb-62d7-34d5-bb4c-d39b5db033be>
-                a                  dcat:CatalogRecord ;
-                dct:identifier     "b1c680cb-62d7-34d5-bb4c-d39b5db033be" ;
-                foaf:primaryTopic  <https://testdirektoratet.no/model/series/0> .
+                <http://test.fellesdatakatalog.digdir.no/datasets/b1c680cb-62d7-34d5-bb4c-d39b5db033be>
+                    a                  dcat:CatalogRecord ;
+                    dct:identifier     "b1c680cb-62d7-34d5-bb4c-d39b5db033be" ;
+                    foaf:primaryTopic  <https://testdirektoratet.no/model/series/0> .
 
-            <https://testdirektoratet.no/model/dataset/0>
-                a               dcat:Dataset .
+                <https://testdirektoratet.no/model/dataset/0>
+                    a               dcat:Dataset .
 
-            <https://testdirektoratet.no/model/dataset/1>
-                a               dcat:Dataset ;
-                dcat:prev       <https://testdirektoratet.no/model/dataset/0> .
+                <https://testdirektoratet.no/model/dataset/1>
+                    a               dcat:Dataset ;
+                    dcat:prev       <https://testdirektoratet.no/model/dataset/0> .
 
-            <https://testdirektoratet.no/model/series/0>
-                a               dcat:Dataset , dcat:DatasetSeries ;
-                dcat:last       <https://testdirektoratet.no/model/dataset/1> .
-        """.trimIndent()
+                <https://testdirektoratet.no/model/series/0>
+                    a               dcat:Dataset , dcat:DatasetSeries ;
+                    dcat:last       <https://testdirektoratet.no/model/dataset/1> .
+                """.trimIndent()
 
-            val expected = Dataset().also { dataset ->
-                dataset.id = "b1c680cb-62d7-34d5-bb4c-d39b5db033be"
-                dataset.uri = "https://testdirektoratet.no/model/series/0"
-                dataset.last = "https://testdirektoratet.no/model/dataset/1"
-                dataset.datasetsInSeries =
-                    listOf("https://testdirektoratet.no/model/dataset/1", "https://testdirektoratet.no/model/dataset/0")
-                dataset.type = ResourceType.datasets
-                dataset.specializedType = DatasetType.datasetSeries
-            }
+            val expected =
+                Dataset().also { dataset ->
+                    dataset.id = "b1c680cb-62d7-34d5-bb4c-d39b5db033be"
+                    dataset.uri = "https://testdirektoratet.no/model/series/0"
+                    dataset.last = "https://testdirektoratet.no/model/dataset/1"
+                    dataset.datasetsInSeries =
+                        listOf("https://testdirektoratet.no/model/dataset/1", "https://testdirektoratet.no/model/dataset/0")
+                    dataset.type = ResourceType.datasets
+                    dataset.specializedType = DatasetType.datasetSeries
+                }
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
@@ -555,5 +599,4 @@ class DatasetExtractionTest {
             assertEquals(expected, result)
         }
     }
-
 }

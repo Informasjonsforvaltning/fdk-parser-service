@@ -1,36 +1,36 @@
 package no.digdir.fdk.parserservice.extract
 
 import no.digdir.fdk.model.ContactPoint
-import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
-import org.apache.jena.sparql.vocabulary.FOAF
 import org.apache.jena.vocabulary.DCAT
-import org.apache.jena.vocabulary.VCARD
 import org.apache.jena.vocabulary.VCARD4
 
-private fun ContactPoint.hasContent() = when {
-    uri != null -> true
-    fullname != null -> true
-    email != null -> true
-    hasURL != null -> true
-    hasTelephone != null -> true
-    organizationName != null -> true
-    organizationUnit != null -> true
-    else -> false
-}
+private fun ContactPoint.hasContent() =
+    when {
+        uri != null -> true
+        fullname != null -> true
+        email != null -> true
+        hasURL != null -> true
+        hasTelephone != null -> true
+        organizationName != null -> true
+        organizationUnit != null -> true
+        else -> false
+    }
 
 private fun Resource.extractVcardTelephone(): String? {
-    val value = singleResource(VCARD4.hasTelephone)
-        ?.extractStringValue(VCARD4.hasValue)
-        ?: extractStringValue(VCARD4.hasTelephone)
+    val value =
+        singleResource(VCARD4.hasTelephone)
+            ?.extractStringValue(VCARD4.hasValue)
+            ?: extractStringValue(VCARD4.hasTelephone)
 
     return value?.removePrefix("tel:")
 }
 
 private fun Resource.extractVcardEmail(): String? {
-    val value = singleResource(VCARD4.hasEmail)
-        ?.extractStringValue(VCARD4.hasValue)
-        ?: extractStringValue(VCARD4.hasEmail)
+    val value =
+        singleResource(VCARD4.hasEmail)
+            ?.extractStringValue(VCARD4.hasValue)
+            ?: extractStringValue(VCARD4.hasEmail)
 
     return value?.removePrefix("mailto:")
 }
@@ -38,7 +38,8 @@ private fun Resource.extractVcardEmail(): String? {
 private fun Resource.buildContactPoint(): ContactPoint? {
     val builder = ContactPoint.newBuilder()
 
-    builder.setUri(extractURIStringValue())
+    builder
+        .setUri(extractURIStringValue())
         .setFormattedName(extractLocalizedStrings(VCARD4.fn))
         .setFullname(extractStringValue(VCARD4.fn))
         .setEmail(extractVcardEmail())

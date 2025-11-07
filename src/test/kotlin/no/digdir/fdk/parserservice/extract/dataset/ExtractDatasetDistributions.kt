@@ -23,12 +23,12 @@ import kotlin.test.assertTrue
 
 @Tag("unit")
 class ExtractDatasetDistributions {
-
     @Nested
     internal inner class V1 {
         @Test
         fun extractDistributionWithAccessUrlDownloadUrlAndUri() {
-            val turtle = """
+            val turtle =
+                """
                 @prefix dct: <http://purl.org/dc/terms/> .
                 @prefix dcat:  <http://www.w3.org/ns/dcat#> .
                 @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
@@ -41,26 +41,28 @@ class ExtractDatasetDistributions {
                     a                dcat:Distribution ;
                     dcat:accessURL   <https://testdirektoratet.no/access> ;
                     dcat:downloadURL <https://testdirektoratet.no/download> .
-            """.trimIndent()
+                """.trimIndent()
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
             val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
 
-            val expected = listOf(
-                Distribution().apply {
-                    uri = "https://testdirektoratet.no/model/distribution"
-                    accessURL = listOf("https://testdirektoratet.no/access")
-                    downloadURL = listOf("https://testdirektoratet.no/download")
-                }
-            )
+            val expected =
+                listOf(
+                    Distribution().apply {
+                        uri = "https://testdirektoratet.no/model/distribution"
+                        accessURL = listOf("https://testdirektoratet.no/access")
+                        downloadURL = listOf("https://testdirektoratet.no/download")
+                    },
+                )
 
             assertEquals(expected, subject.extractListOfDistributionsV1(DCAT.distribution))
         }
 
         @Test
         fun extractDistributionWithTitleAndDescription() {
-            val turtle = """
+            val turtle =
+                """
                 @prefix dct: <http://purl.org/dc/terms/> .
                 @prefix dcat:  <http://www.w3.org/ns/dcat#> .
                 @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
@@ -71,25 +73,27 @@ class ExtractDatasetDistributions {
                                            dct:title        "Distribution"@en ;
                                            dct:description  "Distribution description"@en
                                         ] .
-            """.trimIndent()
+                """.trimIndent()
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
             val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
 
-            val expected = listOf(
-                Distribution().apply {
-                    title = LocalizedStrings().apply { en = "Distribution" }
-                    description = LocalizedStrings().apply { en = "Distribution description" }
-                }
-            )
+            val expected =
+                listOf(
+                    Distribution().apply {
+                        title = LocalizedStrings().apply { en = "Distribution" }
+                        description = LocalizedStrings().apply { en = "Distribution description" }
+                    },
+                )
 
             assertEquals(expected, subject.extractListOfDistributionsV1(DCAT.distribution))
         }
 
         @Test
         fun extractDistributionWithConformsToLicenseAndPage() {
-            val turtle = """
+            val turtle =
+                """
                 @prefix dct: <http://purl.org/dc/terms/> .
                 @prefix dcat:  <http://www.w3.org/ns/dcat#> .
                 @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
@@ -117,47 +121,53 @@ class ExtractDatasetDistributions {
                     a   skos:Concept ;
                     dct:source  <http://source.com> ;
                     skos:prefLabel   "Two"@en .
-            """.trimIndent()
+                """.trimIndent()
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
             val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
 
-            val expectedConformsTo = UriWithLabel().apply {
-                uri = "https://conforms.to"
-                prefLabel = LocalizedStrings().apply { en = "Conforms to" }
-            }
-
-            val expectedPage = UriWithLabelAndType().apply {
-                extraType = FOAF.Document.uri
-                prefLabel = LocalizedStrings().apply { en = "Document label" }
-            }
-
-            val licenseOne = UriWithLabelAndType().apply {
-                uri = "https://license-one.com"
-                extraType = DCTerms.LicenseDocument.uri
-                prefLabel = LocalizedStrings().apply { en = "One" }
-            }
-
-            val licenseTwo = UriWithLabelAndType().apply {
-                uri = "http://source.com"
-                prefLabel = LocalizedStrings().apply { en = "Two" }
-            }
-
-            val expected = listOf(
-                Distribution().apply {
-                    conformsTo = listOf(expectedConformsTo)
-                    page = listOf(expectedPage)
-                    license = listOf(licenseTwo, licenseOne)
+            val expectedConformsTo =
+                UriWithLabel().apply {
+                    uri = "https://conforms.to"
+                    prefLabel = LocalizedStrings().apply { en = "Conforms to" }
                 }
-            )
+
+            val expectedPage =
+                UriWithLabelAndType().apply {
+                    extraType = FOAF.Document.uri
+                    prefLabel = LocalizedStrings().apply { en = "Document label" }
+                }
+
+            val licenseOne =
+                UriWithLabelAndType().apply {
+                    uri = "https://license-one.com"
+                    extraType = DCTerms.LicenseDocument.uri
+                    prefLabel = LocalizedStrings().apply { en = "One" }
+                }
+
+            val licenseTwo =
+                UriWithLabelAndType().apply {
+                    uri = "http://source.com"
+                    prefLabel = LocalizedStrings().apply { en = "Two" }
+                }
+
+            val expected =
+                listOf(
+                    Distribution().apply {
+                        conformsTo = listOf(expectedConformsTo)
+                        page = listOf(expectedPage)
+                        license = listOf(licenseTwo, licenseOne)
+                    },
+                )
 
             assertEquals(expected, subject.extractListOfDistributionsV1(DCAT.distribution))
         }
 
         @Test
         fun extractDistributionFormats() {
-            val turtle = """
+            val turtle =
+                """
                 @prefix dc:   <http://purl.org/dc/elements/1.1/> .
                 @prefix dct: <http://purl.org/dc/terms/> .
                 @prefix dcat:  <http://www.w3.org/ns/dcat#> .
@@ -179,44 +189,49 @@ class ExtractDatasetDistributions {
                 <http://publications.europa.eu/resource/authority/file-type/CSV>
                     a               <http://publications.europa.eu/ontology/euvoc#FileType> ;
                     dc:identifier   "CSV" .
-            """.trimIndent()
+                """.trimIndent()
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
             val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
 
-            val expected = listOf(
-                Format().apply {
-                    name = "csv"
-                    code = "csv"
-                    type = FormatType.UNKNOWN
-                },
-                Format().apply {
-                    uri = "https://www.iana.org/assignments/media-types/text/csv"
-                    name = "csv"
-                    code = "text/csv"
-                    type = FormatType.MEDIA_TYPE
-                },
-                Format().apply {
-                    uri = "http://publications.europa.eu/resource/authority/file-type/CSV"
-                    name = "CSV"
-                    code = "CSV"
-                    type = FormatType.FILE_TYPE
-                },
-            )
+            val expected =
+                listOf(
+                    Format().apply {
+                        name = "csv"
+                        code = "csv"
+                        type = FormatType.UNKNOWN
+                    },
+                    Format().apply {
+                        uri = "https://www.iana.org/assignments/media-types/text/csv"
+                        name = "csv"
+                        code = "text/csv"
+                        type = FormatType.MEDIA_TYPE
+                    },
+                    Format().apply {
+                        uri = "http://publications.europa.eu/resource/authority/file-type/CSV"
+                        name = "CSV"
+                        code = "CSV"
+                        type = FormatType.FILE_TYPE
+                    },
+                )
 
             assertTrue(
-                subject.extractListOfDistributionsV1(DCAT.distribution)!!.first().fdkFormat.containsAll(expected)
+                subject
+                    .extractListOfDistributionsV1(DCAT.distribution)!!
+                    .first()
+                    .fdkFormat
+                    .containsAll(expected),
             )
         }
     }
 
     @Nested
     internal inner class V2 {
-
         @Test
         fun extractDistributionFormats() {
-            val turtle = """
+            val turtle =
+                """
                 @prefix dc:   <http://purl.org/dc/elements/1.1/> .
                 @prefix dct: <http://purl.org/dc/terms/> .
                 @prefix dcat:  <http://www.w3.org/ns/dcat#> .
@@ -240,44 +255,47 @@ class ExtractDatasetDistributions {
                 <http://publications.europa.eu/resource/authority/file-type/CSV>
                     a               <http://publications.europa.eu/ontology/euvoc#FileType> ;
                     dc:identifier   "CSV" .
-            """.trimIndent()
+                """.trimIndent()
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
             val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
 
-            val expectedCompress = Format().apply {
-                name = "zip"
-                code = "zip"
-                type = FormatType.UNKNOWN
-            }
-
-            val expectedPackage = Format().apply {
-                uri = "https://www.iana.org/assignments/media-types/text/csv"
-                name = "csv"
-                code = "text/csv"
-                type = FormatType.MEDIA_TYPE
-            }
-
-            val expectedFormats = listOf(
+            val expectedCompress =
                 Format().apply {
-                    name = "csv"
-                    code = "csv"
+                    name = "zip"
+                    code = "zip"
                     type = FormatType.UNKNOWN
-                },
+                }
+
+            val expectedPackage =
                 Format().apply {
                     uri = "https://www.iana.org/assignments/media-types/text/csv"
                     name = "csv"
                     code = "text/csv"
                     type = FormatType.MEDIA_TYPE
-                },
-                Format().apply {
-                    uri = "http://publications.europa.eu/resource/authority/file-type/CSV"
-                    name = "CSV"
-                    code = "CSV"
-                    type = FormatType.FILE_TYPE
-                },
-            )
+                }
+
+            val expectedFormats =
+                listOf(
+                    Format().apply {
+                        name = "csv"
+                        code = "csv"
+                        type = FormatType.UNKNOWN
+                    },
+                    Format().apply {
+                        uri = "https://www.iana.org/assignments/media-types/text/csv"
+                        name = "csv"
+                        code = "text/csv"
+                        type = FormatType.MEDIA_TYPE
+                    },
+                    Format().apply {
+                        uri = "http://publications.europa.eu/resource/authority/file-type/CSV"
+                        name = "CSV"
+                        code = "CSV"
+                        type = FormatType.FILE_TYPE
+                    },
+                )
 
             val result = subject.extractListOfDistributionsV2(DCAT.distribution)!!.first()
 
@@ -288,7 +306,8 @@ class ExtractDatasetDistributions {
 
         @Test
         fun extractDistributionAccessServices() {
-            val turtle = """
+            val turtle =
+                """
                 @prefix dc:   <http://purl.org/dc/elements/1.1/> .
                 @prefix dct: <http://purl.org/dc/terms/> .
                 @prefix dcat:  <http://www.w3.org/ns/dcat#> .
@@ -318,32 +337,39 @@ class ExtractDatasetDistributions {
 
                 <https://end1.com>
                     skos:prefLabel   "label 1"@en .
-            """.trimIndent()
+                """.trimIndent()
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
             val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
 
-            val expected = listOf(
-                AccessService().apply {
-                    uri = "https://testdirektoratet.no/accessservice/0"
-                    title = LocalizedStrings().also { label -> label.en = "title 0" }
-                    description = LocalizedStrings().also { label -> label.en = "description 0" }
-                    endpointDescription = listOf(UriWithLabelAndType().apply {
-                        uri = "http://end0.com"
-                        prefLabel = LocalizedStrings().also { label -> label.en = "label 0" }
-                    })
-                },
-                AccessService().apply {
-                    uri = "https://testdirektoratet.no/accessservice/1"
-                    title = LocalizedStrings().also { label -> label.en = "title 1" }
-                    description = LocalizedStrings().also { label -> label.en = "description 1" }
-                    endpointDescription = listOf(UriWithLabelAndType().apply {
-                        uri = "https://end1.com"
-                        prefLabel = LocalizedStrings().also { label -> label.en = "label 1" }
-                    })
-                }
-            )
+            val expected =
+                listOf(
+                    AccessService().apply {
+                        uri = "https://testdirektoratet.no/accessservice/0"
+                        title = LocalizedStrings().also { label -> label.en = "title 0" }
+                        description = LocalizedStrings().also { label -> label.en = "description 0" }
+                        endpointDescription =
+                            listOf(
+                                UriWithLabelAndType().apply {
+                                    uri = "http://end0.com"
+                                    prefLabel = LocalizedStrings().also { label -> label.en = "label 0" }
+                                },
+                            )
+                    },
+                    AccessService().apply {
+                        uri = "https://testdirektoratet.no/accessservice/1"
+                        title = LocalizedStrings().also { label -> label.en = "title 1" }
+                        description = LocalizedStrings().also { label -> label.en = "description 1" }
+                        endpointDescription =
+                            listOf(
+                                UriWithLabelAndType().apply {
+                                    uri = "https://end1.com"
+                                    prefLabel = LocalizedStrings().also { label -> label.en = "label 1" }
+                                },
+                            )
+                    },
+                )
 
             val result = subject.extractListOfDistributionsV2(DCAT.distribution)!!.first()
 
@@ -353,10 +379,10 @@ class ExtractDatasetDistributions {
 
     @Nested
     internal inner class MobilityV3 {
-
         @Test
         fun extractMobilityDistribution() {
-            val turtle = """
+            val turtle =
+                """
                 @prefix dc:   <http://purl.org/dc/elements/1.1/> .
                 @prefix dct: <http://purl.org/dc/terms/> .
                 @prefix dcat:  <http://www.w3.org/ns/dcat#> .
@@ -387,48 +413,55 @@ class ExtractDatasetDistributions {
                 <https://testdirektoratet.no/rights>
                     dct:type        <https://w3id.org/mobilitydcat-ap/conditions-for-access-and-usage/free-of-charge> ;
                     dct:description "Rights description"@en .
-            """.trimIndent()
+                """.trimIndent()
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
             val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
 
-            val expected = listOf(
-                Distribution().apply {
-                    uri = "https://testdirektoratet.no/model/distribution"
-                    accessURL = listOf("https://testdirektoratet.no/access")
-                    title = LocalizedStrings().apply { en = "Distribution" }
-                    status = ReferenceDataCode().apply {
-                        uri = "http://publications.europa.eu/resource/authority/distribution-status/COMPLETED"
-                        code = "COMPLETED"
-                        prefLabel = LocalizedStrings().apply {
-                            en = "completed"
-                            nb = "ferdigstilt"
-                            no = "ferdigstilt"
-                            nn = "ferdigstilt"
-                        }
-                    }
-                    mobilityDataStandard = ReferenceDataCode().apply {
-                        uri = "https://w3id.org/mobilitydcat-ap/mobility-data-standard/other"
-                        code = "other"
-                        prefLabel = LocalizedStrings().apply { en = "Other" }
-                    }
-                    rights = RightsStatement().apply {
-                        type = ReferenceDataCode().apply {
-                            uri = "https://w3id.org/mobilitydcat-ap/conditions-for-access-and-usage/free-of-charge"
-                            code = "free-of-charge"
-                        }
-                        description = LocalizedStrings().apply { en = "Rights description" }
-                    }
-                }
-            )
+            val expected =
+                listOf(
+                    Distribution().apply {
+                        uri = "https://testdirektoratet.no/model/distribution"
+                        accessURL = listOf("https://testdirektoratet.no/access")
+                        title = LocalizedStrings().apply { en = "Distribution" }
+                        status =
+                            ReferenceDataCode().apply {
+                                uri = "http://publications.europa.eu/resource/authority/distribution-status/COMPLETED"
+                                code = "COMPLETED"
+                                prefLabel =
+                                    LocalizedStrings().apply {
+                                        en = "completed"
+                                        nb = "ferdigstilt"
+                                        no = "ferdigstilt"
+                                        nn = "ferdigstilt"
+                                    }
+                            }
+                        mobilityDataStandard =
+                            ReferenceDataCode().apply {
+                                uri = "https://w3id.org/mobilitydcat-ap/mobility-data-standard/other"
+                                code = "other"
+                                prefLabel = LocalizedStrings().apply { en = "Other" }
+                            }
+                        rights =
+                            RightsStatement().apply {
+                                type =
+                                    ReferenceDataCode().apply {
+                                        uri = "https://w3id.org/mobilitydcat-ap/conditions-for-access-and-usage/free-of-charge"
+                                        code = "free-of-charge"
+                                    }
+                                description = LocalizedStrings().apply { en = "Rights description" }
+                            }
+                    },
+                )
 
             assertEquals(expected, subject.extractListOfMobilityDistributions())
         }
 
         @Test
         fun extractMobilitySampleData() {
-            val turtle = """
+            val turtle =
+                """
                 @prefix dc:   <http://purl.org/dc/elements/1.1/> .
                 @prefix dct: <http://purl.org/dc/terms/> .
                 @prefix dcat:  <http://www.w3.org/ns/dcat#> .
@@ -459,41 +492,47 @@ class ExtractDatasetDistributions {
                 <https://testdirektoratet.no/rights>
                     dct:type        <https://w3id.org/mobilitydcat-ap/conditions-for-access-and-usage/free-of-charge> ;
                     dct:description "Rights description"@en .
-            """.trimIndent()
+                """.trimIndent()
 
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
             val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
 
-            val expected = listOf(
-                Distribution().apply {
-                    uri = "https://testdirektoratet.no/model/distribution"
-                    accessURL = listOf("https://testdirektoratet.no/sample")
-                    title = LocalizedStrings().apply { en = "Distribution" }
-                    status = ReferenceDataCode().apply {
-                        uri = "http://publications.europa.eu/resource/authority/distribution-status/COMPLETED"
-                        code = "COMPLETED"
-                        prefLabel = LocalizedStrings().apply {
-                            en = "completed"
-                            nb = "ferdigstilt"
-                            no = "ferdigstilt"
-                            nn = "ferdigstilt"
-                        }
-                    }
-                    mobilityDataStandard = ReferenceDataCode().apply {
-                        uri = "https://w3id.org/mobilitydcat-ap/mobility-data-standard/other"
-                        code = "other"
-                        prefLabel = LocalizedStrings().apply { en = "Other" }
-                    }
-                    rights = RightsStatement().apply {
-                        type = ReferenceDataCode().apply {
-                            uri = "https://w3id.org/mobilitydcat-ap/conditions-for-access-and-usage/free-of-charge"
-                            code = "free-of-charge"
-                        }
-                        description = LocalizedStrings().apply { en = "Rights description" }
-                    }
-                }
-            )
+            val expected =
+                listOf(
+                    Distribution().apply {
+                        uri = "https://testdirektoratet.no/model/distribution"
+                        accessURL = listOf("https://testdirektoratet.no/sample")
+                        title = LocalizedStrings().apply { en = "Distribution" }
+                        status =
+                            ReferenceDataCode().apply {
+                                uri = "http://publications.europa.eu/resource/authority/distribution-status/COMPLETED"
+                                code = "COMPLETED"
+                                prefLabel =
+                                    LocalizedStrings().apply {
+                                        en = "completed"
+                                        nb = "ferdigstilt"
+                                        no = "ferdigstilt"
+                                        nn = "ferdigstilt"
+                                    }
+                            }
+                        mobilityDataStandard =
+                            ReferenceDataCode().apply {
+                                uri = "https://w3id.org/mobilitydcat-ap/mobility-data-standard/other"
+                                code = "other"
+                                prefLabel = LocalizedStrings().apply { en = "Other" }
+                            }
+                        rights =
+                            RightsStatement().apply {
+                                type =
+                                    ReferenceDataCode().apply {
+                                        uri = "https://w3id.org/mobilitydcat-ap/conditions-for-access-and-usage/free-of-charge"
+                                        code = "free-of-charge"
+                                    }
+                                description = LocalizedStrings().apply { en = "Rights description" }
+                            }
+                    },
+                )
 
             assertEquals(expected, subject.extractListOfMobilitySampleData())
         }

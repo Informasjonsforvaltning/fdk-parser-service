@@ -11,7 +11,10 @@ import org.apache.jena.rdf.model.Resource
  * @param recordResource The jena resource of the fdkRecord
  * @param datasetResource The jena resource of the dataset
  */
-fun Dataset.Builder.addFdkData(recordResource: Resource, datasetResource: Resource) {
+fun Dataset.Builder.addFdkData(
+    recordResource: Resource,
+    datasetResource: Resource,
+) {
     setId(fdkIdFromRecord(recordResource))
     setHarvest(harvestMetaData(recordResource))
 

@@ -13,15 +13,15 @@ import kotlin.test.assertEquals
 
 @Tag("unit")
 class ExtractLocalizedStrings {
-
     @Test
     fun localizedStringsExtractHandlesMissingValues() {
-        val turtle = """
+        val turtle =
+            """
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
 
             <https://testdirektoratet.no/model/dataset/0>
                 a                         dcat:DataService .
-        """.trimIndent()
+            """.trimIndent()
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
@@ -32,14 +32,15 @@ class ExtractLocalizedStrings {
 
     @Test
     fun localizedStringsUsesNorwegianAsFallbackWhenMissingLanguageDecorator() {
-        val turtle = """
+        val turtle =
+            """
             @prefix dct:   <http://purl.org/dc/terms/> .
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
 
             <https://testdirektoratet.no/model/dataset/0>
                 a                         dcat:DataService ;
                 dct:title                 "title" .
-        """.trimIndent()
+            """.trimIndent()
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
@@ -49,5 +50,4 @@ class ExtractLocalizedStrings {
 
         assertEquals(expected, subject.extractLocalizedStrings(DCTerms.title))
     }
-
 }

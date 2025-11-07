@@ -15,11 +15,13 @@ import org.apache.jena.vocabulary.RDF
 import java.net.URI
 
 private fun Resource.buildQualityAnnotation(dimension: Resource): QualityAnnotation? {
-    val hasBodyBuilder = LocalizedStrings.newBuilder()
-        .setNo(null)
-        .setNb(null)
-        .setNn(null)
-        .setEn(null)
+    val hasBodyBuilder =
+        LocalizedStrings
+            .newBuilder()
+            .setNo(null)
+            .setNb(null)
+            .setNn(null)
+            .setEn(null)
 
     listResources(OA.hasBody)
         ?.asSequence()
@@ -40,11 +42,14 @@ private fun Resource.buildQualityAnnotation(dimension: Resource): QualityAnnotat
     val hasBody = hasBodyBuilder.build()
 
     return if (hasBody.hasContent()) {
-        QualityAnnotation.newBuilder()
+        QualityAnnotation
+            .newBuilder()
             .setInDimension(dimension.uri)
             .setHasBody(hasBody)
             .build()
-    } else null
+    } else {
+        null
+    }
 }
 
 fun Resource.extractQualityAnnotation(dimension: Resource): QualityAnnotation? =

@@ -1,9 +1,9 @@
 package no.digdir.fdk.parserservice.configuration
 
+import jakarta.annotation.PostConstruct
 import no.digdir.fdk.parserservice.parser.DataServiceParserRegistry
 import no.digdir.fdk.parserservice.parser.dataservice.DcatApNoV2Parser
 import org.springframework.context.annotation.Configuration
-import jakarta.annotation.PostConstruct
 
 /**
  * Configuration class for setting up data service parsers with priority ordering.
@@ -19,9 +19,8 @@ import jakarta.annotation.PostConstruct
 @Configuration
 open class DataServiceParserConfiguration(
     private val parserRegistry: DataServiceParserRegistry,
-    private val dcatApNoV2Parser: DcatApNoV2Parser
+    private val dcatApNoV2Parser: DcatApNoV2Parser,
 ) {
-
     /**
      * Registers all available data service parsers with their priority levels.
      * This method is called after dependency injection is complete.

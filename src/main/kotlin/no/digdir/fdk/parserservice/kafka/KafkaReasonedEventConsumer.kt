@@ -14,29 +14,32 @@ import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
 import java.time.Duration
 
-
 @Component
 class KafkaReasonedEventConsumer(
-    private val circuitBreaker: KafkaReasonedEventCircuitBreaker
+    private val circuitBreaker: KafkaReasonedEventCircuitBreaker,
 ) {
     @KafkaListener(
         topics = ["data-service-events"],
         groupId = "fdk-parser-service",
         concurrency = "4",
         containerFactory = "kafkaListenerContainerFactory",
-        id = "data-service-event-consumer"
+        id = "data-service-event-consumer",
     )
-    fun dataServiceListener(record: ConsumerRecord<String, Object>, ack: Acknowledgment) {
+    fun dataServiceListener(
+        record: ConsumerRecord<String, Object>,
+        ack: Acknowledgment,
+    ) {
         LOGGER.debug("Received data service message - offset: " + record.offset())
         try {
             when (val message = runCatching { record.value() }.getOrNull()) {
                 is SpecificRecord -> {
-                    val dataServiceEvent = try {
-                        message as DataServiceEvent
-                    } catch (ex: Exception) {
-                        LOGGER.error("Error parsing data service message", ex)
-                        throw UnrecoverableParseException("Error parsing data service message")
-                    }
+                    val dataServiceEvent =
+                        try {
+                            message as DataServiceEvent
+                        } catch (ex: Exception) {
+                            LOGGER.error("Error parsing data service message", ex)
+                            throw UnrecoverableParseException("Error parsing data service message")
+                        }
                     circuitBreaker.processDataService(dataServiceEvent)
                 }
                 is GenericRecord -> circuitBreaker.processGeneric(message)
@@ -55,19 +58,23 @@ class KafkaReasonedEventConsumer(
         groupId = "fdk-parser-service",
         concurrency = "4",
         containerFactory = "kafkaListenerContainerFactory",
-        id = "dataset-event-consumer"
+        id = "dataset-event-consumer",
     )
-    fun datasetListener(record: ConsumerRecord<String, Object>, ack: Acknowledgment) {
+    fun datasetListener(
+        record: ConsumerRecord<String, Object>,
+        ack: Acknowledgment,
+    ) {
         LOGGER.debug("Received dataset message - offset: " + record.offset())
         try {
             when (val message = runCatching { record.value() }.getOrNull()) {
                 is SpecificRecord -> {
-                    val datasetEvent = try {
-                        message as DatasetEvent
-                    } catch (ex: Exception) {
-                        LOGGER.error("Error parsing dataset message", ex)
-                        throw UnrecoverableParseException("Error parsing dataset message")
-                    }
+                    val datasetEvent =
+                        try {
+                            message as DatasetEvent
+                        } catch (ex: Exception) {
+                            LOGGER.error("Error parsing dataset message", ex)
+                            throw UnrecoverableParseException("Error parsing dataset message")
+                        }
                     circuitBreaker.processDataset(datasetEvent)
                 }
                 is GenericRecord -> circuitBreaker.processGeneric(message)

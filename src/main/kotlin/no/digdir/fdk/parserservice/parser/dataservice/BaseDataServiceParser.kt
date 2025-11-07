@@ -6,10 +6,10 @@ import no.digdir.fdk.parserservice.extract.descriptionHtmlCleaner
 import no.digdir.fdk.parserservice.extract.extractCatalogData
 import no.digdir.fdk.parserservice.extract.extractEuDataTheme
 import no.digdir.fdk.parserservice.extract.extractEurovoc
-import no.digdir.fdk.parserservice.extract.extractListOfReferenceDataCodes
-import no.digdir.fdk.parserservice.extract.extractListOfStrings
 import no.digdir.fdk.parserservice.extract.extractListOfContactPoints
 import no.digdir.fdk.parserservice.extract.extractListOfFormats
+import no.digdir.fdk.parserservice.extract.extractListOfReferenceDataCodes
+import no.digdir.fdk.parserservice.extract.extractListOfStrings
 import no.digdir.fdk.parserservice.extract.extractListOfUriWithLabel
 import no.digdir.fdk.parserservice.extract.extractLocalizedStringList
 import no.digdir.fdk.parserservice.extract.extractLocalizedStrings
@@ -48,7 +48,6 @@ import org.apache.jena.vocabulary.SKOS
  * @see DataServiceParserStrategy
  */
 abstract class BaseDataServiceParser : DataServiceParserStrategy {
-
     /**
      * Gets the default language for this parser version.
      *
@@ -96,7 +95,7 @@ abstract class BaseDataServiceParser : DataServiceParserStrategy {
         setDescription(formattedDescription?.descriptionHtmlCleaner())
 
         // The multiplicity of endpointURL is changed from 1..n to 1..1 in DCAT-AP-NO vs. DCAT-AP
-        setEndpointURL(dataServiceResource.extractStringValue(DCAT.endpointURL)?.let{listOf(it)})
+        setEndpointURL(dataServiceResource.extractStringValue(DCAT.endpointURL)?.let { listOf(it) })
 
         setEndpointDescription(dataServiceResource.extractListOfStrings(DCAT.endpointDescription))
         setServesDataset(dataServiceResource.extractListOfStrings(DCAT.servesDataset))
@@ -120,9 +119,11 @@ abstract class BaseDataServiceParser : DataServiceParserStrategy {
         val allFormats = formats + mediaTypes
         setFdkFormat(allFormats.takeIf { it.isNotEmpty() })
 
-        val themeResources = dataServiceResource.listResources(DCAT.theme)
-            ?.filter { it.isURIResource && !isSkolemizedURI(it.uri) }
-            ?.takeIf { it.isNotEmpty() }
+        val themeResources =
+            dataServiceResource
+                .listResources(DCAT.theme)
+                ?.filter { it.isURIResource && !isSkolemizedURI(it.uri) }
+                ?.takeIf { it.isNotEmpty() }
 
         setThemeUris(themeResources?.map { it.uri })
         setTheme(themeResources?.filter { isEuDataThemeURI(it.uri) }?.map { it.extractEuDataTheme() })

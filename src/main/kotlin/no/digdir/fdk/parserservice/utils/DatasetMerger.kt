@@ -4,28 +4,28 @@ import no.digdir.fdk.model.dataset.Dataset
 
 /**
  * Utility class for merging multiple Dataset objects in a prioritized manner.
- * 
+ *
  * This class provides an efficient approach to combining datasets by prioritizing
  * non-null values from higher priority datasets over lower priority ones.
  * It uses direct method calls for optimal performance and type safety.
- * 
+ *
  * @author FDK Team
  * @version 1.0.0
  * @since 1.0.0
  */
 object DatasetMerger {
-
     /**
      * Merges multiple datasets in priority order (first dataset has highest priority).
-     * 
+     *
      * @param datasets List of datasets in priority order (highest to lowest priority)
      * @return A new Dataset with values from the highest priority non-null source
      * @throws IllegalArgumentException if datasets list is empty
      */
     fun merge(datasets: List<Dataset>): Dataset {
         require(datasets.isNotEmpty()) { "At least one dataset must be provided for merging" }
-        
-        return Dataset.newBuilder()
+
+        return Dataset
+            .newBuilder()
             .setId(datasets.firstNonNull { it.id })
             .setUri(datasets.firstNonNull { it.uri })
             .setIdentifier(datasets.firstNonNull { it.identifier })
@@ -82,20 +82,19 @@ object DatasetMerger {
 
     /**
      * Merges datasets with explicit priority order.
-     * 
+     *
      * @param prioritized The highest priority dataset
      * @param fallbacks Additional datasets in priority order
      * @return A new Dataset with values from the highest priority non-null source
      */
-    fun merge(prioritized: Dataset, vararg fallbacks: Dataset): Dataset {
-        return merge(listOf(prioritized) + fallbacks)
-    }
+    fun merge(
+        prioritized: Dataset,
+        vararg fallbacks: Dataset,
+    ): Dataset = merge(listOf(prioritized) + fallbacks)
 
     /**
      * Helper function to find the first non-null value from prioritized datasets.
      * This is a more efficient alternative to reflection-based property access.
      */
-    private inline fun <T> List<Dataset>.firstNonNull(extractor: (Dataset) -> T?): T? {
-        return this.firstNotNullOfOrNull(extractor)
-    }
+    private inline fun <T> List<Dataset>.firstNonNull(extractor: (Dataset) -> T?): T? = this.firstNotNullOfOrNull(extractor)
 }

@@ -3,14 +3,14 @@ package no.digdir.fdk.parserservice.parser.dataset
 import no.digdir.fdk.model.ResourceType
 import no.digdir.fdk.model.dataset.Dataset
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfReferences
+import no.digdir.fdk.parserservice.extract.dataset.extractListOfSubjects
 import no.digdir.fdk.parserservice.extract.descriptionHtmlCleaner
 import no.digdir.fdk.parserservice.extract.extractCatalogData
 import no.digdir.fdk.parserservice.extract.extractEuDataTheme
 import no.digdir.fdk.parserservice.extract.extractEurovoc
+import no.digdir.fdk.parserservice.extract.extractListOfContactPoints
 import no.digdir.fdk.parserservice.extract.extractListOfReferenceDataCodes
 import no.digdir.fdk.parserservice.extract.extractListOfStrings
-import no.digdir.fdk.parserservice.extract.dataset.extractListOfSubjects
-import no.digdir.fdk.parserservice.extract.extractListOfContactPoints
 import no.digdir.fdk.parserservice.extract.extractListOfUriWithLabel
 import no.digdir.fdk.parserservice.extract.extractLocalizedStringList
 import no.digdir.fdk.parserservice.extract.extractLocalizedStrings
@@ -23,9 +23,9 @@ import no.digdir.fdk.parserservice.extract.isEurovocURI
 import no.digdir.fdk.parserservice.extract.isLosURI
 import no.digdir.fdk.parserservice.extract.isSkolemizedURI
 import no.digdir.fdk.parserservice.extract.listResources
+import no.digdir.fdk.parserservice.parser.DatasetParserStrategy
 import no.digdir.fdk.parserservice.vocabulary.ADMS
 import no.digdir.fdk.parserservice.vocabulary.EUAT
-import no.digdir.fdk.parserservice.parser.DatasetParserStrategy
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.sparql.vocabulary.FOAF
 import org.apache.jena.vocabulary.DCAT
@@ -35,15 +35,15 @@ import org.apache.jena.vocabulary.SKOS
 
 /**
  * Abstract base class for DCAT-AP dataset parsers.
- * 
+ *
  * This class provides common functionality for parsing DCAT-AP datasets
  * and serves as a foundation for version-specific implementations.
  * It handles the extraction of common dataset properties that are shared
  * across different DCAT-AP versions.
- * 
+ *
  * Subclasses must implement the abstract methods to provide version-specific
  * configuration and parsing logic.
- * 
+ *
  * @author FDK Team
  * @version 1.0.0
  * @since 1.0.0
@@ -51,41 +51,40 @@ import org.apache.jena.vocabulary.SKOS
  * @see DcatApNoV1Parser
  */
 abstract class BaseDatasetParser : DatasetParserStrategy {
-
     /**
      * Gets the default language for this parser version.
-     * 
+     *
      * @return The default language code (e.g., "no", "en")
      */
     protected abstract fun getDefaultLanguage(): String
 
     /**
      * Gets the version string for this parser.
-     * 
+     *
      * @return The version string (e.g., "1.1")
      */
     protected abstract fun getVersion(): String
 
     /**
      * Gets the source format identifier for this parser.
-     * 
+     *
      * @return The source format (e.g., "DCAT-AP-NO")
      */
     protected abstract fun getSourceFormat(): String
 
     /**
      * Gets a list of acceptable RDF types for harvested datasets.
-     * 
+     *
      * @return List of acceptable RDF types (e.g., [DCAT.Dataset])
      */
     protected abstract fun getAcceptableTypes(): List<Resource>
 
     /**
      * Adds common dataset values to the builder that are shared across all versions.
-     * 
+     *
      * This method extracts and sets common properties such as title, description,
      * publisher, themes, and other metadata that are consistent across DCAT-AP versions.
-     * 
+     *
      * @param datasetResource The RDF resource representing the dataset
      */
     protected fun Dataset.Builder.addCommonDatasetValues(datasetResource: Resource) {
@@ -111,9 +110,11 @@ abstract class BaseDatasetParser : DatasetParserStrategy {
 
         setContactPoint(datasetResource.extractListOfContactPoints())
 
-        val themeResources = datasetResource.listResources(DCAT.theme)
-            ?.filter { it.isURIResource && !isSkolemizedURI(it.uri) }
-            ?.takeIf { it.isNotEmpty() }
+        val themeResources =
+            datasetResource
+                .listResources(DCAT.theme)
+                ?.filter { it.isURIResource && !isSkolemizedURI(it.uri) }
+                ?.takeIf { it.isNotEmpty() }
 
         setThemeUris(themeResources?.map { it.uri })
         setTheme(themeResources?.filter { isEuDataThemeURI(it.uri) }?.map { it.extractEuDataTheme() })

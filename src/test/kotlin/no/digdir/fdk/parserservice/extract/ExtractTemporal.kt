@@ -13,10 +13,10 @@ import kotlin.test.assertEquals
 
 @Tag("unit")
 class ExtractTemporal {
-
     @Test
     fun extractListOfTemporal() {
-        val turtle = """
+        val turtle =
+            """
             @prefix dct:    <http://purl.org/dc/terms/> .
             @prefix dcat:   <http://www.w3.org/ns/dcat#> .
             @prefix schema:  <http://schema.org/> .
@@ -34,30 +34,32 @@ class ExtractTemporal {
                 a                   dct:PeriodOfTime ;
                 schema:startDate    "2021-04-02"^^xsd:date ;
                 schema:endDate      "2022-04-02"^^xsd:date .
-        """.trimIndent()
+            """.trimIndent()
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
         val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
 
-        val expected = listOf(
-            Temporal().apply {
-                uri = "https://temporal.no"
-                startDate = "2021-04-02"
-                endDate = "2022-04-02"
-            },
-            Temporal().apply {
-                startDate = "2019-04-02"
-                endDate = "2020-04-02"
-            }
-        )
+        val expected =
+            listOf(
+                Temporal().apply {
+                    uri = "https://temporal.no"
+                    startDate = "2021-04-02"
+                    endDate = "2022-04-02"
+                },
+                Temporal().apply {
+                    startDate = "2019-04-02"
+                    endDate = "2020-04-02"
+                },
+            )
 
         assertEquals(expected, subject.extractListOfTemporal(DCTerms.temporal, SCHEMA.startDate, SCHEMA.endDate))
     }
 
     @Test
     fun extractDcatTemporal() {
-        val turtle = """
+        val turtle =
+            """
             @prefix dct:    <http://purl.org/dc/terms/> .
             @prefix dcat:   <http://www.w3.org/ns/dcat#> .
             @prefix schema:  <http://schema.org/> .
@@ -71,19 +73,20 @@ class ExtractTemporal {
                 a                 dct:PeriodOfTime ;
                 dcat:startDate    "2021-04-02"^^xsd:date ;
                 dcat:endDate      "2022-04-02"^^xsd:date .
-        """.trimIndent()
+            """.trimIndent()
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
         val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
 
-        val expected = listOf(
-            Temporal().apply {
-                uri = "https://temporal.no"
-                startDate = "2021-04-02"
-                endDate = "2022-04-02"
-            }
-        )
+        val expected =
+            listOf(
+                Temporal().apply {
+                    uri = "https://temporal.no"
+                    startDate = "2021-04-02"
+                    endDate = "2022-04-02"
+                },
+            )
 
         assertEquals(expected, subject.extractListOfTemporal(DCTerms.temporal, DCAT.startDate, DCAT.endDate))
     }

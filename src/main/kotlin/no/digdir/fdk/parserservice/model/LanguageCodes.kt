@@ -1,9 +1,11 @@
 package no.digdir.fdk.parserservice.model
 
-enum class LanguageCodes(val code: String) {
+enum class LanguageCodes(
+    val code: String,
+) {
     NORWEGIAN_BOKMAL("nb"),
     NORWEGIAN_NYNORSK("nn"),
     ENGLISH("en"),
     NORWEGIAN("no"),
-    NONE("");
+    NONE(""),
 }

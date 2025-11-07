@@ -12,10 +12,10 @@ import kotlin.test.assertEquals
 
 @Tag("unit")
 class ExtractDatasetSubjects {
-
     @Test
     fun extractListOfSubjects() {
-        val turtle = """
+        val turtle =
+            """
             @prefix dct: <http://purl.org/dc/terms/> .
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
             @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
@@ -34,25 +34,26 @@ class ExtractDatasetSubjects {
                 dct:identifier   "http://begrepskatalogen/begrep/321" ;
                 skos:definition  "er lei seg fordi noko ikkje vart slik ein venta eller vona"@nn ;
                 skos:prefLabel   "vonbroten"@nn .
-        """.trimIndent()
+            """.trimIndent()
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
         val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
 
-        val expected = listOf(
-            Subject().apply {
-                uri = "https://testdirektoratet.no/model/concept"
-                identifier = "http://begrepskatalogen/begrep/321"
-                prefLabel = LocalizedStrings().apply { nn = "vonbroten" }
-                definition = LocalizedStrings().apply { nn = "er lei seg fordi noko ikkje vart slik ein venta eller vona" }
-            },
-            Subject().apply {
-                identifier = "http://begrepskatalogen/begrep/123"
-                prefLabel = LocalizedStrings().apply { nb = "dokument" }
-                definition = LocalizedStrings().apply { nb = "Definisjon" }
-            }
-        )
+        val expected =
+            listOf(
+                Subject().apply {
+                    uri = "https://testdirektoratet.no/model/concept"
+                    identifier = "http://begrepskatalogen/begrep/321"
+                    prefLabel = LocalizedStrings().apply { nn = "vonbroten" }
+                    definition = LocalizedStrings().apply { nn = "er lei seg fordi noko ikkje vart slik ein venta eller vona" }
+                },
+                Subject().apply {
+                    identifier = "http://begrepskatalogen/begrep/123"
+                    prefLabel = LocalizedStrings().apply { nb = "dokument" }
+                    definition = LocalizedStrings().apply { nb = "Definisjon" }
+                },
+            )
 
         assertEquals(expected, subject.extractListOfSubjects())
     }

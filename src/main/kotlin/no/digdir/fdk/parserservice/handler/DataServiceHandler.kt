@@ -22,9 +22,8 @@ import tools.jackson.databind.JsonNode
  */
 @Service
 class DataServiceHandler(
-    private val parserRegistry: DataServiceParserRegistry
+    private val parserRegistry: DataServiceParserRegistry,
 ) {
-
     /**
      * Parses a data service from RDF graph data and returns it as JSON.
      *
@@ -39,23 +38,27 @@ class DataServiceHandler(
      * @throws NoAcceptableFDKRecordsException if no data service is found with the given identifier
      * @throws IllegalStateException if no parsers can successfully parse the data service
      */
-    fun parseDataService(fdkId: String, graph: String): JsonNode {
+    fun parseDataService(
+        fdkId: String,
+        graph: String,
+    ): JsonNode {
         val model = ModelFactory.createDefaultModel()
-        val dataService: DataService = try {
-            model.readTurtle(graph)
-            val resourceIRI = topicUriOfRecordWithID(fdkId, model)
-            if (resourceIRI != null) {
-                // Parse with all registered parsers in priority order
-                val parsedDataServices = parserRegistry.parseWithAllParsers(model, resourceIRI, fdkId)
-                
-                // Use the first successfully parsed data service (highest priority)
-                parsedDataServices.first()
-            } else {
-                throw NoAcceptableFDKRecordsException("No data service found with identifier '$fdkId'")
+        val dataService: DataService =
+            try {
+                model.readTurtle(graph)
+                val resourceIRI = topicUriOfRecordWithID(fdkId, model)
+                if (resourceIRI != null) {
+                    // Parse with all registered parsers in priority order
+                    val parsedDataServices = parserRegistry.parseWithAllParsers(model, resourceIRI, fdkId)
+
+                    // Use the first successfully parsed data service (highest priority)
+                    parsedDataServices.first()
+                } else {
+                    throw NoAcceptableFDKRecordsException("No data service found with identifier '$fdkId'")
+                }
+            } finally {
+                model.close()
             }
-        } finally {
-            model.close()
-        }
 
         return avroToJson(dataService, dataService.schema)
     }

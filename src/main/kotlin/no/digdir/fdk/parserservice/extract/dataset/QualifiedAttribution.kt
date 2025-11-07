@@ -8,16 +8,18 @@ import no.digdir.fdk.parserservice.vocabulary.PROV
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCAT
 
-private fun QualifiedAttribution.hasContent() = when {
-    role != null -> true
-    agent != null -> true
-    else -> false
-}
+private fun QualifiedAttribution.hasContent() =
+    when {
+        role != null -> true
+        agent != null -> true
+        else -> false
+    }
 
 private fun Resource.buildQualifiedAttribution(): QualifiedAttribution? {
     val builder = QualifiedAttribution.newBuilder()
 
-    builder.setAgent(extractOrganization(PROV.agent))
+    builder
+        .setAgent(extractOrganization(PROV.agent))
         .setRole(extractStringValue(DCAT.hadRole))
 
     return builder.build().takeIf { it.hasContent() }

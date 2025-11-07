@@ -4,12 +4,13 @@ import no.digdir.fdk.model.ReferenceDataCode
 import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
 
-private fun ReferenceDataCode.hasContent() = when {
-    uri != null -> true
-    code != null -> true
-    prefLabel != null -> true
-    else -> false
-}
+private fun ReferenceDataCode.hasContent() =
+    when {
+        uri != null -> true
+        code != null -> true
+        prefLabel != null -> true
+        else -> false
+    }
 
 /**
  * Builds ReferenceDataCode.
@@ -18,10 +19,14 @@ private fun ReferenceDataCode.hasContent() = when {
  * @param labelPredicate The predicate for the label value
  * @return ReferenceDataCode if able to find any values for the object, null otherwise
  */
-private fun Resource.buildReferenceDataCode(codePredicate: Property, labelPredicate: Property): ReferenceDataCode? {
+private fun Resource.buildReferenceDataCode(
+    codePredicate: Property,
+    labelPredicate: Property,
+): ReferenceDataCode? {
     val builder = ReferenceDataCode.newBuilder()
 
-    builder.setUri(extractURIStringValue())
+    builder
+        .setUri(extractURIStringValue())
         .setCode(extractStringValue(codePredicate))
         .setPrefLabel(extractLocalizedStrings(labelPredicate))
 
@@ -35,11 +40,15 @@ private fun Resource.buildReferenceDataCode(codePredicate: Property, labelPredic
  * @param labelPredicate The predicate for the label value
  * @return ReferenceDataCode if able to find any values for the object, null otherwise
  */
-private fun Resource.buildReferenceDataCode(codeSeparator: String?, labelPredicate: Property): ReferenceDataCode? {
+private fun Resource.buildReferenceDataCode(
+    codeSeparator: String?,
+    labelPredicate: Property,
+): ReferenceDataCode? {
     val builder = ReferenceDataCode.newBuilder()
     val uri = extractURIStringValue()
 
-    builder.setUri(uri)
+    builder
+        .setUri(uri)
         .setCode(codeSeparator?.let { separator -> uri?.split(separator)?.lastOrNull() })
         .setPrefLabel(extractLocalizedStrings(labelPredicate))
 
@@ -57,7 +66,7 @@ private fun Resource.buildReferenceDataCode(codeSeparator: String?, labelPredica
 fun Resource.extractReferenceDataCode(
     mainPredicate: Property,
     codePredicate: Property,
-    labelPredicate: Property
+    labelPredicate: Property,
 ): ReferenceDataCode? =
     singleResource(mainPredicate)
         ?.buildReferenceDataCode(codePredicate, labelPredicate)
@@ -73,7 +82,7 @@ fun Resource.extractReferenceDataCode(
 fun Resource.extractReferenceDataCode(
     mainPredicate: Property,
     codeSeparator: String?,
-    labelPredicate: Property
+    labelPredicate: Property,
 ): ReferenceDataCode? =
     singleResource(mainPredicate)
         ?.buildReferenceDataCode(codeSeparator, labelPredicate)
@@ -89,7 +98,7 @@ fun Resource.extractReferenceDataCode(
 fun Resource.extractListOfReferenceDataCodes(
     mainPredicate: Property,
     codePredicate: Property,
-    labelPredicate: Property
+    labelPredicate: Property,
 ): List<ReferenceDataCode>? =
     listResources(mainPredicate)
         ?.mapNotNull { it.buildReferenceDataCode(codePredicate, labelPredicate) }
@@ -106,7 +115,7 @@ fun Resource.extractListOfReferenceDataCodes(
 fun Resource.extractListOfReferenceDataCodes(
     mainPredicate: Property,
     codeSeparator: String?,
-    labelPredicate: Property
+    labelPredicate: Property,
 ): List<ReferenceDataCode>? =
     listResources(mainPredicate)
         ?.mapNotNull { it.buildReferenceDataCode(codeSeparator, labelPredicate) }

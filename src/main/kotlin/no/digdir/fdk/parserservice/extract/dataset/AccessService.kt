@@ -10,18 +10,20 @@ import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.SKOS
 
-private fun AccessService.hasContent() = when {
-    uri != null -> true
-    title != null -> true
-    description != null -> true
-    endpointDescription != null -> true
-    else -> false
-}
+private fun AccessService.hasContent() =
+    when {
+        uri != null -> true
+        title != null -> true
+        description != null -> true
+        endpointDescription != null -> true
+        else -> false
+    }
 
 private fun Resource.buildAccessService(): AccessService? {
     val builder = AccessService.newBuilder()
 
-    builder.setUri(extractURIStringValue())
+    builder
+        .setUri(extractURIStringValue())
         .setTitle(extractLocalizedStrings(DCTerms.title))
         .setDescription(extractLocalizedStrings(DCTerms.description))
         .setEndpointDescription(extractListOfUriWithLabelAndType(DCAT.endpointDescription, DCTerms.source, SKOS.prefLabel))

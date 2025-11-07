@@ -5,9 +5,9 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import no.digdir.fdk.parserservice.handler.DataServiceHandler
+import no.digdir.fdk.parserservice.handler.DatasetHandler
 import no.digdir.fdk.parserservice.model.RecoverableParseException
 import no.digdir.fdk.parserservice.model.UnrecoverableParseException
-import no.digdir.fdk.parserservice.handler.DatasetHandler
 import no.fdk.dataservice.DataServiceEvent
 import no.fdk.dataservice.DataServiceEventType
 import no.fdk.dataset.DatasetEvent
@@ -50,18 +50,21 @@ class KafkaReasonedEventConsumerTest {
         val datasetEvent = DatasetEvent(DatasetEventType.DATASET_REASONED, "my-id", "uri", System.currentTimeMillis())
         kafkaReasonedEventConsumer.datasetListener(
             record = ConsumerRecord("dataset-events", 0, 0, "my-id", datasetEvent as Object),
-            ack = ack
+            ack = ack,
         )
 
         verify {
-            kafkaTemplate.send(withArg {
-                assertEquals("rdf-parse-events", it)
-            }, withArg {
-                assertEquals(datasetEvent.fdkId, it.fdkId)
-                assertEquals(RdfParseResourceType.DATASET, it.resourceType)
-                assertEquals(parsedJson, it.data)
-                assertEquals(datasetEvent.timestamp, it.timestamp)
-            })
+            kafkaTemplate.send(
+                withArg {
+                    assertEquals("rdf-parse-events", it)
+                },
+                withArg {
+                    assertEquals(datasetEvent.fdkId, it.fdkId)
+                    assertEquals(RdfParseResourceType.DATASET, it.resourceType)
+                    assertEquals(parsedJson, it.data)
+                    assertEquals(datasetEvent.timestamp, it.timestamp)
+                },
+            )
             ack.acknowledge()
         }
         confirmVerified(kafkaTemplate, ack)
@@ -78,7 +81,7 @@ class KafkaReasonedEventConsumerTest {
         val datasetEvent = DatasetEvent(DatasetEventType.DATASET_REASONED, "my-id", "uri", System.currentTimeMillis())
         kafkaReasonedEventConsumer.datasetListener(
             record = ConsumerRecord("dataset-events", 0, 0, "my-id", datasetEvent as Object),
-            ack = ack
+            ack = ack,
         )
 
         verify(exactly = 0) { kafkaTemplate.send(any(), any()) }
@@ -95,7 +98,7 @@ class KafkaReasonedEventConsumerTest {
         val datasetEvent = DatasetEvent(DatasetEventType.DATASET_REASONED, "my-id", "uri", System.currentTimeMillis())
         kafkaReasonedEventConsumer.datasetListener(
             record = ConsumerRecord("dataset-events", 0, 0, "my-id", datasetEvent as Object),
-            ack = ack
+            ack = ack,
         )
 
         verify(exactly = 0) { kafkaTemplate.send(any(), any()) }
@@ -155,18 +158,21 @@ class KafkaReasonedEventConsumerTest {
         val dataServiceEvent = DataServiceEvent(DataServiceEventType.DATA_SERVICE_REASONED, "my-id", "uri", System.currentTimeMillis())
         kafkaReasonedEventConsumer.dataServiceListener(
             record = ConsumerRecord("data-service-events", 0, 0, "my-id", dataServiceEvent as Object),
-            ack = ack
+            ack = ack,
         )
 
         verify {
-            kafkaTemplate.send(withArg {
-                assertEquals("rdf-parse-events", it)
-            }, withArg {
-                assertEquals(dataServiceEvent.fdkId, it.fdkId)
-                assertEquals(RdfParseResourceType.DATA_SERVICE, it.resourceType)
-                assertEquals(parsedJson, it.data)
-                assertEquals(dataServiceEvent.timestamp, it.timestamp)
-            })
+            kafkaTemplate.send(
+                withArg {
+                    assertEquals("rdf-parse-events", it)
+                },
+                withArg {
+                    assertEquals(dataServiceEvent.fdkId, it.fdkId)
+                    assertEquals(RdfParseResourceType.DATA_SERVICE, it.resourceType)
+                    assertEquals(parsedJson, it.data)
+                    assertEquals(dataServiceEvent.timestamp, it.timestamp)
+                },
+            )
             ack.acknowledge()
         }
         confirmVerified(kafkaTemplate, ack)
@@ -181,7 +187,7 @@ class KafkaReasonedEventConsumerTest {
         val dataServiceEvent = DataServiceEvent(DataServiceEventType.DATA_SERVICE_REASONED, "my-id", "uri", System.currentTimeMillis())
         kafkaReasonedEventConsumer.dataServiceListener(
             record = ConsumerRecord("data-service-events", 0, 0, "my-id", dataServiceEvent as Object),
-            ack = ack
+            ack = ack,
         )
 
         verify(exactly = 0) { kafkaTemplate.send(any(), any()) }
@@ -198,7 +204,7 @@ class KafkaReasonedEventConsumerTest {
         val dataServiceEvent = DataServiceEvent(DataServiceEventType.DATA_SERVICE_REASONED, "my-id", "uri", System.currentTimeMillis())
         kafkaReasonedEventConsumer.dataServiceListener(
             record = ConsumerRecord("data-service-events", 0, 0, "my-id", dataServiceEvent as Object),
-            ack = ack
+            ack = ack,
         )
 
         verify(exactly = 0) { kafkaTemplate.send(any(), any()) }

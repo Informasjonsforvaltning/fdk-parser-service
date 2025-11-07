@@ -14,10 +14,10 @@ import kotlin.test.assertTrue
 
 @Tag("unit")
 class ExtractCatalog {
-
     @Test
     fun extractDatasetCatalog() {
-        val turtle = """
+        val turtle =
+            """
             @prefix dct:    <http://purl.org/dc/terms/> .
             @prefix dcat:   <http://www.w3.org/ns/dcat#> .
             @prefix foaf:   <http://xmlns.com/foaf/0.1/> .
@@ -36,31 +36,34 @@ class ExtractCatalog {
             <https://testdirektoratet.no/publisher>
                 a               foaf:Agent ;
                 dct:identifier  "112233445" .
-        """.trimIndent()
+            """.trimIndent()
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
         val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
 
-        val expectedPublisher = Organization().also {
-            it.uri = "https://testdirektoratet.no/publisher"
-            it.id = "112233445"
-        }
+        val expectedPublisher =
+            Organization().also {
+                it.uri = "https://testdirektoratet.no/publisher"
+                it.id = "112233445"
+            }
 
-        val expected = Catalog().also {
-            it.uri = "https://testdirektoratet.no/model/catalog"
-            it.id = "https://id.no"
-            it.title = LocalizedStrings().also { label -> label.no = "Katalog" }
-            it.description = LocalizedStrings().also { label -> label.no = "Beskrivelse av katalog" }
-            it.publisher = expectedPublisher
-        }
+        val expected =
+            Catalog().also {
+                it.uri = "https://testdirektoratet.no/model/catalog"
+                it.id = "https://id.no"
+                it.title = LocalizedStrings().also { label -> label.no = "Katalog" }
+                it.description = LocalizedStrings().also { label -> label.no = "Beskrivelse av katalog" }
+                it.publisher = expectedPublisher
+            }
 
         assertEquals(expected, subject.extractCatalogData())
     }
 
     @Test
     fun handlesMultipleCatalogs() {
-        val turtle = """
+        val turtle =
+            """
             @prefix dct:    <http://purl.org/dc/terms/> .
             @prefix dcat:   <http://www.w3.org/ns/dcat#> .
             @prefix foaf:   <http://xmlns.com/foaf/0.1/> .
@@ -79,20 +82,20 @@ class ExtractCatalog {
             <https://testdirektoratet.no/publisher>
                 a               foaf:Agent ;
                 dct:identifier  "112233445" .
-        """.trimIndent()
+            """.trimIndent()
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
         val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
 
-        val oneOfExpectedURIs = listOf(
-            "https://testdirektoratet.no/model/catalog/0",
-            "https://testdirektoratet.no/model/catalog/1"
-        )
+        val oneOfExpectedURIs =
+            listOf(
+                "https://testdirektoratet.no/model/catalog/0",
+                "https://testdirektoratet.no/model/catalog/1",
+            )
 
         val extractedCatalog = subject.extractCatalogData()
 
         assertTrue(oneOfExpectedURIs.any { it == extractedCatalog!!.uri })
     }
-
 }
