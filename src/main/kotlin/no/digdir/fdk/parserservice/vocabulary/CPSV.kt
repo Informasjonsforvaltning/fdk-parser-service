@@ -4,12 +4,10 @@ import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.ResourceFactory
 
 class CPSV {
-
     companion object {
-        const val uri = "http://purl.org/vocab/cpsv#"
+        const val URI = "http://purl.org/vocab/cpsv#"
 
-        val follows: Property = ResourceFactory.createProperty("${uri}follows")
-        val implements: Property = ResourceFactory.createProperty("${uri}implements")
+        val follows: Property = ResourceFactory.createProperty("${URI}follows")
+        val implements: Property = ResourceFactory.createProperty("${URI}implements")
     }
-
 }

@@ -11,21 +11,22 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 open class CircuitBreakerConsumerConfiguration(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
-    private val kafkaManager: KafkaManager
+    private val kafkaManager: KafkaManager,
 ) {
-
     init {
         LOGGER.debug("Configuring circuit breaker event listener")
         circuitBreakerRegistry.circuitBreaker("rdf-parse").eventPublisher.onStateTransition { event: CircuitBreakerOnStateTransitionEvent ->
             when (event.stateTransition) {
                 StateTransition.CLOSED_TO_OPEN,
                 StateTransition.CLOSED_TO_FORCED_OPEN,
-                StateTransition.HALF_OPEN_TO_OPEN -> kafkaManager.pause("rdf-parse")
+                StateTransition.HALF_OPEN_TO_OPEN,
+                -> kafkaManager.pause("rdf-parse")
 
                 StateTransition.OPEN_TO_HALF_OPEN,
                 StateTransition.HALF_OPEN_TO_CLOSED,
                 StateTransition.FORCED_OPEN_TO_CLOSED,
-                StateTransition.FORCED_OPEN_TO_HALF_OPEN -> kafkaManager.resume("rdf-parse")
+                StateTransition.FORCED_OPEN_TO_HALF_OPEN,
+                -> kafkaManager.resume("rdf-parse")
 
                 else -> throw IllegalStateException("Unknown transition state: " + event.stateTransition)
             }

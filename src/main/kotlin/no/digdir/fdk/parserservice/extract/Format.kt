@@ -17,14 +17,15 @@ fun Resource.extractListOfFormats(pred: Property): List<Format>? =
         .toList()
         .takeIf { it.isNotEmpty() }
 
-fun Resource.extractFormat(pred: Property): Format? =
-    singleObjectStatement(pred)?.buildFormat()
+fun Resource.extractFormat(pred: Property): Format? = singleObjectStatement(pred)?.buildFormat()
 
 private fun Resource.extractType(): FormatType {
-    val rdfTypes = listProperties(RDF.type).asSequence()
-        .filter { isResource(it) }
-        .map { it.resource }
-        .toList()
+    val rdfTypes =
+        listProperties(RDF.type)
+            .asSequence()
+            .filter { isResource(it) }
+            .map { it.resource }
+            .toList()
 
     return when {
         rdfTypes.any { it == DCTerms.MediaType } -> FormatType.MEDIA_TYPE
@@ -48,9 +49,9 @@ private fun Statement.buildFormat(): Format? {
             .setName(string)
             .setCode(string)
             .setType(FormatType.UNKNOWN)
-
     }
 
-    return builder.build()
+    return builder
+        .build()
         .takeIf { it.uri != null || it.name != null || it.code != null }
 }

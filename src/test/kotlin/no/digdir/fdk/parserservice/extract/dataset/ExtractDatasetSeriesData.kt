@@ -13,10 +13,10 @@ import kotlin.test.assertEquals
 
 @Tag("unit")
 class ExtractDatasetSeriesData {
-
     @Test
     fun extractInSeries() {
-        val turtle = """
+        val turtle =
+            """
             @prefix dct: <http://purl.org/dc/terms/> .
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
             @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
@@ -40,24 +40,26 @@ class ExtractDatasetSeriesData {
                 a               dcat:Dataset , dcat:DatasetSeries ;
                 dct:title       "Series"@en ;
                 dcat:last       <https://testdirektoratet.no/model/dataset/1> .
-        """.trimIndent()
+            """.trimIndent()
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
         val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
 
-        val expected = InSeries().apply {
-            id = "b1c680cb-62d7-34d5-bb4c-d39b5db033be"
-            uri = "https://testdirektoratet.no/model/series/0"
-            title = LocalizedStrings().apply { en = "Series" }
-        }
+        val expected =
+            InSeries().apply {
+                id = "b1c680cb-62d7-34d5-bb4c-d39b5db033be"
+                uri = "https://testdirektoratet.no/model/series/0"
+                title = LocalizedStrings().apply { en = "Series" }
+            }
 
         assertEquals(expected, subject.extractInSeries())
     }
 
     @Test
     fun extractDatasetSeriesHandlesCyclicReferences() {
-        val turtle = """
+        val turtle =
+            """
             @prefix dct:   <http://purl.org/dc/terms/> .
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
             @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
@@ -79,12 +81,13 @@ class ExtractDatasetSeriesData {
             <https://testdirektoratet.no/model/series/0>
                 a               dcat:Dataset , dcat:DatasetSeries ;
                 dcat:last       <https://testdirektoratet.no/model/dataset/1> .
-        """.trimIndent()
+            """.trimIndent()
 
-        val expected = listOf(
-            "https://testdirektoratet.no/model/dataset/1",
-            "https://testdirektoratet.no/model/dataset/0"
-        )
+        val expected =
+            listOf(
+                "https://testdirektoratet.no/model/dataset/1",
+                "https://testdirektoratet.no/model/dataset/0",
+            )
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")

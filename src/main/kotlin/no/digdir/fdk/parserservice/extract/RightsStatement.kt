@@ -10,7 +10,8 @@ fun Resource.extractRightsStatement(): RightsStatement? =
         ?.buildRightsStatement()
 
 private fun Resource.buildRightsStatement(): RightsStatement? =
-    RightsStatement.newBuilder()
+    RightsStatement
+        .newBuilder()
         .setType(extractReferenceDataCode(DCTerms.type, "/", SKOS.prefLabel))
         .setDescription(extractLocalizedStrings(DCTerms.description))
         .build()

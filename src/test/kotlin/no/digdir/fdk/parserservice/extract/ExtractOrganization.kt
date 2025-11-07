@@ -13,10 +13,10 @@ import kotlin.test.assertEquals
 
 @Tag("unit")
 class ExtractOrganization {
-
     @Test
     fun extractPublisher() {
-        val turtle = """
+        val turtle =
+            """
             @prefix fdkorg: <https://raw.githubusercontent.com/Informasjonsforvaltning/organization-catalog/main/src/main/resources/ontology/organization-catalog.owl#> .
             @prefix orgtype:   <https://raw.githubusercontent.com/Informasjonsforvaltning/organization-catalog/main/src/main/resources/ontology/org-type.ttl#> .
             @prefix dct:    <http://purl.org/dc/terms/> .
@@ -35,22 +35,22 @@ class ExtractOrganization {
                 rov:orgType     orgtype:ORGL ;
                 fdkorg:orgPath  "/STAT/987654321/123456789" ;
                 foaf:name       "Norsk testorganisasjon"@nb .
-        """.trimIndent()
+            """.trimIndent()
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
         val subject = m.listSubjectsWithProperty(RDF.type, DCAT.DataService).toList().first()
 
-        val expected = Organization().also {
-            it.uri = "https://testdirektoratet.no/publisher"
-            it.id = "112233445"
-            it.name = "TESTORGANISASJON"
-            it.orgPath = "/STAT/987654321/123456789"
-            it.organisasjonsform = "ORGL"
-            it.prefLabel = LocalizedStrings().also { label -> label.nb = "Norsk testorganisasjon" }
-        }
+        val expected =
+            Organization().also {
+                it.uri = "https://testdirektoratet.no/publisher"
+                it.id = "112233445"
+                it.name = "TESTORGANISASJON"
+                it.orgPath = "/STAT/987654321/123456789"
+                it.organisasjonsform = "ORGL"
+                it.prefLabel = LocalizedStrings().also { label -> label.nb = "Norsk testorganisasjon" }
+            }
 
         assertEquals(expected, subject.extractOrganization(DCTerms.publisher))
     }
-
 }

@@ -17,7 +17,8 @@ class ExtractHarvestData {
 
     @Test
     fun exceptionWhenGraphIsMissingCatalogRecord() {
-        val turtle = """
+        val turtle =
+            """
             @prefix dct:   <http://purl.org/dc/terms/> .
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
             @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
@@ -29,7 +30,7 @@ class ExtractHarvestData {
 
             <https://testdirektoratet.no/model/dataset/0>
                 a                         dcat:Dataset .
-        """.trimIndent()
+            """.trimIndent()
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
@@ -39,7 +40,8 @@ class ExtractHarvestData {
 
     @Test
     fun exceptionWhenCatalogRecordIsMissingPrimaryTopic() {
-        val turtle = """
+        val turtle =
+            """
             @prefix dct:   <http://purl.org/dc/terms/> .
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
             @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
@@ -48,7 +50,7 @@ class ExtractHarvestData {
             <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
                     a                  dcat:CatalogRecord ;
                     dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" .
-        """.trimIndent()
+            """.trimIndent()
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
@@ -58,7 +60,8 @@ class ExtractHarvestData {
 
     @Test
     fun exceptionWhenPrimaryTopicDoesNotHaveAcceptableType() {
-        val turtle = """
+        val turtle =
+            """
             @prefix dct:   <http://purl.org/dc/terms/> .
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
             @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
@@ -71,7 +74,7 @@ class ExtractHarvestData {
 
             <https://testdirektoratet.no/model/dataset/0>
                 a                         dcat:DataService .
-        """.trimIndent()
+            """.trimIndent()
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
@@ -81,7 +84,8 @@ class ExtractHarvestData {
 
     @Test
     fun correctlyExtractHarvestMetaData() {
-        val turtle = """
+        val turtle =
+            """
             @prefix dct:   <http://purl.org/dc/terms/> .
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
             @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
@@ -96,12 +100,13 @@ class ExtractHarvestData {
 
             <https://testdirektoratet.no/model/dataset/0>
                 a                         dcat:Dataset .
-        """.trimIndent()
+            """.trimIndent()
 
-        val expected = HarvestMetaData().also {
-            it.firstHarvested = "2018-01-11T10:50:10.111Z"
-            it.modified = "2020-02-22T12:52:20.222Z"
-        }
+        val expected =
+            HarvestMetaData().also {
+                it.firstHarvested = "2018-01-11T10:50:10.111Z"
+                it.modified = "2020-02-22T12:52:20.222Z"
+            }
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
@@ -109,5 +114,4 @@ class ExtractHarvestData {
 
         assertEquals(expected, parsed.harvest)
     }
-
 }

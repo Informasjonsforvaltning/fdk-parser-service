@@ -19,14 +19,17 @@ fun Resource.extractInSeries(): InSeries? {
     val seriesResource = singleResource(DCAT3.inSeries)
 
     if (seriesResource?.isURIResource == true) {
-        val seriesCatalogRecord = model.listResourcesWithProperty(RDF.type, DCAT.CatalogRecord)
-            .asSequence()
-            .filter { it.isURIResource }
-            .filter { model.containsTriple(it.uri, FOAF.primaryTopic.uri, URI.create(seriesResource.uri)) }
-            .toList()
-            .firstOrNull()
+        val seriesCatalogRecord =
+            model
+                .listResourcesWithProperty(RDF.type, DCAT.CatalogRecord)
+                .asSequence()
+                .filter { it.isURIResource }
+                .filter { model.containsTriple(it.uri, FOAF.primaryTopic.uri, URI.create(seriesResource.uri)) }
+                .toList()
+                .firstOrNull()
 
-        builder.setUri(seriesResource.extractURIStringValue())
+        builder
+            .setUri(seriesResource.extractURIStringValue())
             .setId(seriesCatalogRecord?.extractStringValue(DCTerms.identifier))
             .setTitle(seriesResource.extractLocalizedStrings(DCTerms.title))
 
@@ -36,7 +39,7 @@ fun Resource.extractInSeries(): InSeries? {
     }
 }
 
-fun Resource.extractListOfDatasetsInSeries() : List<String>? {
+fun Resource.extractListOfDatasetsInSeries(): List<String>? {
     var current = singleResource(DCAT3.last)
     val datasets = mutableListOf<String>()
 

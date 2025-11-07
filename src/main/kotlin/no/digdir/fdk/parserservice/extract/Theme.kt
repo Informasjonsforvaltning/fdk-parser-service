@@ -12,11 +12,9 @@ private val eurovocBaseURL = "http://eurovoc.europa.eu"
 private val losBaseURL = "https://psi.norge.no/los"
 private val losThemeUrlPart = "/tema/"
 
-private fun codeFromThemeURI(uri: String?): String? =
-    uri?.split("/")?.last()
+private fun codeFromThemeURI(uri: String?): String? = uri?.split("/")?.last()
 
-fun isEuDataThemeURI(uri: String): Boolean =
-    uri.contains(dataThemeBaseURL)
+fun isEuDataThemeURI(uri: String): Boolean = uri.contains(dataThemeBaseURL)
 
 private fun EuDataTheme.hasContent(): Boolean =
     when {
@@ -31,16 +29,17 @@ fun Resource.extractEuDataTheme(): EuDataTheme? {
 
     val themeURI = extractURIStringValue()
 
-    val theme = builder.setUri(themeURI)
-        .setCode(codeFromThemeURI(themeURI))
-        .setTitle(extractLocalizedStrings(SKOS.prefLabel))
-        .build()
+    val theme =
+        builder
+            .setUri(themeURI)
+            .setCode(codeFromThemeURI(themeURI))
+            .setTitle(extractLocalizedStrings(SKOS.prefLabel))
+            .build()
 
     return if (theme.hasContent()) theme else null
 }
 
-fun isEurovocURI(uri: String): Boolean =
-    uri.contains(eurovocBaseURL)
+fun isEurovocURI(uri: String): Boolean = uri.contains(eurovocBaseURL)
 
 private fun Eurovoc.hasContent(): Boolean =
     when {
@@ -56,17 +55,18 @@ fun Resource.extractEurovoc(): Eurovoc? {
 
     val themeURI = if (isURIResource) uri else null
 
-    val theme = builder.setUri(themeURI)
-        .setCode(codeFromThemeURI(themeURI))
-        .setLabel(extractLocalizedStrings(SKOS.prefLabel))
-        .setEurovocPaths(extractListOfStrings(FDK.themePath))
-        .build()
+    val theme =
+        builder
+            .setUri(themeURI)
+            .setCode(codeFromThemeURI(themeURI))
+            .setLabel(extractLocalizedStrings(SKOS.prefLabel))
+            .setEurovocPaths(extractListOfStrings(FDK.themePath))
+            .build()
 
     return if (theme.hasContent()) theme else null
 }
 
-fun isLosURI(uri: String): Boolean =
-    uri.contains(losBaseURL)
+fun isLosURI(uri: String): Boolean = uri.contains(losBaseURL)
 
 private fun LosNode.hasContent(): Boolean =
     when {
@@ -82,12 +82,14 @@ fun Resource.extractLosNode(): LosNode? {
 
     val themeURI = if (isURIResource) uri else null
 
-    val theme = builder.setUri(themeURI)
-        .setCode(codeFromThemeURI(themeURI))
-        .setName(extractLocalizedStrings(SKOS.prefLabel))
-        .setLosPaths(extractListOfStrings(FDK.themePath))
-        .setIsTema(themeURI?.contains(losThemeUrlPart))
-        .build()
+    val theme =
+        builder
+            .setUri(themeURI)
+            .setCode(codeFromThemeURI(themeURI))
+            .setName(extractLocalizedStrings(SKOS.prefLabel))
+            .setLosPaths(extractListOfStrings(FDK.themePath))
+            .setIsTema(themeURI?.contains(losThemeUrlPart))
+            .build()
 
     return if (theme.hasContent()) theme else null
 }

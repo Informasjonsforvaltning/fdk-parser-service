@@ -30,28 +30,28 @@ import java.net.URI
 
 /**
  * Parser implementation for DCAT-AP-NO version 2.2.
- * 
+ *
  * This parser handles the parsing of datasets according to the Norwegian
  * Data Catalog Application Profile (DCAT-AP-NO) version 2.2 specification.
- * 
+ *
  * The parser extracts dataset metadata including distributions, themes,
  * temporal information, and other properties defined in the DCAT-AP-NO v1.1
  * specification.
- * 
+ *
  * ## Usage Example
- * 
+ *
  * ```kotlin
  * val parser = DcatApNoV2Parser()
  * val model = ModelFactory.createDefaultModel()
  * model.read(inputStream, null, "TURTLE")
- * 
+ *
  * val dataset = parser.parse(model)
  * println("Dataset title: ${dataset.title?.no}")
  * println("Dataset URI: ${dataset.uri}")
  * ```
- * 
+ *
  * ## Supported Properties
- * 
+ *
  * The parser extracts the following dataset properties:
  * - Basic metadata (title, description, identifier)
  * - Publisher and organization information
@@ -60,47 +60,52 @@ import java.net.URI
  * - Distributions and samples
  * - Keywords and access rights
  * - Spatial and provenance information
- * 
+ *
  * @see <a href="https://data.norge.no/specification/dcat-ap-no/v2.2">DCAT-AP-NO v2.2 Specification</a>
  * @author FDK Team
  * @version 1.0.0
  * @since 1.0.0
  */
 @Component(value = "DatasetDcatApNoV2Parser")
-class DcatApNoV2Parser() : BaseDatasetParser() {
+class DcatApNoV2Parser : BaseDatasetParser() {
     /**
      * Gets the default language for DCAT-AP-NO v2.2.
-     * 
+     *
      * @return "no" (Norwegian)
      */
     override fun getDefaultLanguage(): String = LanguageCodes.NORWEGIAN.code
 
     /**
      * Gets the version string for this parser.
-     * 
+     *
      * @return "2.2"
      */
     override fun getVersion(): String = "2.2"
 
     /**
      * Gets the source format identifier.
-     * 
+     *
      * @return "DCAT-AP-NO"
      */
     override fun getSourceFormat(): String = "DCAT-AP-NO"
 
     /**
      * Gets the acceptable RDF types for datasets.
-     * 
+     *
      * @return List containing DCAT.Dataset
      */
     override fun getAcceptableTypes(): List<Resource> = listOf(DCAT.Dataset, DCAT3.DatasetSeries)
 
-    override fun parse(model: Model, iri: String): Dataset =
-        parseDataset(model, iri, null)
+    override fun parse(
+        model: Model,
+        iri: String,
+    ): Dataset = parseDataset(model, iri, null)
 
-    override fun parse(model: Model, iri: String, fdkId: String): Dataset =
-        parseDataset(model, iri, fdkId)
+    override fun parse(
+        model: Model,
+        iri: String,
+        fdkId: String,
+    ): Dataset = parseDataset(model, iri, fdkId)
 
     /**
      * Parses an RDF model into a Dataset object according to DCAT-AP-NO v2.2.
@@ -115,7 +120,11 @@ class DcatApNoV2Parser() : BaseDatasetParser() {
      * @throws IllegalArgumentException if the model is null or invalid
      * @throws UnsupportedOperationException if no valid FDK record is found
      */
-    private fun parseDataset(model: Model, iri: String, fdkId: String?): Dataset {
+    private fun parseDataset(
+        model: Model,
+        iri: String,
+        fdkId: String?,
+    ): Dataset {
         if (getAcceptableTypes().none { model.containsTriple(iri, RDF.type.uri, URI.create(it.uri)) }) {
             throw NoAcceptableTypesException("No acceptable types found for $iri")
         }

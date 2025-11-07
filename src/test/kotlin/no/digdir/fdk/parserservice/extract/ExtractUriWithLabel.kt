@@ -14,32 +14,36 @@ import kotlin.test.assertEquals
 
 @Tag("unit")
 class ExtractUriWithLabel {
-
     @Test
     fun extractWhenOnlyUri() {
-        val turtle = """
+        val turtle =
+            """
             @prefix dct:    <http://purl.org/dc/terms/> .
             @prefix dcat:   <http://www.w3.org/ns/dcat#> .
 
             <https://testdirektoratet.no/model/dataset/0>
                 a                         dcat:Dataset ;
                 dct:conformsTo            <https://conforms.to> .
-        """.trimIndent()
+            """.trimIndent()
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
         val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
 
-        val expected = listOf(UriWithLabel().apply {
-            uri = "https://conforms.to"
-        })
+        val expected =
+            listOf(
+                UriWithLabel().apply {
+                    uri = "https://conforms.to"
+                },
+            )
 
         assertEquals(expected, subject.extractListOfUriWithLabel(DCTerms.conformsTo, DCTerms.source, DCTerms.title))
     }
 
     @Test
     fun extractWhenBlankNode() {
-        val turtle = """
+        val turtle =
+            """
             @prefix dct:    <http://purl.org/dc/terms/> .
             @prefix dcat:   <http://www.w3.org/ns/dcat#> .
 
@@ -49,23 +53,27 @@ class ExtractUriWithLabel {
                     dct:source  <https://source.no> ;
                     dct:title   "Blank node"
                 ] .
-        """.trimIndent()
+            """.trimIndent()
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
         val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
 
-        val expected = listOf(UriWithLabel().apply {
-            uri = "https://source.no"
-            prefLabel = LocalizedStrings().also { label -> label.no = "Blank node" }
-        })
+        val expected =
+            listOf(
+                UriWithLabel().apply {
+                    uri = "https://source.no"
+                    prefLabel = LocalizedStrings().also { label -> label.no = "Blank node" }
+                },
+            )
 
         assertEquals(expected, subject.extractListOfUriWithLabel(DCTerms.conformsTo, DCTerms.source, DCTerms.title))
     }
 
     @Test
     fun extractWhenUriResource() {
-        val turtle = """
+        val turtle =
+            """
             @prefix dct:    <http://purl.org/dc/terms/> .
             @prefix dcat:   <http://www.w3.org/ns/dcat#> .
 
@@ -76,30 +84,34 @@ class ExtractUriWithLabel {
             <https://conforms.to>
                 dct:source  <https://source.no> ;
                 dct:title   "URI resource"@en
-        """.trimIndent()
+            """.trimIndent()
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
         val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
 
-        val expected = listOf(UriWithLabel().apply {
-            uri = "https://source.no"
-            prefLabel = LocalizedStrings().also { label -> label.en = "URI resource" }
-        })
+        val expected =
+            listOf(
+                UriWithLabel().apply {
+                    uri = "https://source.no"
+                    prefLabel = LocalizedStrings().also { label -> label.en = "URI resource" }
+                },
+            )
 
         assertEquals(expected, subject.extractListOfUriWithLabel(DCTerms.conformsTo, DCTerms.source, DCTerms.title))
     }
 
     @Test
     fun doesNotThrowErrorWhenLiteral() {
-        val turtle = """
+        val turtle =
+            """
             @prefix dct:    <http://purl.org/dc/terms/> .
             @prefix dcat:   <http://www.w3.org/ns/dcat#> .
 
             <https://testdirektoratet.no/model/dataset/0>
                 a                         dcat:Dataset ;
                 dct:conformsTo            "https://conforms.to" .
-        """.trimIndent()
+            """.trimIndent()
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")

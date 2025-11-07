@@ -6,10 +6,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
 
-
 @Component
 class KafkaRdfParseEventProducer(
-        private val kafkaTemplate: KafkaTemplate<String, RdfParseEvent>
+    private val kafkaTemplate: KafkaTemplate<String, RdfParseEvent>,
 ) {
     fun sendMessage(msg: RdfParseEvent) {
         LOGGER.debug("Sending message to Kafka topic: $TOPIC_NAME")

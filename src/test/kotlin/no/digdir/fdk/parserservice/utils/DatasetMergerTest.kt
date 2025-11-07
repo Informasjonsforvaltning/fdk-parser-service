@@ -9,8 +9,10 @@ import kotlin.test.assertEquals
 
 @Tag("unit")
 class DatasetMergerTest {
-
-    private fun minimal(id: String, uri: String): Dataset =
+    private fun minimal(
+        id: String,
+        uri: String,
+    ): Dataset =
         Dataset().apply {
             this.id = id
             this.uri = uri
@@ -19,8 +21,9 @@ class DatasetMergerTest {
     @Test
     fun `should merge datasets with priority order`() {
         val highPriority = minimal("high-priority-id", "http://high")
-        val lowPriority = minimal("low-priority-id", "http://low")
-            .apply { title = LocalizedStrings().apply { en = "Title only available in low" } }
+        val lowPriority =
+            minimal("low-priority-id", "http://low")
+                .apply { title = LocalizedStrings().apply { en = "Title only available in low" } }
 
         val result = DatasetMerger.merge(listOf(highPriority, lowPriority))
         assertEquals("high-priority-id", result.id)

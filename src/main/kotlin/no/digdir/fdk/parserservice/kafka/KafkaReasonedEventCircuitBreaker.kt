@@ -19,20 +19,20 @@ import org.springframework.stereotype.Component
 import kotlin.time.measureTimedValue
 import kotlin.time.toJavaDuration
 
-
 @Component
 open class KafkaReasonedEventCircuitBreaker(
     private val producer: KafkaRdfParseEventProducer,
     private val dataServiceHandler: DataServiceHandler,
-    private val datasetHandler: DatasetHandler
+    private val datasetHandler: DatasetHandler,
 ) {
     @CircuitBreaker(name = "rdf-parse-generic")
     open fun processGeneric(event: GenericRecord) {
         val type = runCatching { event.get("type") as String }.getOrNull()
-        val resourceType = when (type) {
-            DatasetEventType.DATASET_REASONED.name -> RdfParseResourceType.DATASET
-            else -> null
-        }
+        val resourceType =
+            when (type) {
+                DatasetEventType.DATASET_REASONED.name -> RdfParseResourceType.DATASET
+                else -> null
+            }
 
         val fdkId = runCatching { event.get("fdkId") as String }.getOrNull()
         val graph = runCatching { event.get("graph") as String }.getOrNull()
@@ -41,7 +41,13 @@ open class KafkaReasonedEventCircuitBreaker(
         if (fdkId != null && graph != null && timestamp != null && resourceType != null) {
             handleRecord(fdkId, graph, timestamp, resourceType)
         } else {
-            LOGGER.error("Unable to get required message values. fdkId: {}, graph: {}, timestamp: {}, type: {}", fdkId, graph, timestamp, resourceType)
+            LOGGER.error(
+                "Unable to get required message values. fdkId: {}, graph: {}, timestamp: {}, type: {}",
+                fdkId,
+                graph,
+                timestamp,
+                resourceType,
+            )
             throw UnrecoverableParseException("Unable to get required message values")
         }
     }
@@ -57,7 +63,12 @@ open class KafkaReasonedEventCircuitBreaker(
             if (fdkId != null && graph != null && timestamp != null) {
                 handleRecord(fdkId, graph, timestamp, RdfParseResourceType.DATA_SERVICE)
             } else {
-                LOGGER.error("Unable to get required data service message values. fdkId: {}, graph: {}, timestamp: {}", fdkId, graph, timestamp)
+                LOGGER.error(
+                    "Unable to get required data service message values. fdkId: {}, graph: {}, timestamp: {}",
+                    fdkId,
+                    graph,
+                    timestamp,
+                )
                 throw UnrecoverableParseException("Unable to get required data service message values")
             }
         }
@@ -80,43 +91,61 @@ open class KafkaReasonedEventCircuitBreaker(
         }
     }
 
-    private fun handleRecord(fdkId: String, graph: String, timestamp: Long, resourceType: RdfParseResourceType) {
+    private fun handleRecord(
+        fdkId: String,
+        graph: String,
+        timestamp: Long,
+        resourceType: RdfParseResourceType,
+    ) {
         try {
             parseAndProduce(fdkId, graph, timestamp, resourceType)
         } catch (e: RecoverableParseException) {
             LOGGER.warn("Recoverable parsing error: " + e.message)
-            Metrics.counter(
-                "rdf_parse_error",
-                "type", resourceType.toString().lowercase()
-            ).increment()
+            Metrics
+                .counter(
+                    "rdf_parse_error",
+                    "type",
+                    resourceType.toString().lowercase(),
+                ).increment()
             throw e
         } catch (e: UnrecoverableParseException) {
             LOGGER.error("Unrecoverable parsing error: " + e.message)
-            Metrics.counter(
-                "rdf_parse_error",
-                "type", resourceType.toString().lowercase()
-            ).increment()
+            Metrics
+                .counter(
+                    "rdf_parse_error",
+                    "type",
+                    resourceType.toString().lowercase(),
+                ).increment()
             throw e
         }
     }
 
-    private fun parseAndProduce(fdkId: String, graph: String, timestamp: Long, type: RdfParseResourceType) {
-        val timeElapsed = measureTimedValue {
-            LOGGER.debug("Parse dataset - id: $fdkId")
-            val json = when (type) {
-                RdfParseResourceType.CONCEPT -> LOGGER.warn("Parse of concepts not implemented")
-                RdfParseResourceType.DATA_SERVICE -> dataServiceHandler.parseDataService(fdkId, graph)
-                RdfParseResourceType.DATASET -> datasetHandler.parseDataset(fdkId, graph)
-                RdfParseResourceType.EVENT -> LOGGER.warn("Parse of events not implemented")
-                RdfParseResourceType.INFORMATION_MODEL -> LOGGER.warn("Parse of information models not implemented")
-                RdfParseResourceType.SERVICE -> LOGGER.warn("Parse of services not implemented")
+    private fun parseAndProduce(
+        fdkId: String,
+        graph: String,
+        timestamp: Long,
+        type: RdfParseResourceType,
+    ) {
+        val timeElapsed =
+            measureTimedValue {
+                LOGGER.debug("Parse dataset - id: $fdkId")
+                val json =
+                    when (type) {
+                        RdfParseResourceType.CONCEPT -> LOGGER.warn("Parse of concepts not implemented")
+                        RdfParseResourceType.DATA_SERVICE -> dataServiceHandler.parseDataService(fdkId, graph)
+                        RdfParseResourceType.DATASET -> datasetHandler.parseDataset(fdkId, graph)
+                        RdfParseResourceType.EVENT -> LOGGER.warn("Parse of events not implemented")
+                        RdfParseResourceType.INFORMATION_MODEL -> LOGGER.warn("Parse of information models not implemented")
+                        RdfParseResourceType.SERVICE -> LOGGER.warn("Parse of services not implemented")
+                    }
+                producer.sendMessage(RdfParseEvent(type, fdkId, json.toString(), timestamp))
             }
-            producer.sendMessage(RdfParseEvent(type, fdkId, json.toString(), timestamp))
-        }
-        Metrics.timer(
-            "rdf_parse",
-            "type", type.toString().lowercase()
-        ).record(timeElapsed.duration.toJavaDuration())
+        Metrics
+            .timer(
+                "rdf_parse",
+                "type",
+                type.toString().lowercase(),
+            ).record(timeElapsed.duration.toJavaDuration())
     }
 
     companion object {

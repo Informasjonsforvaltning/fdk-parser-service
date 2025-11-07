@@ -7,7 +7,11 @@ import org.apache.jena.rdf.model.Statement
 import org.apache.jena.vocabulary.RDF
 import org.apache.jena.vocabulary.SKOS
 
-fun Resource.extractListOfUriWithLabelAndType(pred: Property, uriPred: Property, labelPred: Property): List<UriWithLabelAndType>? =
+fun Resource.extractListOfUriWithLabelAndType(
+    pred: Property,
+    uriPred: Property,
+    labelPred: Property,
+): List<UriWithLabelAndType>? =
     listProperties(pred)
         .asSequence()
         .mapNotNull { it.buildUriWithLabelAndType(uriPred, labelPred) }
@@ -22,7 +26,10 @@ private fun Resource.extractNonConceptType(): String? =
         ?.resource
         ?.uri
 
-private fun Statement.buildUriWithLabelAndType(uriPred: Property, labelPred: Property): UriWithLabelAndType? {
+private fun Statement.buildUriWithLabelAndType(
+    uriPred: Property,
+    labelPred: Property,
+): UriWithLabelAndType? {
     if (isResource(this)) {
         val builder = UriWithLabelAndType.newBuilder()
         val uriValueFromPredicate = resource.extractStringValue(uriPred)
@@ -34,5 +41,7 @@ private fun Statement.buildUriWithLabelAndType(uriPred: Property, labelPred: Pro
             .setPrefLabel(resource.extractLocalizedStrings(labelPred))
             .build()
             .takeIf { it.uri != null || it.prefLabel != null }
-    } else return null
+    } else {
+        return null
+    }
 }

@@ -14,10 +14,10 @@ import kotlin.test.assertEquals
 
 @Tag("unit")
 class ExtractDatasetReferences {
-
     @Test
     fun extractListOfReferences() {
-        val turtle = """
+        val turtle =
+            """
             @prefix dct:  <http://purl.org/dc/terms/> .
             @prefix dcat: <http://www.w3.org/ns/dcat#> .
             @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -40,65 +40,67 @@ class ExtractDatasetReferences {
             <https://relation.no>
                 a           rdfs:Resource ;
                 rdfs:label  "related"@en .
-        """.trimIndent()
+            """.trimIndent()
 
         val m = ModelFactory.createDefaultModel()
         m.read(StringReader(turtle), null, "TURTLE")
         val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
 
-        val expected = listOf(
-            Reference().apply {
-                referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/hasVersion" }
-                source = UriWithLabel().apply { uri = "https://hasversion.no" }
-            },
-            Reference().apply {
-                referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/isVersionOf" }
-                source = UriWithLabel().apply { uri = "https://isversionof.no" }
-            },
-            Reference().apply {
-                referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/isPartOf" }
-                source = UriWithLabel().apply { uri = "https://ispartof.no" }
-            },
-            Reference().apply {
-                referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/hasPart" }
-                source = UriWithLabel().apply { uri = "https://haspart.no" }
-            },
-            Reference().apply {
-                referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/references" }
-                source = UriWithLabel().apply { uri = "https://references.no" }
-            },
-            Reference().apply {
-                referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/isReferencedBy" }
-                source = UriWithLabel().apply { uri = "https://isreferencedby.no" }
-            },
-            Reference().apply {
-                referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/replaces" }
-                source = UriWithLabel().apply { uri = "https://replaces.no" }
-            },
-            Reference().apply {
-                referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/isReplacedBy" }
-                source = UriWithLabel().apply { uri = "https://isreplacedby.no" }
-            },
-            Reference().apply {
-                referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/requires" }
-                source = UriWithLabel().apply { uri = "https://requires.no" }
-            },
-            Reference().apply {
-                referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/isRequiredBy" }
-                source = UriWithLabel().apply { uri = "https://isrequiredby.no" }
-            },
-            Reference().apply {
-                referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/relation" }
-                source = UriWithLabel().apply {
-                    uri = "https://relation.no"
-                    prefLabel = LocalizedStrings().apply { en = "related" }
-                }
-            },
-            Reference().apply {
-                referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/source" }
-                source = UriWithLabel().apply { uri = "https://source.no" }
-            }
-        )
+        val expected =
+            listOf(
+                Reference().apply {
+                    referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/hasVersion" }
+                    source = UriWithLabel().apply { uri = "https://hasversion.no" }
+                },
+                Reference().apply {
+                    referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/isVersionOf" }
+                    source = UriWithLabel().apply { uri = "https://isversionof.no" }
+                },
+                Reference().apply {
+                    referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/isPartOf" }
+                    source = UriWithLabel().apply { uri = "https://ispartof.no" }
+                },
+                Reference().apply {
+                    referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/hasPart" }
+                    source = UriWithLabel().apply { uri = "https://haspart.no" }
+                },
+                Reference().apply {
+                    referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/references" }
+                    source = UriWithLabel().apply { uri = "https://references.no" }
+                },
+                Reference().apply {
+                    referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/isReferencedBy" }
+                    source = UriWithLabel().apply { uri = "https://isreferencedby.no" }
+                },
+                Reference().apply {
+                    referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/replaces" }
+                    source = UriWithLabel().apply { uri = "https://replaces.no" }
+                },
+                Reference().apply {
+                    referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/isReplacedBy" }
+                    source = UriWithLabel().apply { uri = "https://isreplacedby.no" }
+                },
+                Reference().apply {
+                    referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/requires" }
+                    source = UriWithLabel().apply { uri = "https://requires.no" }
+                },
+                Reference().apply {
+                    referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/isRequiredBy" }
+                    source = UriWithLabel().apply { uri = "https://isrequiredby.no" }
+                },
+                Reference().apply {
+                    referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/relation" }
+                    source =
+                        UriWithLabel().apply {
+                            uri = "https://relation.no"
+                            prefLabel = LocalizedStrings().apply { en = "related" }
+                        }
+                },
+                Reference().apply {
+                    referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/source" }
+                    source = UriWithLabel().apply { uri = "https://source.no" }
+                },
+            )
 
         assertEquals(expected, subject.extractListOfReferences())
     }

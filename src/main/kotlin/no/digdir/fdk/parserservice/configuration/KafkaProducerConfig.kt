@@ -7,7 +7,6 @@ import org.springframework.kafka.core.ProducerFactory
 
 open class KafkaProducerConfig {
     @Bean
-    open fun kafkaTemplate(producerFactory: ProducerFactory<String, RdfParseEvent>): KafkaTemplate<String, RdfParseEvent> {
-        return KafkaTemplate(producerFactory)
-    }
+    open fun kafkaTemplate(producerFactory: ProducerFactory<String, RdfParseEvent>): KafkaTemplate<String, RdfParseEvent> =
+        KafkaTemplate(producerFactory)
 }

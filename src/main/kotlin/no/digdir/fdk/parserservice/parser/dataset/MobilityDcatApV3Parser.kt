@@ -24,7 +24,6 @@ import org.apache.jena.vocabulary.SKOS
 import org.springframework.stereotype.Component
 import java.net.URI
 
-
 /**
  * Parser implementation for mobilityDCAT-AP version 3.0.0.
  *
@@ -62,7 +61,7 @@ import java.net.URI
  * @since 1.0.0
  */
 @Component
-class MobilityDcatApV3Parser() : BaseDatasetParser() {
+class MobilityDcatApV3Parser : BaseDatasetParser() {
     /**
      * Gets the default language for Mobility DCAT-AP v3.0.0.
      *
@@ -91,11 +90,16 @@ class MobilityDcatApV3Parser() : BaseDatasetParser() {
      */
     override fun getAcceptableTypes(): List<Resource> = listOf(DCAT.Dataset)
 
-    override fun parse(model: Model, iri: String): Dataset =
-        parseDataset(model, iri, null)
+    override fun parse(
+        model: Model,
+        iri: String,
+    ): Dataset = parseDataset(model, iri, null)
 
-    override fun parse(model: Model, iri: String, fdkId: String): Dataset =
-        parseDataset(model, iri, fdkId)
+    override fun parse(
+        model: Model,
+        iri: String,
+        fdkId: String,
+    ): Dataset = parseDataset(model, iri, fdkId)
 
     /**
      * Parses an RDF model into a Dataset object according to Mobility DCAT-AP v3.0.0.
@@ -111,7 +115,11 @@ class MobilityDcatApV3Parser() : BaseDatasetParser() {
      * @throws IllegalArgumentException if the model is null or invalid
      * @throws UnsupportedOperationException if no valid FDK record is found
      */
-    private fun parseDataset(model: Model, iri: String, fdkId: String?): Dataset {
+    private fun parseDataset(
+        model: Model,
+        iri: String,
+        fdkId: String?,
+    ): Dataset {
         if (getAcceptableTypes().none { model.containsTriple(iri, RDF.type.uri, URI.create(it.uri)) }) {
             throw NoAcceptableTypesException("No acceptable types found for $iri")
         }

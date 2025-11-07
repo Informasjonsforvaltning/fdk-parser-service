@@ -4,12 +4,10 @@ import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.ResourceFactory
 
 class DQV {
-
     companion object {
-        const val uri = "http://www.w3.org/ns/dqv#"
+        const val URI = "http://www.w3.org/ns/dqv#"
 
-        val inDimension: Property = ResourceFactory.createProperty("${uri}inDimension")
-        val hasQualityAnnotation: Property = ResourceFactory.createProperty("${uri}hasQualityAnnotation")
+        val inDimension: Property = ResourceFactory.createProperty("${URI}inDimension")
+        val hasQualityAnnotation: Property = ResourceFactory.createProperty("${URI}hasQualityAnnotation")
     }
-
 }
