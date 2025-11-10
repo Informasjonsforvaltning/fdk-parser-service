@@ -5,6 +5,7 @@
   "doc": "Types for resources in FDK",
   "symbols": [
     "datasets",
-    "dataservices"
+    "dataservices",
+    "informationmodels"
   ]
 }

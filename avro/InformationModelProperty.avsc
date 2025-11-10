@@ -1,0 +1,151 @@
+{
+  "type": "record",
+  "name": "InformationModelProperty",
+  "namespace": "no.digdir.fdk.model.informationmodel",
+  "doc": "Model property in an information model",
+  "fields": [
+    {
+      "name": "uri",
+      "type": ["null", "string"],
+      "doc": "URI of the model property"
+    },
+    {
+      "name": "identifier",
+      "type": ["null", "string"],
+      "doc": "Identifier of the model property"
+    },
+    {
+      "name": "title",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Title of the model property"
+    },
+    {
+      "name": "description",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Description of the model property"
+    },
+    {
+      "name": "subject",
+      "type": ["null", "string"],
+      "doc": "Subject of the model property"
+    },
+    {
+      "name": "propertyTypes",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "Types of the property"
+    },
+    {
+      "name": "minOccurs",
+      "type": ["null", "int"],
+      "doc": "Minimum occurrences"
+    },
+    {
+      "name": "maxOccurs",
+      "type": ["null", "int"],
+      "doc": "Maximum occurrences"
+    },
+    {
+      "name": "hasType",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "Types the property has"
+    },
+    {
+      "name": "relationPropertyLabel",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Label for the relation property"
+    },
+    {
+      "name": "sequenceNumber",
+      "type": ["null", "int"],
+      "doc": "Sequence number"
+    },
+    {
+      "name": "belongsToModule",
+      "type": ["null", "string"],
+      "doc": "Module the property belongs to"
+    },
+    {
+      "name": "formsSymmetryWith",
+      "type": ["null", "string"],
+      "doc": "Forms symmetry with"
+    },
+    {
+      "name": "isAbstractionOf",
+      "type": ["null", "string"],
+      "doc": "Is abstraction of"
+    },
+    {
+      "name": "refersTo",
+      "type": ["null", "string"],
+      "doc": "Refers to"
+    },
+    {
+      "name": "hasDataType",
+      "type": ["null", "string"],
+      "doc": "Has data type"
+    },
+    {
+      "name": "hasSimpleType",
+      "type": ["null", "string"],
+      "doc": "Has simple type"
+    },
+    {
+      "name": "hasObjectType",
+      "type": ["null", "string"],
+      "doc": "Has object type"
+    },
+    {
+      "name": "hasValueFrom",
+      "type": ["null", "string"],
+      "doc": "Has value from"
+    },
+    {
+      "name": "hasSome",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "Has some"
+    },
+    {
+      "name": "hasMember",
+      "type": ["null", "string"],
+      "doc": "Has member"
+    },
+    {
+      "name": "contains",
+      "type": ["null", "string"],
+      "doc": "Contains"
+    },
+    {
+      "name": "hasSupplier",
+      "type": ["null", "string"],
+      "doc": "Has supplier"
+    },
+    {
+      "name": "hasGeneralConcept",
+      "type": ["null", "string"],
+      "doc": "Has general concept"
+    },
+    {
+      "name": "notification",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Notification"
+    }
+  ]
+}

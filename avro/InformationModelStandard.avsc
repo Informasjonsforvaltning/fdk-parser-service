@@ -1,0 +1,37 @@
+{
+  "type": "record",
+  "name": "InformationModelStandard",
+  "namespace": "no.digdir.fdk.model.informationmodel",
+  "doc": "Standard or specification that the information model references",
+  "fields": [
+    {
+      "name": "uri",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    {
+      "name": "title",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual label"
+    },
+    {
+      "name": "seeAlso",
+      "type": ["null", {
+        "type": "array",
+        "items": "string"
+      }]
+    },
+    {
+      "name": "versionInfo",
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  ]
+}

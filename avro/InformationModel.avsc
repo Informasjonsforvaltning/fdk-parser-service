@@ -1,0 +1,319 @@
+{
+  "type": "record",
+  "name": "InformationModel",
+  "namespace": "no.digdir.fdk.model.informationmodel",
+  "doc": "Internal Data.norge.no model for information models",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string",
+      "doc": "Unique FDK identifier for the information model"
+    },
+    {
+      "name": "uri",
+      "type": "string",
+      "doc": "Subject URI for the information model in the harvested source"
+    },
+    {
+      "name": "identifier",
+      "type": ["null", {
+        "type": "array",
+        "items": "string"
+      }],
+      "doc": "List of information model identifiers"
+    },
+    {
+      "name": "harvest",
+      "type": ["null", "no.digdir.fdk.model.HarvestMetaData"],
+      "doc": "Meta data about the harvest of the information model to FDK"
+    },
+    {
+      "name": "catalog",
+      "type": ["null", "no.digdir.fdk.model.Catalog"],
+      "doc": "Information about the catalog the information model is contained in"
+    },
+    {
+      "name": "title",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Multilingual title of the information model"
+    },
+    {
+      "name": "description",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Multilingual description of the information model"
+    },
+    {
+      "name": "descriptionFormatted",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Multilingual description of the information model, where harvested formatting is intact"
+    },
+    {
+      "name": "publisher",
+      "type": ["null", "no.digdir.fdk.model.Organization"],
+      "doc": "Publisher of the information model"
+    },
+    {
+      "name": "dctType",
+      "type": ["null", "string"],
+      "doc": "DCT type of the information model"
+    },
+    {
+      "name": "conformsTo",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.informationmodel.InformationModelStandard"
+        }
+      ],
+      "doc": "Standards the information model conforms to"
+    },
+    {
+      "name": "license",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.ReferenceDataCode"
+        }
+      ],
+      "doc": "Licenses for the information model"
+    },
+    {
+      "name": "informationModelIdentifier",
+      "type": ["null", "string"],
+      "doc": "Specific information model identifier"
+    },
+    {
+      "name": "spatial",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.ReferenceDataCode"
+        }
+      ],
+      "doc": "Spatial coverage"
+    },
+    {
+      "name": "isPartOf",
+      "type": ["null", "string"],
+      "doc": "Information model this is part of"
+    },
+    {
+      "name": "hasPart",
+      "type": ["null", "string"],
+      "doc": "Information models that are part of this"
+    },
+    {
+      "name": "isReplacedBy",
+      "type": ["null", "string"],
+      "doc": "Information model this is replaced by"
+    },
+    {
+      "name": "isProfileOf",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.informationmodel.InformationModelStandard"
+        }
+      ],
+      "doc": "Standards this is a profile of"
+    },
+    {
+      "name": "replaces",
+      "type": ["null", "string"],
+      "doc": "Information model this replaces"
+    },
+    {
+      "name": "temporal",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.Temporal"
+        }
+      ],
+      "doc": "Temporal coverage"
+    },
+    {
+      "name": "hasFormat",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.informationmodel.InformationModelFormat"
+        }
+      ],
+      "doc": "Formats available"
+    },
+    {
+      "name": "homepage",
+      "type": ["null", "string"],
+      "doc": "Homepage for the information model"
+    },
+    {
+      "name": "status",
+      "type": ["null", "string"],
+      "doc": "Status of the information model"
+    },
+    {
+      "name": "versionInfo",
+      "type": ["null", "string"],
+      "doc": "Version information"
+    },
+    {
+      "name": "versionNotes",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Version notes"
+    },
+    {
+      "name": "subjects",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "Subjects the information model covers"
+    },
+    {
+      "name": "containsSubjects",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "All subjects contained in the information model and its elements"
+    },
+    {
+      "name": "containsModelElements",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "Identifiers of model elements contained"
+    },
+    {
+      "name": "modelElements",
+      "type": [
+        "null",
+        {
+          "type": "map",
+          "values": "InformationModelElement"
+        }
+      ],
+      "doc": "Model elements in the information model"
+    },
+    {
+      "name": "modelProperties",
+      "type": [
+        "null",
+        {
+          "type": "map",
+          "values": "InformationModelProperty"
+        }
+      ],
+      "doc": "Model properties in the information model"
+    },
+    {
+      "name": "themeUris",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "All theme URIs"
+    },
+    {
+      "name": "theme",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.EuDataTheme"
+        }
+      ],
+      "doc": "EU data themes"
+    },
+    {
+      "name": "losTheme",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.LosNode"
+        }
+      ],
+      "doc": "LOS themes"
+    },
+    {
+      "name": "eurovocThemes",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.Eurovoc"
+        }
+      ],
+      "doc": "Eurovoc themes"
+    },
+    {
+      "name": "keyword",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.LocalizedStrings"
+        }
+      ],
+      "doc": "Keywords describing the information model"
+    },
+    {
+      "name": "contactPoint",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.ContactPoint"
+        }
+      ],
+      "doc": "Contact points for the information model"
+    },
+    {
+      "name": "issued",
+      "type": ["null", "string"],
+      "doc": "Issue date"
+    },
+    {
+      "name": "modified",
+      "type": ["null", "string"],
+      "doc": "Modification date"
+    },
+    {
+      "name": "language",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.ReferenceDataCode"
+        }
+      ],
+      "doc": "Languages the information model is available in"
+    },
+    {
+      "name": "type",
+      "type": "no.digdir.fdk.model.ResourceType",
+      "doc": "Resource type for indexing"
+    }
+  ]
+}
