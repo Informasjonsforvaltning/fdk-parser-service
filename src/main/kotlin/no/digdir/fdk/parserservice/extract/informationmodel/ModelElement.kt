@@ -47,7 +47,6 @@ private fun InformationModelCodeElement.hasContent() =
         uri != null -> true
         identifier != null -> true
         prefLabel != null -> true
-        inScheme != null -> true
         subject != null -> true
         notation != null -> true
         topConceptOf != null -> true

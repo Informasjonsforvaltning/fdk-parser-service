@@ -8,15 +8,16 @@ import no.digdir.fdk.model.ReferenceDataCode
 import no.digdir.fdk.model.ResourceType
 import no.digdir.fdk.model.informationmodel.InformationModel
 import no.digdir.fdk.model.informationmodel.InformationModelElement
+import no.digdir.fdk.model.informationmodel.InformationModelFormat
 import no.digdir.fdk.model.informationmodel.InformationModelProperty
 import no.digdir.fdk.model.informationmodel.InformationModelStandard
 import no.digdir.fdk.parserservice.parser.informationmodel.ModellDcatApNoV1Parser
 import org.apache.jena.rdf.model.ModelFactory
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertNull
 import java.io.StringReader
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @Tag("unit")
 class InformationModelExtractionTest {
@@ -445,5 +446,143 @@ class InformationModelExtractionTest {
             expectedContainsSubjects,
             result.containsSubjects!!.map { it as String }.sorted(),
         )
+    }
+
+    @Test
+    fun `should ignore properties missing all fields`() {
+        val turtle =
+            """
+            @prefix ex-abstrakt: <http://example.com/test_abstraksjon#> .
+            @prefix dct:   <http://purl.org/dc/terms/> .
+            @prefix modelldcatno: <https://data.norge.no/vocabulary/modelldcatno#> .
+            @prefix test: <https://test.com#> .
+            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+
+            <http://test.fellesdatakatalog.digdir.no/information-models/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+                a                  dcat:CatalogRecord ;
+                dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
+                foaf:primaryTopic  <https://test.com#Diversemodell> .
+
+            test:Diversemodell  a    modelldcatno:InformationModel ;
+                    dct:subject             ex-abstrakt:begrep0 , ex-abstrakt:begrep1 ;
+                    modelldcatno:containsModelElement
+                            ex-abstrakt:Elm .
+
+            ex-abstrakt:Elm  a              modelldcatno:ObjectType ;
+                    modelldcatno:hasProperty      <https://test.com#Diversemodell/.well-known/skolem/prop> .
+            """.trimIndent()
+
+        val model = ModelFactory.createDefaultModel()
+        model.read(StringReader(turtle), null, "TURTLE")
+
+        val parser = ModellDcatApNoV1Parser()
+        val result =
+            parser.parse(
+                model,
+                "https://test.com#Diversemodell",
+                "a1c680ca-62d7-34d5-aa4c-d39b5db033ae",
+            )
+
+        assertNull(result.modelProperties)
+    }
+
+    @Test
+    fun `should extract information model formats`() {
+        val turtle =
+            """
+            @prefix dct:   <http://purl.org/dc/terms/> .
+            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+            @prefix modelldcatno: <https://data.norge.no/vocabulary/modelldcatno#> .
+            @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+            @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+            @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+
+            <http://test.fellesdatakatalog.digdir.no/information-models/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+                a                  dcat:CatalogRecord ;
+                dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
+                foaf:primaryTopic  <http://test.fellesdatakatalog.digdir.no/information-model/test> .
+
+            <http://test.fellesdatakatalog.digdir.no/information-model/test>
+                a                         modelldcatno:InformationModel ;
+                dct:title                 "Test Information Model"@no ;
+                dct:hasFormat             <http://test.fellesdatakatalog.digdir.no/information-model/test#format> .
+
+            <http://test.fellesdatakatalog.digdir.no/information-model/test#format>
+                a                         dct:MediaTypeOrExtent ;
+                dct:title                 "JSON Schema"@no , "JSON Schema"@en ;
+                dct:format                "application/schema+json" ;
+                rdfs:seeAlso              <https://json-schema.org/> ;
+                dct:language              <http://publications.europa.eu/resource/authority/language/ENG> .
+            """.trimIndent()
+
+        val model = ModelFactory.createDefaultModel()
+        model.read(StringReader(turtle), null, "TURTLE")
+
+        val parser = ModellDcatApNoV1Parser()
+        val informationModel =
+            parser.parse(
+                model,
+                "http://test.fellesdatakatalog.digdir.no/information-model/test",
+                "a1c680ca-62d7-34d5-aa4c-d39b5db033ae",
+            )
+
+        val expected =
+            listOf(
+                InformationModelFormat().apply {
+                    uri = "http://test.fellesdatakatalog.digdir.no/information-model/test#format"
+                    title =
+                        LocalizedStrings().apply {
+                            no = "JSON Schema"
+                            en = "JSON Schema"
+                        }
+                    format = "application/schema+json"
+                    seeAlso = "https://json-schema.org/"
+                    language =
+                        ReferenceDataCode().apply {
+                            uri = "http://publications.europa.eu/resource/authority/language/ENG"
+                        }
+                },
+            )
+
+        assertEquals(expected, informationModel.hasFormat)
+    }
+
+    @Test
+    fun `should ignore formats missing all fields when extracting information model formats`() {
+        val turtle =
+            """
+            @prefix dct:   <http://purl.org/dc/terms/> .
+            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+            @prefix modelldcatno: <https://data.norge.no/vocabulary/modelldcatno#> .
+
+            <http://test.fellesdatakatalog.digdir.no/information-models/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+                a                  dcat:CatalogRecord ;
+                dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
+                foaf:primaryTopic  <http://test.fellesdatakatalog.digdir.no/information-model/test> .
+
+            <http://test.fellesdatakatalog.digdir.no/information-model/test>
+                a                         modelldcatno:InformationModel ;
+                dct:title                 "Test Information Model"@no ;
+                dct:hasFormat             <http://test.fellesdatakatalog.digdir.no/information-model/test/.well-known/skolem/format> .
+
+            <http://test.fellesdatakatalog.digdir.no/information-model/test/.well-known/skolem/format>
+                a                         dct:MediaTypeOrExtent .
+            """.trimIndent()
+
+        val model = ModelFactory.createDefaultModel()
+        model.read(StringReader(turtle), null, "TURTLE")
+
+        val parser = ModellDcatApNoV1Parser()
+        val informationModel =
+            parser.parse(
+                model,
+                "http://test.fellesdatakatalog.digdir.no/information-model/test",
+                "a1c680ca-62d7-34d5-aa4c-d39b5db033ae",
+            )
+
+        assertNull(informationModel.hasFormat)
     }
 }

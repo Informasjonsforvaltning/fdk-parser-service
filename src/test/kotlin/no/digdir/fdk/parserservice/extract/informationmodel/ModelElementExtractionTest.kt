@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.io.StringReader
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @Tag("unit")
 class ModelElementExtractionTest {
@@ -167,5 +168,57 @@ class ModelElementExtractionTest {
             }
 
         assertEquals(expected, subject.buildModelElement())
+    }
+
+    @Test
+    fun `should extract null when information model element is missing all fields`() {
+        val turtle =
+            """
+            <https://test.com#Model/.well-known/skolem/123>
+                <https://test.com#randomPredicate>  "Lorem ipsum" .
+            """.trimIndent()
+
+        val model = ModelFactory.createDefaultModel()
+        model.read(StringReader(turtle), null, "TURTLE")
+        val element = model.getResource("https://test.com#Model/.well-known/skolem/123")
+
+        assertNull(element.buildModelElement())
+    }
+
+    @Test
+    fun `should ignore code element with no values when extracting code list element`() {
+        val turtle =
+            """
+            @prefix dct:   <http://purl.org/dc/terms/> .
+            @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+            @prefix xkos:  <https://rdf-vocabulary.ddialliance.org/xkos/> .
+            @prefix modelldcatno: <https://data.norge.no/vocabulary/modelldcatno#> .
+            @prefix test: <https://test.com#> .
+            @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+
+            test:CodeList
+                a                         modelldcatno:CodeList ;
+                dct:identifier            "code-list" ;
+                dct:title                 "Code List"@no .
+
+            <https://test.com#Model/.well-known/skolem/123>
+                a           modelldcatno:CodeElement ;
+                skos:inScheme             test:CodeList .
+            """.trimIndent()
+
+        val model = ModelFactory.createDefaultModel()
+        model.read(StringReader(turtle), null, "TURTLE")
+        val codeList = model.getResource("https://test.com#CodeList")
+
+        val expected =
+            InformationModelElement().apply {
+                uri = "https://test.com#CodeList"
+                identifier = "code-list"
+                title = LocalizedStrings().apply { no = "Code List" }
+                elementTypes = listOf("https://data.norge.no/vocabulary/modelldcatno#CodeList")
+                codes = null
+            }
+
+        assertEquals(expected, codeList.buildModelElement())
     }
 }
