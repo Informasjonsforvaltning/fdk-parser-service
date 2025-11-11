@@ -4,6 +4,7 @@ import no.digdir.fdk.parserservice.model.RecoverableParseException
 import no.digdir.fdk.parserservice.model.UnrecoverableParseException
 import no.fdk.dataservice.DataServiceEvent
 import no.fdk.dataset.DatasetEvent
+import no.fdk.informationmodel.InformationModelEvent
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.specific.SpecificRecord
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -76,6 +77,40 @@ class KafkaReasonedEventConsumer(
                             throw UnrecoverableParseException("Error parsing dataset message")
                         }
                     circuitBreaker.processDataset(datasetEvent)
+                }
+                is GenericRecord -> circuitBreaker.processGeneric(message)
+                else -> LOGGER.warn("Unknown message type: {}", message?.getClass())
+            }
+            ack.acknowledge()
+        } catch (e: RecoverableParseException) {
+            ack.acknowledge()
+        } catch (e: UnrecoverableParseException) {
+            ack.nack(Duration.ZERO)
+        }
+    }
+    @KafkaListener(
+        topics = ["information-model-events"],
+        groupId = "fdk-parser-service",
+        concurrency = "4",
+        containerFactory = "kafkaListenerContainerFactory",
+        id = "information-model-event-consumer",
+    )
+    fun informationModelListener(
+        record: ConsumerRecord<String, Object>,
+        ack: Acknowledgment,
+    ) {
+        LOGGER.debug("Received information model message - offset: " + record.offset())
+        try {
+            when (val message = runCatching { record.value() }.getOrNull()) {
+                is SpecificRecord -> {
+                    val infoModelEvent =
+                        try {
+                            message as InformationModelEvent
+                        } catch (ex: Exception) {
+                            LOGGER.error("Error parsing information model message", ex)
+                            throw UnrecoverableParseException("Error parsing information model message")
+                        }
+                    circuitBreaker.processInformationModel(infoModelEvent)
                 }
                 is GenericRecord -> circuitBreaker.processGeneric(message)
                 else -> LOGGER.warn("Unknown message type: {}", message?.getClass())

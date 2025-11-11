@@ -4,12 +4,15 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
 import io.micrometer.core.instrument.Metrics
 import no.digdir.fdk.parserservice.handler.DataServiceHandler
 import no.digdir.fdk.parserservice.handler.DatasetHandler
+import no.digdir.fdk.parserservice.handler.InformationModelHandler
 import no.digdir.fdk.parserservice.model.RecoverableParseException
 import no.digdir.fdk.parserservice.model.UnrecoverableParseException
 import no.fdk.dataservice.DataServiceEvent
 import no.fdk.dataservice.DataServiceEventType
 import no.fdk.dataset.DatasetEvent
 import no.fdk.dataset.DatasetEventType
+import no.fdk.informationmodel.InformationModelEvent
+import no.fdk.informationmodel.InformationModelEventType
 import no.fdk.rdf.parse.RdfParseEvent
 import no.fdk.rdf.parse.RdfParseResourceType
 import org.apache.avro.generic.GenericRecord
@@ -24,6 +27,7 @@ open class KafkaReasonedEventCircuitBreaker(
     private val producer: KafkaRdfParseEventProducer,
     private val dataServiceHandler: DataServiceHandler,
     private val datasetHandler: DatasetHandler,
+    private val informationModelHandler: InformationModelHandler,
 ) {
     @CircuitBreaker(name = "rdf-parse-generic")
     open fun processGeneric(event: GenericRecord) {
@@ -91,6 +95,23 @@ open class KafkaReasonedEventCircuitBreaker(
         }
     }
 
+    @CircuitBreaker(name = "rdf-parse-information-model")
+    open fun processInformationModel(event: InformationModelEvent) {
+        val type = runCatching { event.type }.getOrNull()
+        if (type == InformationModelEventType.INFORMATION_MODEL_REASONED) {
+            val fdkId = runCatching { event.fdkId.toString() }.getOrNull()
+            val graph = runCatching { event.graph.toString() }.getOrNull()
+            val timestamp = runCatching { event.timestamp }.getOrNull()
+
+            if (fdkId != null && graph != null && timestamp != null) {
+                handleRecord(fdkId, graph, timestamp, RdfParseResourceType.INFORMATION_MODEL)
+            } else {
+                LOGGER.error("Unable to get required information model message values. fdkId: {}, graph: {}, timestamp: {}", fdkId, graph, timestamp)
+                throw UnrecoverableParseException("Unable to get required information model message values")
+            }
+        }
+    }
+
     private fun handleRecord(
         fdkId: String,
         graph: String,
@@ -135,7 +156,7 @@ open class KafkaReasonedEventCircuitBreaker(
                         RdfParseResourceType.DATA_SERVICE -> dataServiceHandler.parseDataService(fdkId, graph)
                         RdfParseResourceType.DATASET -> datasetHandler.parseDataset(fdkId, graph)
                         RdfParseResourceType.EVENT -> LOGGER.warn("Parse of events not implemented")
-                        RdfParseResourceType.INFORMATION_MODEL -> LOGGER.warn("Parse of information models not implemented")
+                        RdfParseResourceType.INFORMATION_MODEL -> informationModelHandler.parseInformationModel(fdkId, graph)
                         RdfParseResourceType.SERVICE -> LOGGER.warn("Parse of services not implemented")
                     }
                 producer.sendMessage(RdfParseEvent(type, fdkId, json.toString(), timestamp))
