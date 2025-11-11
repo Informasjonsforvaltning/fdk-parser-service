@@ -6,12 +6,15 @@ import io.mockk.mockk
 import io.mockk.verify
 import no.digdir.fdk.parserservice.handler.DataServiceHandler
 import no.digdir.fdk.parserservice.handler.DatasetHandler
+import no.digdir.fdk.parserservice.handler.InformationModelHandler
 import no.digdir.fdk.parserservice.model.RecoverableParseException
 import no.digdir.fdk.parserservice.model.UnrecoverableParseException
 import no.fdk.dataservice.DataServiceEvent
 import no.fdk.dataservice.DataServiceEventType
 import no.fdk.dataset.DatasetEvent
 import no.fdk.dataset.DatasetEventType
+import no.fdk.informationmodel.InformationModelEvent
+import no.fdk.informationmodel.InformationModelEventType
 import no.fdk.rdf.parse.RdfParseEvent
 import no.fdk.rdf.parse.RdfParseResourceType
 import org.apache.avro.generic.GenericRecord
@@ -32,10 +35,11 @@ import kotlin.test.assertEquals
 class KafkaReasonedEventConsumerTest {
     private val datasetHandler: DatasetHandler = mockk()
     private val dataServiceHandler: DataServiceHandler = mockk()
+    private val informationModelHandler: InformationModelHandler = mockk()
     private val kafkaTemplate: KafkaTemplate<String, RdfParseEvent> = mockk()
     private val ack: Acknowledgment = mockk()
     private val kafkaRdfParseEventProducer = KafkaRdfParseEventProducer(kafkaTemplate)
-    private val circuitBreaker = KafkaReasonedEventCircuitBreaker(kafkaRdfParseEventProducer, dataServiceHandler, datasetHandler)
+    private val circuitBreaker = KafkaReasonedEventCircuitBreaker(kafkaRdfParseEventProducer, dataServiceHandler, datasetHandler, informationModelHandler)
     private val kafkaReasonedEventConsumer = KafkaReasonedEventConsumer(circuitBreaker)
     private val mapper = jacksonObjectMapper()
 
@@ -227,6 +231,89 @@ class KafkaReasonedEventConsumerTest {
 
         verify {
             kafkaTemplate.send(any(), match { it.fdkId == "fdk-id" && it.resourceType == RdfParseResourceType.DATA_SERVICE })
+        }
+    }
+
+    @Test
+    fun `information model listener should produce a rdf parse event`() {
+        val parsedJson = "{\"data\":\"my-parsed-rdf\"}"
+        every { informationModelHandler.parseInformationModel(any(), any()) } returns mapper.readTree(parsedJson)
+        every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
+        every { ack.acknowledge() } returns Unit
+        every { ack.nack(Duration.ZERO) } returns Unit
+
+        val informationModelEvent = InformationModelEvent(InformationModelEventType.INFORMATION_MODEL_REASONED, "my-id", "uri", System.currentTimeMillis())
+        kafkaReasonedEventConsumer.informationModelListener(
+            record = ConsumerRecord("information-model-events", 0, 0, "my-id", informationModelEvent as Object),
+            ack = ack,
+        )
+
+        verify {
+            kafkaTemplate.send(
+                withArg {
+                    assertEquals("rdf-parse-events", it)
+                },
+                withArg {
+                    assertEquals(informationModelEvent.fdkId, it.fdkId)
+                    assertEquals(RdfParseResourceType.INFORMATION_MODEL, it.resourceType)
+                    assertEquals(parsedJson, it.data)
+                    assertEquals(informationModelEvent.timestamp, it.timestamp)
+                },
+            )
+            ack.acknowledge()
+        }
+        confirmVerified(kafkaTemplate, ack)
+    }
+
+    @Test
+    fun `information model listener should acknowledge when a recoverable exception occurs`() {
+        every { informationModelHandler.parseInformationModel(any(), any()) } throws RecoverableParseException("Error parsing RDF: invalid rdf")
+        every { ack.acknowledge() } returns Unit
+        every { ack.nack(Duration.ZERO) } returns Unit
+
+        val informationModelEvent = InformationModelEvent(InformationModelEventType.INFORMATION_MODEL_REASONED, "my-id", "uri", System.currentTimeMillis())
+        kafkaReasonedEventConsumer.informationModelListener(
+            record = ConsumerRecord("information-model-events", 0, 0, "my-id", informationModelEvent as Object),
+            ack = ack,
+        )
+
+        verify(exactly = 0) { kafkaTemplate.send(any(), any()) }
+        verify(exactly = 1) { ack.acknowledge() }
+        verify(exactly = 0) { ack.nack(Duration.ZERO) }
+        confirmVerified(kafkaTemplate, ack)
+    }
+
+    @Test
+    fun `information model listener should not acknowledge when a unrecoverable exception occurs`() {
+        every { informationModelHandler.parseInformationModel(any(), any()) } throws UnrecoverableParseException("Error parsing RDF")
+        every { ack.nack(Duration.ZERO) } returns Unit
+
+        val informationModelEvent = InformationModelEvent(InformationModelEventType.INFORMATION_MODEL_REASONED, "my-id", "uri", System.currentTimeMillis())
+        kafkaReasonedEventConsumer.informationModelListener(
+            record = ConsumerRecord("information-model-events", 0, 0, "my-id", informationModelEvent as Object),
+            ack = ack,
+        )
+
+        verify(exactly = 0) { kafkaTemplate.send(any(), any()) }
+        verify(exactly = 0) { ack.acknowledge() }
+        verify(exactly = 1) { ack.nack(Duration.ZERO) }
+        confirmVerified(kafkaTemplate, ack)
+    }
+
+    @Test
+    fun `processInformationModel should handle valid information model reasoned event`() {
+        val event = mockk<InformationModelEvent>()
+        every { event.type } returns InformationModelEventType.INFORMATION_MODEL_REASONED
+        every { event.fdkId } returns "fdk-id"
+        every { event.graph } returns "graph"
+        every { event.timestamp } returns 12345L
+        every { informationModelHandler.parseInformationModel(any(), any()) } returns mapper.readTree("{\"ok\":true}")
+        every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
+
+        circuitBreaker.processInformationModel(event)
+
+        verify {
+            kafkaTemplate.send(any(), match { it.fdkId == "fdk-id" && it.resourceType == RdfParseResourceType.INFORMATION_MODEL })
         }
     }
 }
