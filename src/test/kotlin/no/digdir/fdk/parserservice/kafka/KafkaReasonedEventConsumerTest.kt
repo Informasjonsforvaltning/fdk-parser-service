@@ -39,7 +39,8 @@ class KafkaReasonedEventConsumerTest {
     private val kafkaTemplate: KafkaTemplate<String, RdfParseEvent> = mockk()
     private val ack: Acknowledgment = mockk()
     private val kafkaRdfParseEventProducer = KafkaRdfParseEventProducer(kafkaTemplate)
-    private val circuitBreaker = KafkaReasonedEventCircuitBreaker(kafkaRdfParseEventProducer, dataServiceHandler, datasetHandler, informationModelHandler)
+    private val circuitBreaker =
+        KafkaReasonedEventCircuitBreaker(kafkaRdfParseEventProducer, dataServiceHandler, datasetHandler, informationModelHandler)
     private val kafkaReasonedEventConsumer = KafkaReasonedEventConsumer(circuitBreaker)
     private val mapper = jacksonObjectMapper()
 
@@ -242,7 +243,8 @@ class KafkaReasonedEventConsumerTest {
         every { ack.acknowledge() } returns Unit
         every { ack.nack(Duration.ZERO) } returns Unit
 
-        val informationModelEvent = InformationModelEvent(InformationModelEventType.INFORMATION_MODEL_REASONED, "my-id", "uri", System.currentTimeMillis())
+        val informationModelEvent =
+            InformationModelEvent(InformationModelEventType.INFORMATION_MODEL_REASONED, "my-id", "uri", System.currentTimeMillis())
         kafkaReasonedEventConsumer.informationModelListener(
             record = ConsumerRecord("information-model-events", 0, 0, "my-id", informationModelEvent as Object),
             ack = ack,
@@ -267,11 +269,13 @@ class KafkaReasonedEventConsumerTest {
 
     @Test
     fun `information model listener should acknowledge when a recoverable exception occurs`() {
-        every { informationModelHandler.parseInformationModel(any(), any()) } throws RecoverableParseException("Error parsing RDF: invalid rdf")
+        every { informationModelHandler.parseInformationModel(any(), any()) } throws
+            RecoverableParseException("Error parsing RDF: invalid rdf")
         every { ack.acknowledge() } returns Unit
         every { ack.nack(Duration.ZERO) } returns Unit
 
-        val informationModelEvent = InformationModelEvent(InformationModelEventType.INFORMATION_MODEL_REASONED, "my-id", "uri", System.currentTimeMillis())
+        val informationModelEvent =
+            InformationModelEvent(InformationModelEventType.INFORMATION_MODEL_REASONED, "my-id", "uri", System.currentTimeMillis())
         kafkaReasonedEventConsumer.informationModelListener(
             record = ConsumerRecord("information-model-events", 0, 0, "my-id", informationModelEvent as Object),
             ack = ack,
@@ -288,7 +292,8 @@ class KafkaReasonedEventConsumerTest {
         every { informationModelHandler.parseInformationModel(any(), any()) } throws UnrecoverableParseException("Error parsing RDF")
         every { ack.nack(Duration.ZERO) } returns Unit
 
-        val informationModelEvent = InformationModelEvent(InformationModelEventType.INFORMATION_MODEL_REASONED, "my-id", "uri", System.currentTimeMillis())
+        val informationModelEvent =
+            InformationModelEvent(InformationModelEventType.INFORMATION_MODEL_REASONED, "my-id", "uri", System.currentTimeMillis())
         kafkaReasonedEventConsumer.informationModelListener(
             record = ConsumerRecord("information-model-events", 0, 0, "my-id", informationModelEvent as Object),
             ack = ack,

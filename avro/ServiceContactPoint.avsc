@@ -1,0 +1,38 @@
+{
+  "type": "record",
+  "name": "ServiceContactPoint",
+  "namespace": "no.digdir.fdk.model.service",
+  "doc": "Information about a service contact point",
+  "fields": [
+    {
+      "name": "uri",
+      "type": ["null", "string"],
+      "doc": "URI for the contact point"
+    },
+    {
+      "name": "contactType",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Multilingual type of the contact point"
+    },
+    {
+      "name": "email",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "Email addresses"
+    },
+    {
+      "name": "telephone",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "Telephone numbers"
+    },
+    {
+      "name": "contactPage",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "Contact page URLs"
+    },
+    {
+      "name": "language",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.ReferenceDataCode"}],
+      "doc": "Languages for the contact point"
+    }
+  ]
+}

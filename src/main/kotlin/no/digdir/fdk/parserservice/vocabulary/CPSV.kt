@@ -1,6 +1,7 @@
 package no.digdir.fdk.parserservice.vocabulary
 
 import org.apache.jena.rdf.model.Property
+import org.apache.jena.rdf.model.Resource
 import org.apache.jena.rdf.model.ResourceFactory
 
 class CPSV {
@@ -9,5 +10,7 @@ class CPSV {
 
         val follows: Property = ResourceFactory.createProperty("${URI}follows")
         val implements: Property = ResourceFactory.createProperty("${URI}implements")
+
+        val PublicService: Resource = ResourceFactory.createResource("${URI}PublicService")
     }
 }

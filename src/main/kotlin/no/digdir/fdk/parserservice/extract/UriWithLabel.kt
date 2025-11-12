@@ -34,3 +34,27 @@ private fun Statement.buildUriWithLabel(
         return null
     }
 }
+
+fun Resource.extractListOfUriWithLabel(
+    pred: Property,
+    labelPred: Property,
+): List<UriWithLabel>? =
+    listProperties(pred)
+        .asSequence()
+        .mapNotNull { it.buildUriWithLabel(labelPred) }
+        .toList()
+        .takeIf { it.isNotEmpty() }
+
+private fun Statement.buildUriWithLabel(labelPred: Property): UriWithLabel? {
+    if (isResource(this)) {
+        val builder = UriWithLabel.newBuilder()
+
+        return builder
+            .setUri(resource.extractURIStringValue())
+            .setPrefLabel(resource.extractLocalizedStrings(labelPred))
+            .build()
+            .takeIf { it.uri != null || it.prefLabel != null }
+    } else {
+        return null
+    }
+}

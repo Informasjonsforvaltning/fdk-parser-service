@@ -1,0 +1,38 @@
+{
+  "type": "record",
+  "name": "ServiceEvidence",
+  "namespace": "no.digdir.fdk.model.service",
+  "doc": "Information about service evidence/inputs",
+  "fields": [
+    {
+      "name": "rdfType",
+      "type": "string",
+      "doc": "RDF type of the evidence (DATASET_TYPE or EVIDENCE_TYPE)"
+    },
+    {
+      "name": "uri",
+      "type": ["null", "string"],
+      "doc": "URI for the evidence"
+    },
+    {
+      "name": "identifier",
+      "type": ["null", "string"],
+      "doc": "Identifier for the evidence"
+    },
+    {
+      "name": "name",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Multilingual name of the evidence"
+    },
+    {
+      "name": "description",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Multilingual description of the evidence"
+    },
+    {
+      "name": "page",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "Pages related to the evidence"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "type": "record",
+  "name": "ServiceAgent",
+  "namespace": "no.digdir.fdk.model.service",
+  "doc": "Information about service agents",
+  "fields": [
+    {
+      "name": "uri",
+      "type": ["null", "string"],
+      "doc": "URI for the agent"
+    },
+    {
+      "name": "identifier",
+      "type": ["null", "string"],
+      "doc": "Identifier for the agent"
+    },
+    {
+      "name": "name",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Multilingual name of the agent"
+    }
+  ]
+}

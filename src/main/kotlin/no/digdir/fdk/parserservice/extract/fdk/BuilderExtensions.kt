@@ -3,6 +3,7 @@ package no.digdir.fdk.parserservice.extract.fdk
 import no.digdir.fdk.model.dataservice.DataService
 import no.digdir.fdk.model.dataset.Dataset
 import no.digdir.fdk.model.informationmodel.InformationModel
+import no.digdir.fdk.model.service.Service
 import no.digdir.fdk.parserservice.extract.containsTriple
 import no.digdir.fdk.parserservice.vocabulary.FDK
 import org.apache.jena.rdf.model.Resource
@@ -34,10 +35,19 @@ fun DataService.Builder.addFdkData(recordResource: Resource) {
 }
 
 /**
- * Adds data to the data service builder that has been added to the data service graph by the FDK harvest process.
+ * Adds data to the information model builder that has been added to the information model graph by the FDK harvest process.
  * @param recordResource The jena resource of the fdkRecord
  */
 fun InformationModel.Builder.addFdkData(recordResource: Resource) {
+    setId(fdkIdFromRecord(recordResource))
+    setHarvest(harvestMetaData(recordResource))
+}
+
+/**
+ * Adds data to the service builder that has been added to the service graph by the FDK harvest process.
+ * @param recordResource The jena resource of the fdkRecord
+ */
+fun Service.Builder.addFdkData(recordResource: Resource) {
     setId(fdkIdFromRecord(recordResource))
     setHarvest(harvestMetaData(recordResource))
 }
