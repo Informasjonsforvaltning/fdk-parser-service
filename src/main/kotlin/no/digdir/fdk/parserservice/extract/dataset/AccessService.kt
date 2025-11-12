@@ -31,6 +31,12 @@ private fun Resource.buildAccessService(): AccessService? {
     return builder.build().takeIf { it.hasContent() }
 }
 
+/**
+ * Extracts and builds access services exposed by a distribution by traversing
+ * DCAT accessService relations.
+ *
+ * @return list of `AccessService` objects or `null` when no services are declared
+ */
 fun Resource.extractListOfAccessServices(): List<AccessService>? =
     listResources(DCAT.accessService)
         ?.mapNotNull { it.buildAccessService() }

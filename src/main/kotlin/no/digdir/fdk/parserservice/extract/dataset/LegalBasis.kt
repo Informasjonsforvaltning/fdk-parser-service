@@ -14,6 +14,12 @@ import org.apache.jena.vocabulary.RDFS
 import org.apache.jena.vocabulary.SKOS
 import java.net.URI
 
+/**
+ * Extracts CPSV rule references that represent legal bases for disclosure/processing.
+ *
+ * @param rule CPSV rule predicate (e.g. `CPSV.ruleForDisclosure`)
+ * @return list of legal basis descriptors or `null` when none exist
+ */
 fun Resource.extractListOfLegalBasisV2(rule: Property): List<UriWithLabelAndType>? =
     listProperties(CPSV.follows)
         .asSequence()

@@ -1,0 +1,198 @@
+{
+  "type": "record",
+  "name": "Service",
+  "namespace": "no.digdir.fdk.model.service",
+  "doc": "Internal Data.norge.no model for services",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string",
+      "doc": "Unique FDK identifier for the service"
+    },
+    {
+      "name": "uri",
+      "type": "string",
+      "doc": "Subject URI for the service in the harvested source"
+    },
+    {
+      "name": "identifier",
+      "type": ["null", "string"],
+      "doc": "Service identifier from dct:identifier"
+    },
+    {
+      "name": "title",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Multilingual title of the service"
+    },
+    {
+      "name": "description",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Multilingual description of the service"
+    },
+    {
+      "name": "harvest",
+      "type": ["null", "no.digdir.fdk.model.HarvestMetaData"],
+      "doc": "Metadata about the harvest of the service to FDK"
+    },
+    {
+      "name": "catalog",
+      "type": ["null", "no.digdir.fdk.model.Catalog"],
+      "doc": "Catalog information for the service"
+    },
+    {
+      "name": "ownedBy",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.Organization"}],
+      "doc": "Organizations that own the service"
+    },
+    {
+      "name": "contactPoint",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.service.ServiceContactPoint"}],
+      "doc": "Contact points for the service"
+    },
+    {
+      "name": "keyword",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.LocalizedStrings"}],
+      "doc": "Keywords associated with the service"
+    },
+    {
+      "name": "sector",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.EuDataTheme"}],
+      "doc": "Sectors associated with the service"
+    },
+    {
+      "name": "produces",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.service.ServiceOutput"}],
+      "doc": "Outputs produced by the service"
+    },
+    {
+      "name": "spatial",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "Spatial coverage of the service"
+    },
+    {
+      "name": "hasInput",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.service.ServiceEvidence"}],
+      "doc": "Inputs/evidence required by the service"
+    },
+    {
+      "name": "processingTime",
+      "type": ["null", "string"],
+      "doc": "Processing time for the service"
+    },
+    {
+      "name": "isDescribedAt",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.UriWithLabel"}],
+      "doc": "Resources that describe the service"
+    },
+    {
+      "name": "hasParticipation",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "Participation URIs"
+    },
+    {
+      "name": "isGroupedBy",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "Grouping URIs"
+    },
+    {
+      "name": "isClassifiedBy",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.UriWithLabel"}],
+      "doc": "Classifications of the service"
+    },
+    {
+      "name": "hasChannel",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.service.ServiceChannel"}],
+      "doc": "Channels through which the service is available"
+    },
+    {
+      "name": "follows",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.service.ServiceRule"}],
+      "doc": "Rules that the service follows"
+    },
+    {
+      "name": "hasCost",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.service.ServiceCost"}],
+      "doc": "Costs associated with the service"
+    },
+    {
+      "name": "requires",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.UriWithLabel"}],
+      "doc": "URIs of required services"
+    },
+    {
+      "name": "relation",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.UriWithLabel"}],
+      "doc": "URIs of related services"
+    },
+    {
+      "name": "hasLegalResource",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.service.ServiceLegalResource"}],
+      "doc": "Legal resources associated with the service"
+    },
+    {
+      "name": "language",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.ReferenceDataCode"}],
+      "doc": "Languages supported by the service"
+    },
+    {
+      "name": "holdsRequirement",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.service.ServiceRequirement"}],
+      "doc": "Requirements for the service"
+    },
+    {
+      "name": "admsStatus",
+      "type": ["null", "no.digdir.fdk.model.ReferenceDataCode"],
+      "doc": "Status of the service"
+    },
+    {
+      "name": "subject",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.UriWithLabel"}],
+      "doc": "Subjects of the service"
+    },
+    {
+      "name": "homepage",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "Homepage URLs"
+    },
+    {
+      "name": "dctType",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.ReferenceDataCode"}],
+      "doc": "Types of the service"
+    },
+    {
+      "name": "thematicAreaUris",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "Thematic area URIs"
+    },
+    {
+      "name": "losThemes",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.LosNode"}],
+      "doc": "LOS themes associated with the service"
+    },
+    {
+      "name": "eurovocThemes",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.Eurovoc"}],
+      "doc": "EUROVOC themes associated with the service"
+    },
+    {
+      "name": "participatingAgents",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.service.ServiceAgent"}],
+      "doc": "Agents participating in the service"
+    },
+    {
+      "name": "hasCompetentAuthority",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.Organization"}],
+      "doc": "Competent authorities for the service (PublicService only)"
+    },
+    {
+      "name": "type",
+      "type": ["null", "no.digdir.fdk.model.ResourceType"],
+      "doc": "Resource type"
+    },
+    {
+      "name": "specializedType",
+      "type": ["null", "string"],
+      "doc": "Type of service"
+    }
+  ]
+}

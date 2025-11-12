@@ -97,6 +97,7 @@ class DatasetHandlerTest {
                   "name": null,
                   "orgPath": null,
                   "prefLabel": null,
+                  "title": null,
                   "organisasjonsform": null
                 },
                 "title": {

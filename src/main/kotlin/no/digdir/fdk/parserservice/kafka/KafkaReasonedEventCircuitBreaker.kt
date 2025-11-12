@@ -106,7 +106,12 @@ open class KafkaReasonedEventCircuitBreaker(
             if (fdkId != null && graph != null && timestamp != null) {
                 handleRecord(fdkId, graph, timestamp, RdfParseResourceType.INFORMATION_MODEL)
             } else {
-                LOGGER.error("Unable to get required information model message values. fdkId: {}, graph: {}, timestamp: {}", fdkId, graph, timestamp)
+                LOGGER.error(
+                    "Unable to get required information model message values. fdkId: {}, graph: {}, timestamp: {}",
+                    fdkId,
+                    graph,
+                    timestamp,
+                )
                 throw UnrecoverableParseException("Unable to get required information model message values")
             }
         }

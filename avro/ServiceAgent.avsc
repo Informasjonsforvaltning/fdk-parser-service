@@ -1,0 +1,28 @@
+{
+  "type": "record",
+  "name": "ServiceAgent",
+  "namespace": "no.digdir.fdk.model.service",
+  "doc": "Information about service agent",
+  "fields": [
+    {
+      "name": "uri",
+      "type": ["null", "string"],
+      "doc": "URI for the agent"
+    },
+    {
+      "name": "identifier",
+      "type": ["null", "string"],
+      "doc": "Identifier for the agent"
+    },
+    {
+      "name": "name",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Multilingual name of the agent"
+    },
+    {
+      "name": "playsRole",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.service.ServiceParticipation"}],
+      "doc": "Descriptions of how an Agent participates in or interacts with a service"
+    }
+  ]
+}

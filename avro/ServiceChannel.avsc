@@ -1,0 +1,53 @@
+{
+  "type": "record",
+  "name": "ServiceChannel",
+  "namespace": "no.digdir.fdk.model.service",
+  "doc": "Information about a service channel",
+  "fields": [
+    {
+      "name": "uri",
+      "type": ["null", "string"],
+      "doc": "URI for the channel"
+    },
+    {
+      "name": "identifier",
+      "type": ["null", "string"],
+      "doc": "Identifier for the channel"
+    },
+    {
+      "name": "channelType",
+      "type": ["null", "no.digdir.fdk.model.ReferenceDataCode"],
+      "doc": "Type of the channel"
+    },
+    {
+      "name": "description",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Multilingual description of the channel"
+    },
+    {
+      "name": "processingTime",
+      "type": ["null", "string"],
+      "doc": "Processing time for the channel"
+    },
+    {
+      "name": "hasInput",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "List of input requirements"
+    },
+    {
+      "name": "email",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "Email addresses for the channel"
+    },
+    {
+      "name": "url",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "URLs for the channel"
+    },
+    {
+      "name": "telephone",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "Telephone numbers for the channel"
+    }
+  ]
+}

@@ -14,6 +14,12 @@ import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDF
 import java.net.URI
 
+/**
+ * Extracts the dataset series metadata by resolving the `dcat3:inSeries` reference and
+ * mapping relevant catalog record data.
+ *
+ * @return `InSeries` descriptor or `null` when the resource is not part of a series
+ */
 fun Resource.extractInSeries(): InSeries? {
     val builder = InSeries.newBuilder()
     val seriesResource = singleResource(DCAT3.inSeries)
@@ -39,6 +45,12 @@ fun Resource.extractInSeries(): InSeries? {
     }
 }
 
+/**
+ * Traverses the linked-list structure defined by `dcat3:last`/`dcat3:prev` to collect
+ * the URIs of datasets that belong to the same series.
+ *
+ * @return ordered list of dataset URIs or `null` when the linkage is absent
+ */
 fun Resource.extractListOfDatasetsInSeries(): List<String>? {
     var current = singleResource(DCAT3.last)
     val datasets = mutableListOf<String>()

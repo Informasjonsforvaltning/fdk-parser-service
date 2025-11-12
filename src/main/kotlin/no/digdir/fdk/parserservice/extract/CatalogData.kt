@@ -10,6 +10,12 @@ import java.net.URI
 
 private fun Catalog.hasData(): Boolean = uri != null || id != null || title != null || description != null || publisher != null
 
+/**
+ * Extracts catalog metadata for the dataset/resource currently being parsed by traversing
+ * the surrounding DCAT catalog structure within the model.
+ *
+ * @return a populated `Catalog` instance or `null` when no catalog context is available
+ */
 fun Resource.extractCatalogData(): Catalog? {
     val catalogResource = getCatalogResource()
 

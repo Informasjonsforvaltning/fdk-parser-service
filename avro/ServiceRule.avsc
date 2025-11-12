@@ -1,0 +1,38 @@
+{
+  "type": "record",
+  "name": "ServiceRule",
+  "namespace": "no.digdir.fdk.model.service",
+  "doc": "Information about service rules",
+  "fields": [
+    {
+      "name": "uri",
+      "type": ["null", "string"],
+      "doc": "URI for the rule"
+    },
+    {
+      "name": "identifier",
+      "type": ["null", "string"],
+      "doc": "Identifier for the rule"
+    },
+    {
+      "name": "name",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Multilingual name of the rule"
+    },
+    {
+      "name": "description",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Multilingual description of the rule"
+    },
+    {
+      "name": "language",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.ReferenceDataCode"}],
+      "doc": "Languages for the output"
+    },
+    {
+      "name": "legalResources",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "List of legal resources this rule implements"
+    }
+  ]
+}

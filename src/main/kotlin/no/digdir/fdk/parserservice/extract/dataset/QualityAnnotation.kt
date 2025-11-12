@@ -52,6 +52,13 @@ private fun Resource.buildQualityAnnotation(dimension: Resource): QualityAnnotat
     }
 }
 
+/**
+ * Extracts the first quality annotation for the supplied dimension (e.g. accuracy,
+ * completeness) and maps it to a `QualityAnnotation` containing the hasBody text.
+ *
+ * @param dimension DQV dimension resource to filter on
+ * @return matching `QualityAnnotation` or `null` when none is found
+ */
 fun Resource.extractQualityAnnotation(dimension: Resource): QualityAnnotation? =
     listResources(DQV.hasQualityAnnotation)
         ?.firstOrNull { model.containsTriple(it.uri, DQV.inDimension.uri, URI.create(dimension.uri)) }

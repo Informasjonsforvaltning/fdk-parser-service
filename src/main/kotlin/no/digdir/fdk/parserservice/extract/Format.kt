@@ -10,6 +10,13 @@ import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.DC_11
 import org.apache.jena.vocabulary.RDF
 
+/**
+ * Extracts all format resources reachable via the given predicate and converts them
+ * to `Format` instances containing URI, code, name and inferred type.
+ *
+ * @param pred the predicate that points to the format resource(s)
+ * @return list of populated `Format` objects, or `null` when no values exist
+ */
 fun Resource.extractListOfFormats(pred: Property): List<Format>? =
     listProperties(pred)
         .asSequence()
@@ -17,6 +24,12 @@ fun Resource.extractListOfFormats(pred: Property): List<Format>? =
         .toList()
         .takeIf { it.isNotEmpty() }
 
+/**
+ * Extracts a single format resource reachable via the predicate and maps it to a `Format`.
+ *
+ * @param pred predicate pointing to the format resource
+ * @return populated `Format` or `null` if the predicate does not resolve to a format
+ */
 fun Resource.extractFormat(pred: Property): Format? = singleObjectStatement(pred)?.buildFormat()
 
 private fun Resource.extractType(): FormatType {

@@ -1,0 +1,38 @@
+{
+  "type": "record",
+  "name": "ServiceRequirement",
+  "namespace": "no.digdir.fdk.model.service",
+  "doc": "Information about service requirements",
+  "fields": [
+    {
+      "name": "uri",
+      "type": ["null", "string"],
+      "doc": "URI for the requirement"
+    },
+    {
+      "name": "identifier",
+      "type": ["null", "string"],
+      "doc": "Identifier for the requirement"
+    },
+    {
+      "name": "dctTitle",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Multilingual title of the requirement"
+    },
+    {
+      "name": "dctType",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.UriWithLabel"}],
+      "doc": "Type of requirement"
+    },
+    {
+      "name": "description",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Multilingual description of the requirement"
+    },
+    {
+      "name": "fulfils",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "List of requirements this fulfils"
+    }
+  ]
+}

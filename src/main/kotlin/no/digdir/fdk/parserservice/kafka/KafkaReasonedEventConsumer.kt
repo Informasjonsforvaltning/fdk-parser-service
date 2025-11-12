@@ -88,6 +88,7 @@ class KafkaReasonedEventConsumer(
             ack.nack(Duration.ZERO)
         }
     }
+
     @KafkaListener(
         topics = ["information-model-events"],
         groupId = "fdk-parser-service",

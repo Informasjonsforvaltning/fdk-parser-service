@@ -7,6 +7,15 @@ import org.apache.jena.rdf.model.Statement
 import org.apache.jena.vocabulary.RDF
 import org.apache.jena.vocabulary.SKOS
 
+/**
+ * Extracts URI-with-label entries and augments them with an extra RDF type when present,
+ * allowing consumers to differentiate between SKOS concepts and other resources.
+ *
+ * @param pred predicate pointing to the target resource(s)
+ * @param uriPred predicate used to read the URI value when not directly available
+ * @param labelPred predicate providing a localized label
+ * @return list of `UriWithLabelAndType` objects or `null` when no resources exist
+ */
 fun Resource.extractListOfUriWithLabelAndType(
     pred: Property,
     uriPred: Property,

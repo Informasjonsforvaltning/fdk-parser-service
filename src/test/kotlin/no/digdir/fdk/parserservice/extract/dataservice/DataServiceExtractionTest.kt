@@ -107,7 +107,9 @@ class DataServiceExtractionTest {
                     Organization().apply {
                         uri = "https://testdirektoratet.no/publisher"
                         id = "112233445"
+                        name = "Test Publisher"
                         prefLabel = LocalizedStrings().apply { no = "Test Publisher" }
+                        title = LocalizedStrings().apply { no = "Test Publisher" }
                     }
             }
 
