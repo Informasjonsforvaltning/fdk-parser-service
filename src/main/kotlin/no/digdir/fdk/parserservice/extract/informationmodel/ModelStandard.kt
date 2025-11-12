@@ -22,6 +22,13 @@ private fun InformationModelStandard.hasContent(): Boolean =
         else -> false
     }
 
+/**
+ * Extracts references to modelling standards/profiles and maps them to
+ * `InformationModelStandard` objects containing title, seeAlso and version info.
+ *
+ * @param pred predicate (e.g. `prof:isProfileOf`) pointing to the standard resource
+ * @return list of standards or `null` when no references exist
+ */
 fun Resource.extractListOfModelStandard(pred: Property): List<InformationModelStandard>? =
     listProperties(pred)
         .asSequence()

@@ -124,9 +124,15 @@ class InformationModelHandlerTest {
               "publisher": {
                 "id": "112233445",
                 "uri": "https://testdirektoratet.no/publisher",
-                "name": null,
+                "name": "Digitaliseringsdirektoratet",
                 "orgPath": null,
                 "prefLabel": {
+                  "no": "Digitaliseringsdirektoratet",
+                  "nb": null,
+                  "nn": null,
+                  "en": null
+                },
+                "title": {
                   "no": "Digitaliseringsdirektoratet",
                   "nb": null,
                   "nn": null,

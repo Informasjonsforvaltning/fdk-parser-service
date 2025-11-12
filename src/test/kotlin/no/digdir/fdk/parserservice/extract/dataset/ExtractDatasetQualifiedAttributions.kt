@@ -59,6 +59,7 @@ class ExtractDatasetQualifiedAttributions {
                             id = "123456789"
                             name = "Testdirektoratet"
                             prefLabel = LocalizedStrings().apply { en = "Norwegian Test Agency" }
+                            title = LocalizedStrings().apply { en = "Norwegian Test Agency" }
                         }
                 },
                 QualifiedAttribution().apply {

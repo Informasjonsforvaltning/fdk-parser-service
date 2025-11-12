@@ -51,6 +51,12 @@ private fun Resource.buildContactPoint(): ContactPoint? {
     return builder.build().takeIf { it.hasContent() }
 }
 
+/**
+ * Extracts all DCAT contact point resources and converts them to `ContactPoint`
+ * objects containing vCard metadata such as formatted name, email and phone number.
+ *
+ * @return list of contact points or `null` when no contact point information exists
+ */
 fun Resource.extractListOfContactPoints(): List<ContactPoint>? =
     listResources(DCAT.contactPoint)
         ?.mapNotNull { it.buildContactPoint() }

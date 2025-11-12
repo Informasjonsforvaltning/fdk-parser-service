@@ -37,6 +37,14 @@
       "doc": "Simple organization map of the organization, it lists organization ID and the ID of eventual parent organizations"
     },
     {
+      "name": "title",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual title of the organization"
+    },
+    {
       "name": "prefLabel",
       "type": [
         "null",

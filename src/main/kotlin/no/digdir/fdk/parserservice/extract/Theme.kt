@@ -24,6 +24,11 @@ private fun EuDataTheme.hasContent(): Boolean =
         else -> false
     }
 
+/**
+ * Extracts EU data theme metadata (code, URI and labels) from the resource.
+ *
+ * @return populated `EuDataTheme` or `null` when the resource lacks theme content
+ */
 fun Resource.extractEuDataTheme(): EuDataTheme? {
     val builder = EuDataTheme.newBuilder()
 
@@ -50,6 +55,11 @@ private fun Eurovoc.hasContent(): Boolean =
         else -> false
     }
 
+/**
+ * Extracts Eurovoc concept information including code, labels and stored theme paths.
+ *
+ * @return populated `Eurovoc` instance or `null` when the concept lacks data
+ */
 fun Resource.extractEurovoc(): Eurovoc? {
     val builder = Eurovoc.newBuilder()
 
@@ -77,6 +87,11 @@ private fun LosNode.hasContent(): Boolean =
         else -> false
     }
 
+/**
+ * Extracts LOS theme metadata (code, labels, theme paths and tema flag) from the resource.
+ *
+ * @return populated `LosNode` or `null` when insufficient data is present
+ */
 fun Resource.extractLosNode(): LosNode? {
     val builder = LosNode.newBuilder()
 

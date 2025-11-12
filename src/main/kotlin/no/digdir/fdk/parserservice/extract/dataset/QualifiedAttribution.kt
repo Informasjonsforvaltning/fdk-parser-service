@@ -25,6 +25,12 @@ private fun Resource.buildQualifiedAttribution(): QualifiedAttribution? {
     return builder.build().takeIf { it.hasContent() }
 }
 
+/**
+ * Extracts PROV qualified attribution entries, capturing both the agent (organization)
+ * and role applied to the dataset or distribution.
+ *
+ * @return list of `QualifiedAttribution` items or `null` when none exist
+ */
 fun Resource.extractListOfQualifiedAttributions(): List<QualifiedAttribution>? =
     listResources(PROV.qualifiedAttribution)
         ?.mapNotNull { it.buildQualifiedAttribution() }

@@ -26,6 +26,15 @@ private fun Resource.buildTemporal(
     return builder.build().takeIf { it.hasContent() }
 }
 
+/**
+ * Extracts temporal coverage intervals by following the supplied predicate and reading
+ * start/end dates from the referenced resources.
+ *
+ * @param mainPredicate predicate linking to temporal resources
+ * @param startPredicate predicate holding the start date literal
+ * @param endPredicate predicate holding the end date literal
+ * @return list of `Temporal` objects or `null` when none exist
+ */
 fun Resource.extractListOfTemporal(
     mainPredicate: Property,
     startPredicate: Property,

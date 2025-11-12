@@ -6,6 +6,7 @@
   "symbols": [
     "datasets",
     "dataservices",
-    "informationmodels"
+    "informationmodels",
+    "publicservices"
   ]
 }

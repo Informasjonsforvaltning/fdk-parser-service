@@ -136,21 +136,43 @@ private fun Resource.buildMobilitySampleData(): Distribution? {
     }
 }
 
+/**
+ * Extracts distributions compliant with DCAT-AP-NO v1 by traversing the supplied predicate.
+ *
+ * @param mainPredicate predicate referencing distribution resources
+ * @return list of distributions or `null` when no resources are available
+ */
 fun Resource.extractListOfDistributionsV1(mainPredicate: Property): List<Distribution>? =
     listResources(mainPredicate)
         ?.mapNotNull { it.buildDistributionV1() }
         ?.takeIf { it.isNotEmpty() }
 
+/**
+ * Extracts distributions compliant with DCAT-AP-NO v2 by following the predicate.
+ *
+ * @param mainPredicate predicate referencing distribution resources
+ * @return list of distributions or `null` when no resources are available
+ */
 fun Resource.extractListOfDistributionsV2(mainPredicate: Property): List<Distribution>? =
     listResources(mainPredicate)
         ?.mapNotNull { it.buildDistributionV2() }
         ?.takeIf { it.isNotEmpty() }
 
+/**
+ * Extracts mobility-specific distributions (DCAT mobility profile) from `dcat:distribution`.
+ *
+ * @return list of mobility distributions or `null` when none exist
+ */
 fun Resource.extractListOfMobilityDistributions(): List<Distribution>? =
     listResources(DCAT.distribution)
         ?.mapNotNull { it.buildDistributionMobility() }
         ?.takeIf { it.isNotEmpty() }
 
+/**
+ * Extracts mobility sample distributions (ADMS sample) and maps them to dataset distributions.
+ *
+ * @return list of sample distributions or `null` when no sample data is available
+ */
 fun Resource.extractListOfMobilitySampleData(): List<Distribution>? =
     listResources(DCAT.distribution)
         ?.mapNotNull { it.buildMobilitySampleData() }

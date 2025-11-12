@@ -1,0 +1,33 @@
+{
+  "type": "record",
+  "name": "ServiceParticipation",
+  "namespace": "no.digdir.fdk.model.service",
+  "doc": "Information about service participation",
+  "fields": [
+    {
+      "name": "uri",
+      "type": ["null", "string"],
+      "doc": "URI for the participation"
+    },
+    {
+      "name": "identifier",
+      "type": ["null", "string"],
+      "doc": "Identifier for the participation"
+    },
+    {
+      "name": "description",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Multilingual description of the participation"
+    },
+    {
+      "name": "role",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.ReferenceDataCode"}],
+      "doc": "Refers to a description of the role played in the participation"
+    },
+    {
+      "name": "agent",
+      "type": ["null", "string"],
+      "doc": "Refers to the agent involved in the participation"
+    }
+  ]
+}

@@ -39,6 +39,12 @@ private fun Resource.buildReference(predicate: Property): Reference? {
     return referenceBuilder.build().takeIf { it.hasContent() }
 }
 
+/**
+ * Extracts a combined list of dataset references (versions, relation, requires, etc.)
+ * and converts them into `Reference` objects with type and source metadata.
+ *
+ * @return list of references or `null` when no reference predicates are present
+ */
 fun Resource.extractListOfReferences(): List<Reference>? {
     val referencePredicates =
         listOf(

@@ -1,0 +1,38 @@
+{
+  "type": "record",
+  "name": "ServiceCost",
+  "namespace": "no.digdir.fdk.model.service",
+  "doc": "Information about service costs",
+  "fields": [
+    {
+      "name": "uri",
+      "type": ["null", "string"],
+      "doc": "URI for the cost"
+    },
+    {
+      "name": "identifier",
+      "type": ["null", "string"],
+      "doc": "Identifier for the cost"
+    },
+    {
+      "name": "description",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Multilingual description of the cost"
+    },
+    {
+      "name": "currency",
+      "type": ["null", "string"],
+      "doc": "Currency code"
+    },
+    {
+      "name": "ifAccessedThrough",
+      "type": ["null", "string"],
+      "doc": "Channel through which the cost applies"
+    },
+    {
+      "name": "value",
+      "type": ["null", "string"],
+      "doc": "Cost value"
+    }
+  ]
+}

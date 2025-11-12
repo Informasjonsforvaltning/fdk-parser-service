@@ -45,10 +45,10 @@ class ExtractOrganization {
             Organization().also {
                 it.uri = "https://testdirektoratet.no/publisher"
                 it.id = "112233445"
-                it.name = "TESTORGANISASJON"
+                it.name = "Norsk testorganisasjon"
                 it.orgPath = "/STAT/987654321/123456789"
-                it.organisasjonsform = "ORGL"
                 it.prefLabel = LocalizedStrings().also { label -> label.nb = "Norsk testorganisasjon" }
+                it.title = LocalizedStrings().also { label -> label.nb = "Norsk testorganisasjon" }
             }
 
         assertEquals(expected, subject.extractOrganization(DCTerms.publisher))

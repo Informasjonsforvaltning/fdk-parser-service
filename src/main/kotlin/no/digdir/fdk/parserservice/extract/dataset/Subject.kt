@@ -30,6 +30,12 @@ private fun Resource.buildSubject(): Subject? {
     return builder.build().takeIf { it.hasContent() }
 }
 
+/**
+ * Extracts SKOS subject resources linked to the dataset and converts them into
+ * `Subject` instances containing URI, identifier, label and definition.
+ *
+ * @return list of dataset subjects or `null` when none are declared
+ */
 fun Resource.extractListOfSubjects(): List<Subject>? =
     listResources(DCTerms.subject)
         ?.mapNotNull { it.buildSubject() }

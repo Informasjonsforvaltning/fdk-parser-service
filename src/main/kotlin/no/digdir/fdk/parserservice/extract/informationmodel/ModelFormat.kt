@@ -23,6 +23,12 @@ private fun InformationModelFormat.hasContent(): Boolean =
         else -> false
     }
 
+/**
+ * Extracts `dct:hasFormat` resources and converts them into `InformationModelFormat`
+ * objects enriched with titles, seeAlso links, mime types and language codes.
+ *
+ * @return list of model formats or `null` when the information model declares none
+ */
 fun Resource.extractListOfModelFormat(): List<InformationModelFormat>? =
     listProperties(DCTerms.hasFormat)
         .asSequence()
