@@ -19,12 +19,8 @@ import no.digdir.fdk.parserservice.extract.isLosURI
 import no.digdir.fdk.parserservice.extract.isSkolemizedURI
 import no.digdir.fdk.parserservice.extract.listResources
 import no.digdir.fdk.parserservice.extract.service.extractListOfParticipatingAgents
-import no.digdir.fdk.parserservice.extract.service.extractListOfServiceChannels
 import no.digdir.fdk.parserservice.extract.service.extractListOfServiceContactPoints
-import no.digdir.fdk.parserservice.extract.service.extractListOfServiceCosts
-import no.digdir.fdk.parserservice.extract.service.extractListOfServiceEvidence
 import no.digdir.fdk.parserservice.extract.service.extractListOfServiceLegalResources
-import no.digdir.fdk.parserservice.extract.service.extractListOfServiceOutput
 import no.digdir.fdk.parserservice.extract.service.extractListOfServiceRequirements
 import no.digdir.fdk.parserservice.extract.service.extractListOfServiceRules
 import no.digdir.fdk.parserservice.parser.ServiceParserStrategy
@@ -113,7 +109,6 @@ abstract class BaseServiceParser : ServiceParserStrategy {
         setParticipatingAgents(serviceResource.extractListOfParticipatingAgents())
 
         setRequires(serviceResource.extractListOfUriWithLabel(DCTerms.requires, DCTerms.title))
-        setRelation(serviceResource.extractListOfUriWithLabel(DCTerms.relation, DCTerms.title))
         setDctType(serviceResource.extractListOfReferenceDataCodes(DCTerms.type, DC_11.identifier, SKOS.prefLabel))
         setSubject(serviceResource.extractListOfUriWithLabel(DCTerms.subject, DCTerms.source, SKOS.prefLabel))
 
@@ -133,12 +128,8 @@ abstract class BaseServiceParser : ServiceParserStrategy {
 
         setContactPoint(serviceResource.extractListOfServiceContactPoints())
         setHoldsRequirement(serviceResource.extractListOfServiceRequirements())
-        setHasInput(serviceResource.extractListOfServiceEvidence())
         setFollows(serviceResource.extractListOfServiceRules())
         setHasLegalResource(serviceResource.extractListOfServiceLegalResources(CV.hasLegalResource))
-        setHasChannel(serviceResource.extractListOfServiceChannels())
-        setHasCost(serviceResource.extractListOfServiceCosts())
-        setProduces(serviceResource.extractListOfServiceOutput(CPSV.produces))
 
         setOwnedBy(serviceResource.extractListOfOrganizations(CV.ownedBy))
         setHasCompetentAuthority(serviceResource.extractListOfOrganizations(CV.hasCompetentAuthority))

@@ -3,6 +3,7 @@ package no.digdir.fdk.parserservice.handler
 import io.kotest.assertions.json.shouldEqualJson
 import no.digdir.fdk.parserservice.parser.ServiceParserRegistry
 import no.digdir.fdk.parserservice.parser.service.CpsvApNoV0Parser
+import no.digdir.fdk.parserservice.parser.service.CpsvApNoV1Parser
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -14,6 +15,7 @@ class ServiceHandlerTest {
 
     init {
         parserRegistry.registerParser(CpsvApNoV0Parser(), priority = 50, name = "CPSV-AP-NO-V0")
+        parserRegistry.registerParser(CpsvApNoV1Parser(), priority = 100, name = "CPSV-AP-NO-V1")
     }
 
     @Test
@@ -314,7 +316,7 @@ class ServiceHandlerTest {
             <https://raw.githubusercontent.com/Informasjonsforvaltning/cpsv-ap-no/develop/examples/exTjenesteDummy.ttl>
                     rdf:type            cpsvno:Service ;
                     dct:identifier      "https://raw.githubusercontent.com/Informasjonsforvaltning/cpsv-ap-no/develop/examples/exTjenesteDummy.ttl"^^xsd:anyURI ;
-                    cpsv:hasInput       <http://public-service-publisher.fellesdatakatalog.digdir.no/evidence/1> ,
+                    cpsvno:hasRequiredEvidence       <http://public-service-publisher.fellesdatakatalog.digdir.no/evidence/1> ,
                                         <http://public-service-publisher.fellesdatakatalog.digdir.no/evidence/3> ,
                                         [
                                             rdf:type cv:Evidence ;
@@ -332,7 +334,7 @@ class ServiceHandlerTest {
             <http://public-service-publisher.fellesdatakatalog.digdir.no/channel/1>
                     a               cv:Channel ;
                     dct:identifier  "1" ;
-                    cpsv:hasInput   <http://public-service-publisher.fellesdatakatalog.digdir.no/evidence/2> ,
+                    cpsvno:hasRequiredEvidence   <http://public-service-publisher.fellesdatakatalog.digdir.no/evidence/2> ,
                                     <http://public-service-publisher.fellesdatakatalog.digdir.no/evidence/3> ,
                                     <http://public-service-publisher.fellesdatakatalog.digdir.no/evidence/4> ,
                                     [

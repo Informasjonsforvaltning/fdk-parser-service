@@ -3,6 +3,7 @@ package no.digdir.fdk.parserservice.handler
 import no.digdir.fdk.parserservice.extract.fdk.topicUriOfRecordWithID
 import no.digdir.fdk.parserservice.model.NoAcceptableFDKRecordsException
 import no.digdir.fdk.parserservice.parser.ServiceParserRegistry
+import no.digdir.fdk.parserservice.utils.ServiceMerger
 import no.digdir.fdk.parserservice.utils.avroToJson
 import no.digdir.fdk.parserservice.utils.readTurtle
 import org.apache.jena.rdf.model.ModelFactory
@@ -50,8 +51,8 @@ class ServiceHandler(
                     // Parse with all registered parsers in priority order
                     val parsedServices = parserRegistry.parseWithAllParsers(model, resourceIRI, fdkId)
 
-                    // Use the first successfully parsed service (highest priority)
-                    parsedServices.first()
+                    // Merge all successfully parsed services using the service merger
+                    ServiceMerger.merge(parsedServices)
                 } else {
                     throw NoAcceptableFDKRecordsException("No service found with identifier '$fdkId'")
                 }
