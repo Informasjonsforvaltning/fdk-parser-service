@@ -468,13 +468,12 @@ class ServiceExtractionTest {
             @prefix at:    <http://publications.europa.eu/ontology/authority/> .
             @prefix cpsvno: <https://data.norge.no/vocabulary/cpsvno#> .
             @prefix cv:     <http://data.europa.eu/m8g/> .
-            @prefix dcat:   <http://www.w3.org/ns/dcat#> .
             @prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
             @prefix vcard:  <http://www.w3.org/2006/vcard/ns#> .
 
             <https://test.no/service>
                 a                   cpsvno:Service ;
-                dcat:contactPoint  <https://test.no/contact/1> .
+                cv:contactPoint  <https://test.no/contact/1> .
 
             <https://test.no/contact/1>
                 a               cv:ContactPoint;

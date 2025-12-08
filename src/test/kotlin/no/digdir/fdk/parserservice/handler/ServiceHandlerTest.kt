@@ -147,7 +147,38 @@ class ServiceHandlerTest {
               "organisasjonsform": null
             }
           ],
-          "contactPoint": null,
+          "contactPoint": [
+            {
+              "uri": "https://raw.githubusercontent.com/Informasjonsforvaltning/cpsv-ap-no/develop/examples/exKontaktpunktDummy.ttl",
+              "contactType": {
+                "no": null,
+                "nb": "Kontakt test",
+                "nn": null,
+                "en": null
+              },
+              "email": [
+                "postmottak@example.org"
+              ],
+              "telephone": [
+                "+4712345678"
+              ],
+              "contactPage": [
+                "https://example.org/exKontaktside"
+              ],
+              "language": [
+                {
+                  "uri": "http://publications.europa.eu/resource/authority/language/ENG",
+                  "code": "ENG",
+                  "prefLabel": {
+                    "no": "Engelsk",
+                    "nb": "Engelsk",
+                    "nn": "Engelsk",
+                    "en": "English"
+                  }
+                }
+              ]
+            }
+          ],
           "keyword": null,
           "sector": [
             {
