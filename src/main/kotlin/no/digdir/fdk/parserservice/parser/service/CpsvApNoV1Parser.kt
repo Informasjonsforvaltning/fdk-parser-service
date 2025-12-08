@@ -6,16 +6,18 @@ import no.digdir.fdk.parserservice.extract.extractListOfUriWithLabel
 import no.digdir.fdk.parserservice.extract.fdk.addFdkData
 import no.digdir.fdk.parserservice.extract.fdk.fdkRecord
 import no.digdir.fdk.parserservice.extract.fdk.resourceOfIRI
-import no.digdir.fdk.parserservice.extract.service.extractListOfServiceChannelsV0
-import no.digdir.fdk.parserservice.extract.service.extractListOfServiceCostsV0
+import no.digdir.fdk.parserservice.extract.service.extractListOfServiceChannelsV1
+import no.digdir.fdk.parserservice.extract.service.extractListOfServiceCostsV1
 import no.digdir.fdk.parserservice.extract.service.extractListOfServiceEvidence
 import no.digdir.fdk.parserservice.extract.service.extractListOfServiceOutput
 import no.digdir.fdk.parserservice.model.LanguageCodes
 import no.digdir.fdk.parserservice.model.NoAcceptableTypesException
 import no.digdir.fdk.parserservice.vocabulary.CPSV
 import no.digdir.fdk.parserservice.vocabulary.CPSVNO
+import no.digdir.fdk.parserservice.vocabulary.CV
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
+import org.apache.jena.rdf.model.ResourceFactory
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDF
 import org.springframework.stereotype.Component
@@ -35,8 +37,8 @@ import java.net.URI
  * @version 1.0.0
  * @since 1.0.0
  */
-@Component(value = "ServiceCpsvnoParser")
-class CpsvApNoV0Parser : BaseServiceParser() {
+@Component(value = "ServiceCpsvNoV1Parser")
+class CpsvApNoV1Parser : BaseServiceParser() {
     /**
      * Gets the default language for CPSVNO.
      *
@@ -49,7 +51,7 @@ class CpsvApNoV0Parser : BaseServiceParser() {
      *
      * @return "0.9"
      */
-    override fun getVersion(): String = "0.9"
+    override fun getVersion(): String = "1.1.2"
 
     /**
      * Gets the source format identifier.
@@ -65,9 +67,9 @@ class CpsvApNoV0Parser : BaseServiceParser() {
      */
     override fun getAcceptableTypes(): List<Resource> =
         listOf(
-            org.apache.jena.rdf.model.ResourceFactory
+            ResourceFactory
                 .createResource(CPSVNO.Service.uri),
-            org.apache.jena.rdf.model.ResourceFactory
+            ResourceFactory
                 .createResource(CPSV.PublicService.uri),
         )
 
@@ -116,11 +118,11 @@ class CpsvApNoV0Parser : BaseServiceParser() {
 
         builder.addCommonServiceValues(serviceResource)
 
-        builder.setRelation(serviceResource.extractListOfUriWithLabel(DCTerms.relation, DCTerms.title))
-        builder.setHasChannel(serviceResource.extractListOfServiceChannelsV0())
-        builder.setHasInput(serviceResource.extractListOfServiceEvidence(CPSV.hasInput))
-        builder.setProduces(serviceResource.extractListOfServiceOutput(CPSV.produces))
-        builder.setHasCost(serviceResource.extractListOfServiceCostsV0())
+        builder.setRelation(serviceResource.extractListOfUriWithLabel(CV.relatedService, DCTerms.title))
+        builder.setHasChannel(serviceResource.extractListOfServiceChannelsV1())
+        builder.setHasInput(serviceResource.extractListOfServiceEvidence(CPSVNO.hasRequiredEvidence))
+        builder.setProduces(serviceResource.extractListOfServiceOutput(CPSVNO.hasPossibleOutput))
+        builder.setHasCost(serviceResource.extractListOfServiceCostsV1())
 
         return builder.build()
     }

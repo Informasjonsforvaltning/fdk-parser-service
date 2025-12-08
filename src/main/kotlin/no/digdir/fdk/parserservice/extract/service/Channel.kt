@@ -8,7 +8,9 @@ import no.digdir.fdk.parserservice.extract.extractStringValue
 import no.digdir.fdk.parserservice.extract.extractURIStringValue
 import no.digdir.fdk.parserservice.extract.listResources
 import no.digdir.fdk.parserservice.vocabulary.CPSV
+import no.digdir.fdk.parserservice.vocabulary.CPSVNO
 import no.digdir.fdk.parserservice.vocabulary.CV
+import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.SKOS
@@ -28,7 +30,7 @@ private fun ServiceChannel.hasContent() =
         else -> false
     }
 
-private fun Resource.buildServiceChannel(): ServiceChannel? {
+private fun Resource.buildServiceChannel(hasInputPredicate: Property): ServiceChannel? {
     val builder = ServiceChannel.newBuilder()
 
     builder
@@ -37,7 +39,7 @@ private fun Resource.buildServiceChannel(): ServiceChannel? {
         .setChannelType(extractReferenceDataCode(DCTerms.type, "#", SKOS.prefLabel))
         .setDescription(extractLocalizedStrings(DCTerms.description))
         .setProcessingTime(extractStringValue(CV.processingTime))
-        .setHasInput(extractListOfStrings(CPSV.hasInput))
+        .setHasInput(extractListOfStrings(hasInputPredicate))
         .setEmail(extractListOfStrings(VCARD4.hasEmail))
         .setUrl(extractListOfStrings(VCARD4.hasURL))
         .setTelephone(extractListOfStrings(VCARD4.hasTelephone))
@@ -46,13 +48,25 @@ private fun Resource.buildServiceChannel(): ServiceChannel? {
 }
 
 /**
- * Extracts all service channel resources and converts them to `ServiceChannel`
+ * Extracts all V0 service channel resources and converts them to `ServiceChannel`
  * objects containing channel metadata such as type, description, processing time,
  * contact information, and input requirements.
  *
  * @return list of service channels or `null` when no channel information exists
  */
-fun Resource.extractListOfServiceChannels(): List<ServiceChannel>? =
+fun Resource.extractListOfServiceChannelsV0(): List<ServiceChannel>? =
     listResources(CV.hasChannel)
-        ?.mapNotNull { it.buildServiceChannel() }
+        ?.mapNotNull { it.buildServiceChannel(CPSV.hasInput) }
+        ?.takeIf { it.isNotEmpty() }
+
+/**
+ * Extracts all V1 service channel resources and converts them to `ServiceChannel`
+ * objects containing channel metadata such as type, description, processing time,
+ * contact information, and input requirements.
+ *
+ * @return list of service channels or `null` when no channel information exists
+ */
+fun Resource.extractListOfServiceChannelsV1(): List<ServiceChannel>? =
+    listResources(CV.hasChannel)
+        ?.mapNotNull { it.buildServiceChannel(CPSVNO.hasRequiredEvidence) }
         ?.takeIf { it.isNotEmpty() }

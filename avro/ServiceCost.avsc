@@ -25,6 +25,11 @@
       "doc": "Currency code"
     },
     {
+      "name": "currencyCode",
+      "type": ["null", "no.digdir.fdk.model.ReferenceDataCode"],
+      "doc": "Currency code"
+    },
+    {
       "name": "ifAccessedThrough",
       "type": ["null", "string"],
       "doc": "Channel through which the cost applies"

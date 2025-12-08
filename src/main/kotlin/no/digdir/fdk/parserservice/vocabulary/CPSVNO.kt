@@ -8,6 +8,8 @@ class CPSVNO {
     companion object {
         const val URI = "https://data.norge.no/vocabulary/cpsvno#"
 
+        val hasRequiredEvidence: Property = ResourceFactory.createProperty("${URI}hasRequiredEvidence")
+        val hasPossibleOutput: Property = ResourceFactory.createProperty("${URI}hasPossibleOutput")
         val ruleForDisclosure: Property = ResourceFactory.createProperty("${URI}ruleForDisclosure")
         val ruleForNonDisclosure: Property = ResourceFactory.createProperty("${URI}ruleForNonDisclosure")
         val ruleForDataProcessing: Property = ResourceFactory.createProperty("${URI}ruleForDataProcessing")
