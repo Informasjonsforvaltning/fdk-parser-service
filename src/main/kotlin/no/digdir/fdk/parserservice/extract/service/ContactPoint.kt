@@ -9,7 +9,6 @@ import no.digdir.fdk.parserservice.extract.listResources
 import no.digdir.fdk.parserservice.vocabulary.CV
 import no.digdir.fdk.parserservice.vocabulary.EUAT
 import org.apache.jena.rdf.model.Resource
-import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.SKOS
 import org.apache.jena.vocabulary.VCARD4
 
@@ -51,12 +50,12 @@ private fun Resource.buildServiceContactPoint(): ServiceContactPoint? {
 }
 
 /**
- * Extracts all DCAT contact point resources and converts them to `ContactPoint`
- * objects containing vCard metadata such as formatted name, email and phone number.
+ * Extracts all CV contact point resources and converts them to `ContactPoint`
+ * objects containing contact data such as email and phone number.
  *
  * @return list of contact points or `null` when no contact point information exists
  */
 fun Resource.extractListOfServiceContactPoints(): List<ServiceContactPoint>? =
-    listResources(DCAT.contactPoint)
+    listResources(CV.contactPoint)
         ?.mapNotNull { it.buildServiceContactPoint() }
         ?.takeIf { it.isNotEmpty() }
