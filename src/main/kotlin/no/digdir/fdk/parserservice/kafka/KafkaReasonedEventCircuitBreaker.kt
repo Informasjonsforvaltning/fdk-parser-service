@@ -11,6 +11,9 @@ import no.fdk.dataservice.DataServiceEvent
 import no.fdk.dataservice.DataServiceEventType
 import no.fdk.dataset.DatasetEvent
 import no.fdk.dataset.DatasetEventType
+import no.fdk.harvest.DataType
+import no.fdk.harvest.HarvestEvent
+import no.fdk.harvest.HarvestPhase
 import no.fdk.informationmodel.InformationModelEvent
 import no.fdk.informationmodel.InformationModelEventType
 import no.fdk.rdf.parse.RdfParseEvent
@@ -19,12 +22,14 @@ import org.apache.avro.generic.GenericRecord
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import java.time.Instant
 import kotlin.time.measureTimedValue
 import kotlin.time.toJavaDuration
 
 @Component
 open class KafkaReasonedEventCircuitBreaker(
     private val producer: KafkaRdfParseEventProducer,
+    private val harvestEventProducer: KafkaHarvestEventProducer,
     private val dataServiceHandler: DataServiceHandler,
     private val datasetHandler: DatasetHandler,
     private val informationModelHandler: InformationModelHandler,
@@ -41,9 +46,11 @@ open class KafkaReasonedEventCircuitBreaker(
         val fdkId = runCatching { event.get("fdkId") as String }.getOrNull()
         val graph = runCatching { event.get("graph") as String }.getOrNull()
         val timestamp = runCatching { event.get("timestamp") as Long }.getOrNull()
+        val harvestRunId = runCatching { event.get("harvestRunId")?.toString() }.getOrNull()
+        val uri = runCatching { event.get("uri")?.toString() }.getOrNull()
 
         if (fdkId != null && graph != null && timestamp != null && resourceType != null) {
-            handleRecord(fdkId, graph, timestamp, resourceType)
+            handleRecord(fdkId, graph, timestamp, resourceType, harvestRunId, uri)
         } else {
             LOGGER.error(
                 "Unable to get required message values. fdkId: {}, graph: {}, timestamp: {}, type: {}",
@@ -63,9 +70,11 @@ open class KafkaReasonedEventCircuitBreaker(
             val fdkId = runCatching { event.fdkId.toString() }.getOrNull()
             val graph = runCatching { event.graph.toString() }.getOrNull()
             val timestamp = runCatching { event.timestamp }.getOrNull()
+            val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
+            val uri = runCatching { event.uri?.toString() }.getOrNull()
 
             if (fdkId != null && graph != null && timestamp != null) {
-                handleRecord(fdkId, graph, timestamp, RdfParseResourceType.DATA_SERVICE)
+                handleRecord(fdkId, graph, timestamp, RdfParseResourceType.DATA_SERVICE, harvestRunId, uri)
             } else {
                 LOGGER.error(
                     "Unable to get required data service message values. fdkId: {}, graph: {}, timestamp: {}",
@@ -85,9 +94,11 @@ open class KafkaReasonedEventCircuitBreaker(
             val fdkId = runCatching { event.fdkId.toString() }.getOrNull()
             val graph = runCatching { event.graph.toString() }.getOrNull()
             val timestamp = runCatching { event.timestamp }.getOrNull()
+            val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
+            val uri = runCatching { event.uri?.toString() }.getOrNull()
 
             if (fdkId != null && graph != null && timestamp != null) {
-                handleRecord(fdkId, graph, timestamp, RdfParseResourceType.DATASET)
+                handleRecord(fdkId, graph, timestamp, RdfParseResourceType.DATASET, harvestRunId, uri)
             } else {
                 LOGGER.error("Unable to get required dataset message values. fdkId: {}, graph: {}, timestamp: {}", fdkId, graph, timestamp)
                 throw UnrecoverableParseException("Unable to get required dataset message values")
@@ -102,9 +113,11 @@ open class KafkaReasonedEventCircuitBreaker(
             val fdkId = runCatching { event.fdkId.toString() }.getOrNull()
             val graph = runCatching { event.graph.toString() }.getOrNull()
             val timestamp = runCatching { event.timestamp }.getOrNull()
+            val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
+            val uri = runCatching { event.uri?.toString() }.getOrNull()
 
             if (fdkId != null && graph != null && timestamp != null) {
-                handleRecord(fdkId, graph, timestamp, RdfParseResourceType.INFORMATION_MODEL)
+                handleRecord(fdkId, graph, timestamp, RdfParseResourceType.INFORMATION_MODEL, harvestRunId, uri)
             } else {
                 LOGGER.error(
                     "Unable to get required information model message values. fdkId: {}, graph: {}, timestamp: {}",
@@ -122,9 +135,22 @@ open class KafkaReasonedEventCircuitBreaker(
         graph: String,
         timestamp: Long,
         resourceType: RdfParseResourceType,
+        harvestRunId: String?,
+        uri: String?,
     ) {
+        val startTime = Instant.now().toString()
         try {
-            parseAndProduce(fdkId, graph, timestamp, resourceType)
+            parseAndProduce(fdkId, graph, timestamp, resourceType, harvestRunId, uri)
+            // Produce harvest event on success
+            produceHarvestEvent(
+                harvestRunId = harvestRunId,
+                resourceType = resourceType,
+                fdkId = fdkId,
+                uri = uri,
+                startTime = startTime,
+                endTime = Instant.now().toString(),
+                errorMessage = null,
+            )
         } catch (e: RecoverableParseException) {
             LOGGER.warn("Recoverable parsing error: " + e.message)
             Metrics
@@ -133,6 +159,16 @@ open class KafkaReasonedEventCircuitBreaker(
                     "type",
                     resourceType.toString().lowercase(),
                 ).increment()
+            // Produce harvest event on failure
+            produceHarvestEvent(
+                harvestRunId = harvestRunId,
+                resourceType = resourceType,
+                fdkId = fdkId,
+                uri = uri,
+                startTime = startTime,
+                endTime = Instant.now().toString(),
+                errorMessage = e.message,
+            )
             throw e
         } catch (e: UnrecoverableParseException) {
             LOGGER.error("Unrecoverable parsing error: " + e.message)
@@ -142,6 +178,16 @@ open class KafkaReasonedEventCircuitBreaker(
                     "type",
                     resourceType.toString().lowercase(),
                 ).increment()
+            // Produce harvest event on failure
+            produceHarvestEvent(
+                harvestRunId = harvestRunId,
+                resourceType = resourceType,
+                fdkId = fdkId,
+                uri = uri,
+                startTime = startTime,
+                endTime = Instant.now().toString(),
+                errorMessage = e.message,
+            )
             throw e
         }
     }
@@ -151,20 +197,31 @@ open class KafkaReasonedEventCircuitBreaker(
         graph: String,
         timestamp: Long,
         type: RdfParseResourceType,
+        harvestRunId: String?,
+        uri: String?,
     ) {
         val timeElapsed =
             measureTimedValue {
                 LOGGER.debug("Parse dataset - id: $fdkId")
                 val json =
                     when (type) {
-                        RdfParseResourceType.CONCEPT -> LOGGER.warn("Parse of concepts not implemented")
+                        RdfParseResourceType.CONCEPT -> {
+                            LOGGER.warn("Parse of concepts not implemented")
+                            throw UnrecoverableParseException("Parse of concepts not implemented")
+                        }
                         RdfParseResourceType.DATA_SERVICE -> dataServiceHandler.parseDataService(fdkId, graph)
                         RdfParseResourceType.DATASET -> datasetHandler.parseDataset(fdkId, graph)
-                        RdfParseResourceType.EVENT -> LOGGER.warn("Parse of events not implemented")
+                        RdfParseResourceType.EVENT -> {
+                            LOGGER.warn("Parse of events not implemented")
+                            throw UnrecoverableParseException("Parse of events not implemented")
+                        }
                         RdfParseResourceType.INFORMATION_MODEL -> informationModelHandler.parseInformationModel(fdkId, graph)
-                        RdfParseResourceType.SERVICE -> LOGGER.warn("Parse of services not implemented")
+                        RdfParseResourceType.SERVICE -> {
+                            LOGGER.warn("Parse of services not implemented")
+                            throw UnrecoverableParseException("Parse of services not implemented")
+                        }
                     }
-                producer.sendMessage(RdfParseEvent(type, fdkId, json.toString(), timestamp))
+                producer.sendMessage(RdfParseEvent(type, harvestRunId, uri, fdkId, json.toString(), timestamp))
             }
         Metrics
             .timer(
@@ -172,6 +229,45 @@ open class KafkaReasonedEventCircuitBreaker(
                 "type",
                 type.toString().lowercase(),
             ).record(timeElapsed.duration.toJavaDuration())
+    }
+
+    private fun mapResourceTypeToDataType(resourceType: RdfParseResourceType): DataType =
+        when (resourceType) {
+            RdfParseResourceType.DATASET -> DataType.dataset
+            RdfParseResourceType.DATA_SERVICE -> DataType.dataservice
+            RdfParseResourceType.INFORMATION_MODEL -> DataType.informationmodel
+            RdfParseResourceType.CONCEPT -> DataType.concept
+            RdfParseResourceType.SERVICE -> DataType.publicService
+            RdfParseResourceType.EVENT -> DataType.event
+        }
+
+    private fun produceHarvestEvent(
+        harvestRunId: String?,
+        resourceType: RdfParseResourceType,
+        fdkId: String,
+        uri: String?,
+        startTime: String,
+        endTime: String,
+        errorMessage: String?,
+    ) {
+        val harvestEvent =
+            HarvestEvent(
+                HarvestPhase.RDF_PARSING,
+                harvestRunId,
+                mapResourceTypeToDataType(resourceType),
+                null,
+                null,
+                null,
+                fdkId,
+                uri,
+                startTime,
+                endTime,
+                errorMessage,
+                null,
+                null,
+                null,
+            )
+        harvestEventProducer.sendMessage(harvestEvent)
     }
 
     companion object {
