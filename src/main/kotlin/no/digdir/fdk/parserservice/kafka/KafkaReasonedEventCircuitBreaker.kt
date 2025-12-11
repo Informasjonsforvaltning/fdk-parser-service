@@ -295,7 +295,17 @@ open class KafkaReasonedEventCircuitBreaker(
                         RdfParseResourceType.INFORMATION_MODEL -> informationModelHandler.parseInformationModel(fdkId, graph)
                         RdfParseResourceType.SERVICE -> serviceHandler.parseService(fdkId, graph)
                     }
-                producer.sendMessage(RdfParseEvent(type, harvestRunId, uri, fdkId, json.toString(), timestamp))
+                val rdfParseEvent =
+                    RdfParseEvent
+                        .newBuilder()
+                        .setResourceType(type)
+                        .setHarvestRunId(harvestRunId)
+                        .setUri(uri)
+                        .setFdkId(fdkId)
+                        .setData(json.toString())
+                        .setTimestamp(timestamp)
+                        .build()
+                producer.sendMessage(rdfParseEvent)
             }
         Metrics
             .timer(
