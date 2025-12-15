@@ -5,6 +5,7 @@ import no.digdir.fdk.parserservice.model.UnrecoverableParseException
 import no.fdk.dataservice.DataServiceEvent
 import no.fdk.dataset.DatasetEvent
 import no.fdk.informationmodel.InformationModelEvent
+import no.fdk.service.ServiceEvent
 import org.apache.avro.generic.GenericRecord
 import org.apache.avro.specific.SpecificRecord
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -27,7 +28,7 @@ class KafkaReasonedEventConsumer(
         id = "data-service-event-consumer",
     )
     fun dataServiceListener(
-        record: ConsumerRecord<String, Object>,
+        record: ConsumerRecord<String, Any>,
         ack: Acknowledgment,
     ) {
         LOGGER.debug("Received data service message - offset: " + record.offset())
@@ -44,7 +45,7 @@ class KafkaReasonedEventConsumer(
                     circuitBreaker.processDataService(dataServiceEvent)
                 }
                 is GenericRecord -> circuitBreaker.processGeneric(message)
-                else -> LOGGER.warn("Unknown message type: {}", message?.getClass())
+                else -> LOGGER.warn("Unknown message type: {}", message?.javaClass)
             }
             ack.acknowledge()
         } catch (e: RecoverableParseException) {
@@ -62,7 +63,7 @@ class KafkaReasonedEventConsumer(
         id = "dataset-event-consumer",
     )
     fun datasetListener(
-        record: ConsumerRecord<String, Object>,
+        record: ConsumerRecord<String, Any>,
         ack: Acknowledgment,
     ) {
         LOGGER.debug("Received dataset message - offset: " + record.offset())
@@ -79,7 +80,7 @@ class KafkaReasonedEventConsumer(
                     circuitBreaker.processDataset(datasetEvent)
                 }
                 is GenericRecord -> circuitBreaker.processGeneric(message)
-                else -> LOGGER.warn("Unknown message type: {}", message?.getClass())
+                else -> LOGGER.warn("Unknown message type: {}", message?.javaClass)
             }
             ack.acknowledge()
         } catch (e: RecoverableParseException) {
@@ -97,7 +98,7 @@ class KafkaReasonedEventConsumer(
         id = "information-model-event-consumer",
     )
     fun informationModelListener(
-        record: ConsumerRecord<String, Object>,
+        record: ConsumerRecord<String, Any>,
         ack: Acknowledgment,
     ) {
         LOGGER.debug("Received information model message - offset: " + record.offset())
@@ -114,7 +115,42 @@ class KafkaReasonedEventConsumer(
                     circuitBreaker.processInformationModel(infoModelEvent)
                 }
                 is GenericRecord -> circuitBreaker.processGeneric(message)
-                else -> LOGGER.warn("Unknown message type: {}", message?.getClass())
+                else -> LOGGER.warn("Unknown message type: {}", message?.javaClass)
+            }
+            ack.acknowledge()
+        } catch (e: RecoverableParseException) {
+            ack.acknowledge()
+        } catch (e: UnrecoverableParseException) {
+            ack.nack(Duration.ZERO)
+        }
+    }
+
+    @KafkaListener(
+        topics = ["service-events"],
+        groupId = "fdk-parser-service",
+        concurrency = "4",
+        containerFactory = "kafkaListenerContainerFactory",
+        id = "service-event-consumer",
+    )
+    fun serviceListener(
+        record: ConsumerRecord<String, Any>,
+        ack: Acknowledgment,
+    ) {
+        LOGGER.debug("Received service message - offset: " + record.offset())
+        try {
+            when (val message = runCatching { record.value() }.getOrNull()) {
+                is SpecificRecord -> {
+                    val serviceEvent =
+                        try {
+                            message as ServiceEvent
+                        } catch (ex: Exception) {
+                            LOGGER.error("Error parsing service message", ex)
+                            throw UnrecoverableParseException("Error parsing service message")
+                        }
+                    circuitBreaker.processService(serviceEvent)
+                }
+                is GenericRecord -> circuitBreaker.processGeneric(message)
+                else -> LOGGER.warn("Unknown message type: {}", message?.javaClass)
             }
             ack.acknowledge()
         } catch (e: RecoverableParseException) {
