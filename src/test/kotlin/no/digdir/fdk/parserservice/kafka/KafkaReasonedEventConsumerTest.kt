@@ -7,6 +7,7 @@ import io.mockk.verify
 import no.digdir.fdk.parserservice.handler.DataServiceHandler
 import no.digdir.fdk.parserservice.handler.DatasetHandler
 import no.digdir.fdk.parserservice.handler.InformationModelHandler
+import no.digdir.fdk.parserservice.handler.ServiceHandler
 import no.digdir.fdk.parserservice.model.RecoverableParseException
 import no.digdir.fdk.parserservice.model.UnrecoverableParseException
 import no.fdk.dataservice.DataServiceEvent
@@ -17,6 +18,8 @@ import no.fdk.informationmodel.InformationModelEvent
 import no.fdk.informationmodel.InformationModelEventType
 import no.fdk.rdf.parse.RdfParseEvent
 import no.fdk.rdf.parse.RdfParseResourceType
+import no.fdk.service.ServiceEvent
+import no.fdk.service.ServiceEventType
 import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.Tag
@@ -36,11 +39,12 @@ class KafkaReasonedEventConsumerTest {
     private val datasetHandler: DatasetHandler = mockk()
     private val dataServiceHandler: DataServiceHandler = mockk()
     private val informationModelHandler: InformationModelHandler = mockk()
+    private val serviceHandler: ServiceHandler = mockk()
     private val kafkaTemplate: KafkaTemplate<String, RdfParseEvent> = mockk()
     private val ack: Acknowledgment = mockk()
     private val kafkaRdfParseEventProducer = KafkaRdfParseEventProducer(kafkaTemplate)
     private val circuitBreaker =
-        KafkaReasonedEventCircuitBreaker(kafkaRdfParseEventProducer, dataServiceHandler, datasetHandler, informationModelHandler)
+        KafkaReasonedEventCircuitBreaker(kafkaRdfParseEventProducer, dataServiceHandler, datasetHandler, informationModelHandler, serviceHandler)
     private val kafkaReasonedEventConsumer = KafkaReasonedEventConsumer(circuitBreaker)
     private val mapper = jacksonObjectMapper()
 
@@ -54,7 +58,7 @@ class KafkaReasonedEventConsumerTest {
 
         val datasetEvent = DatasetEvent(DatasetEventType.DATASET_REASONED, "my-id", "uri", System.currentTimeMillis())
         kafkaReasonedEventConsumer.datasetListener(
-            record = ConsumerRecord("dataset-events", 0, 0, "my-id", datasetEvent as Object),
+            record = ConsumerRecord("dataset-events", 0, 0, "my-id", datasetEvent as Any),
             ack = ack,
         )
 
@@ -85,7 +89,7 @@ class KafkaReasonedEventConsumerTest {
 
         val datasetEvent = DatasetEvent(DatasetEventType.DATASET_REASONED, "my-id", "uri", System.currentTimeMillis())
         kafkaReasonedEventConsumer.datasetListener(
-            record = ConsumerRecord("dataset-events", 0, 0, "my-id", datasetEvent as Object),
+            record = ConsumerRecord("dataset-events", 0, 0, "my-id", datasetEvent as Any),
             ack = ack,
         )
 
@@ -102,7 +106,7 @@ class KafkaReasonedEventConsumerTest {
 
         val datasetEvent = DatasetEvent(DatasetEventType.DATASET_REASONED, "my-id", "uri", System.currentTimeMillis())
         kafkaReasonedEventConsumer.datasetListener(
-            record = ConsumerRecord("dataset-events", 0, 0, "my-id", datasetEvent as Object),
+            record = ConsumerRecord("dataset-events", 0, 0, "my-id", datasetEvent as Any),
             ack = ack,
         )
 
@@ -162,7 +166,7 @@ class KafkaReasonedEventConsumerTest {
 
         val dataServiceEvent = DataServiceEvent(DataServiceEventType.DATA_SERVICE_REASONED, "my-id", "uri", System.currentTimeMillis())
         kafkaReasonedEventConsumer.dataServiceListener(
-            record = ConsumerRecord("data-service-events", 0, 0, "my-id", dataServiceEvent as Object),
+            record = ConsumerRecord("data-service-events", 0, 0, "my-id", dataServiceEvent as Any),
             ack = ack,
         )
 
@@ -191,7 +195,7 @@ class KafkaReasonedEventConsumerTest {
 
         val dataServiceEvent = DataServiceEvent(DataServiceEventType.DATA_SERVICE_REASONED, "my-id", "uri", System.currentTimeMillis())
         kafkaReasonedEventConsumer.dataServiceListener(
-            record = ConsumerRecord("data-service-events", 0, 0, "my-id", dataServiceEvent as Object),
+            record = ConsumerRecord("data-service-events", 0, 0, "my-id", dataServiceEvent as Any),
             ack = ack,
         )
 
@@ -208,7 +212,7 @@ class KafkaReasonedEventConsumerTest {
 
         val dataServiceEvent = DataServiceEvent(DataServiceEventType.DATA_SERVICE_REASONED, "my-id", "uri", System.currentTimeMillis())
         kafkaReasonedEventConsumer.dataServiceListener(
-            record = ConsumerRecord("data-service-events", 0, 0, "my-id", dataServiceEvent as Object),
+            record = ConsumerRecord("data-service-events", 0, 0, "my-id", dataServiceEvent as Any),
             ack = ack,
         )
 
@@ -246,7 +250,7 @@ class KafkaReasonedEventConsumerTest {
         val informationModelEvent =
             InformationModelEvent(InformationModelEventType.INFORMATION_MODEL_REASONED, "my-id", "uri", System.currentTimeMillis())
         kafkaReasonedEventConsumer.informationModelListener(
-            record = ConsumerRecord("information-model-events", 0, 0, "my-id", informationModelEvent as Object),
+            record = ConsumerRecord("information-model-events", 0, 0, "my-id", informationModelEvent as Any),
             ack = ack,
         )
 
@@ -277,7 +281,7 @@ class KafkaReasonedEventConsumerTest {
         val informationModelEvent =
             InformationModelEvent(InformationModelEventType.INFORMATION_MODEL_REASONED, "my-id", "uri", System.currentTimeMillis())
         kafkaReasonedEventConsumer.informationModelListener(
-            record = ConsumerRecord("information-model-events", 0, 0, "my-id", informationModelEvent as Object),
+            record = ConsumerRecord("information-model-events", 0, 0, "my-id", informationModelEvent as Any),
             ack = ack,
         )
 
@@ -295,7 +299,7 @@ class KafkaReasonedEventConsumerTest {
         val informationModelEvent =
             InformationModelEvent(InformationModelEventType.INFORMATION_MODEL_REASONED, "my-id", "uri", System.currentTimeMillis())
         kafkaReasonedEventConsumer.informationModelListener(
-            record = ConsumerRecord("information-model-events", 0, 0, "my-id", informationModelEvent as Object),
+            record = ConsumerRecord("information-model-events", 0, 0, "my-id", informationModelEvent as Any),
             ack = ack,
         )
 
@@ -319,6 +323,89 @@ class KafkaReasonedEventConsumerTest {
 
         verify {
             kafkaTemplate.send(any(), match { it.fdkId == "fdk-id" && it.resourceType == RdfParseResourceType.INFORMATION_MODEL })
+        }
+    }
+
+    @Test
+    fun `service listener should produce a rdf parse event`() {
+        val parsedJson = "{\"data\":\"my-parsed-rdf\"}"
+        every { serviceHandler.parseService(any(), any()) } returns mapper.readTree(parsedJson)
+        every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
+        every { ack.acknowledge() } returns Unit
+        every { ack.nack(Duration.ZERO) } returns Unit
+
+        val serviceEvent = ServiceEvent(ServiceEventType.SERVICE_REASONED, "my-id", "uri", System.currentTimeMillis())
+        kafkaReasonedEventConsumer.serviceListener(
+            record = ConsumerRecord("service-events", 0, 0, "my-id", serviceEvent as Any),
+            ack = ack,
+        )
+
+        verify {
+            kafkaTemplate.send(
+                withArg {
+                    assertEquals("rdf-parse-events", it)
+                },
+                withArg {
+                    assertEquals(serviceEvent.fdkId, it.fdkId)
+                    assertEquals(RdfParseResourceType.SERVICE, it.resourceType)
+                    assertEquals(parsedJson, it.data)
+                    assertEquals(serviceEvent.timestamp, it.timestamp)
+                },
+            )
+            ack.acknowledge()
+        }
+        confirmVerified(kafkaTemplate, ack)
+    }
+
+    @Test
+    fun `service listener should acknowledge when a recoverable exception occurs`() {
+        every { serviceHandler.parseService(any(), any()) } throws RecoverableParseException("Error parsing RDF: invalid rdf")
+        every { ack.acknowledge() } returns Unit
+        every { ack.nack(Duration.ZERO) } returns Unit
+
+        val serviceEvent = ServiceEvent(ServiceEventType.SERVICE_REASONED, "my-id", "uri", System.currentTimeMillis())
+        kafkaReasonedEventConsumer.serviceListener(
+            record = ConsumerRecord("service-events", 0, 0, "my-id", serviceEvent as Any),
+            ack = ack,
+        )
+
+        verify(exactly = 0) { kafkaTemplate.send(any(), any()) }
+        verify(exactly = 1) { ack.acknowledge() }
+        verify(exactly = 0) { ack.nack(Duration.ZERO) }
+        confirmVerified(kafkaTemplate, ack)
+    }
+
+    @Test
+    fun `service listener should not acknowledge when a unrecoverable exception occurs`() {
+        every { serviceHandler.parseService(any(), any()) } throws UnrecoverableParseException("Error parsing RDF")
+        every { ack.nack(Duration.ZERO) } returns Unit
+
+        val serviceEvent = ServiceEvent(ServiceEventType.SERVICE_REASONED, "my-id", "uri", System.currentTimeMillis())
+        kafkaReasonedEventConsumer.serviceListener(
+            record = ConsumerRecord("service-events", 0, 0, "my-id", serviceEvent as Any),
+            ack = ack,
+        )
+
+        verify(exactly = 0) { kafkaTemplate.send(any(), any()) }
+        verify(exactly = 0) { ack.acknowledge() }
+        verify(exactly = 1) { ack.nack(Duration.ZERO) }
+        confirmVerified(kafkaTemplate, ack)
+    }
+
+    @Test
+    fun `processService should handle valid service reasoned event`() {
+        val event = mockk<ServiceEvent>()
+        every { event.type } returns ServiceEventType.SERVICE_REASONED
+        every { event.fdkId } returns "fdk-id"
+        every { event.graph } returns "graph"
+        every { event.timestamp } returns 12345L
+        every { serviceHandler.parseService(any(), any()) } returns mapper.readTree("{\"ok\":true}")
+        every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
+
+        circuitBreaker.processService(event)
+
+        verify {
+            kafkaTemplate.send(any(), match { it.fdkId == "fdk-id" && it.resourceType == RdfParseResourceType.SERVICE })
         }
     }
 }
