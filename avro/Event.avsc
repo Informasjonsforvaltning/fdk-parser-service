@@ -1,0 +1,128 @@
+{
+  "type": "record",
+  "name": "Event",
+  "namespace": "no.digdir.fdk.model.event",
+  "doc": "Internal Data.norge.no model for events",
+  "fields": [
+    {
+      "name": "id",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Unique FDK identifier for the event"
+    },
+    {
+      "name": "uri",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Subject URI for the event in the harvested source"
+    },
+    {
+      "name": "identifier",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Event identifier from dct:identifier"
+    },
+    {
+      "name": "harvest",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.HarvestMetaData"
+      ],
+      "doc": "Meta data about the harvest of the event to FDK"
+    },
+    {
+      "name": "title",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual title of the event"
+    },
+    {
+      "name": "description",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual description of the event"
+    },
+    {
+      "name": "dctType",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.ReferenceDataCode"
+        }
+      ],
+      "doc": "List of event types from dct:type"
+    },
+    {
+      "name": "relation",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "List of related resources from dct:relation"
+    },
+    {
+      "name": "mayInitiate",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "List of services that may be initiated by this event"
+    },
+    {
+      "name": "subject",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "List of subjects from dct:subject"
+    },
+    {
+      "name": "distribution",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "List of distributions from dcat:distribution"
+    },
+    {
+      "name": "catalog",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.Catalog"
+      ],
+      "doc": "Information about the catalog the event is a member of"
+    },
+    {
+      "name": "specializedType",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Specialized type of event: 'event', 'businessEvent', or 'lifeEvent'"
+    }
+  ]
+}
+
