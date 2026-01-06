@@ -10,6 +10,7 @@ class CPSVNO {
 
         val hasRequiredEvidence: Property = ResourceFactory.createProperty("${URI}hasRequiredEvidence")
         val hasPossibleOutput: Property = ResourceFactory.createProperty("${URI}hasPossibleOutput")
+        val mayInitiate: Property = ResourceFactory.createProperty("${URI}mayInitiate")
         val ruleForDisclosure: Property = ResourceFactory.createProperty("${URI}ruleForDisclosure")
         val ruleForNonDisclosure: Property = ResourceFactory.createProperty("${URI}ruleForNonDisclosure")
         val ruleForDataProcessing: Property = ResourceFactory.createProperty("${URI}ruleForDataProcessing")

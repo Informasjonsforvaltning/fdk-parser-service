@@ -2,6 +2,7 @@ package no.digdir.fdk.parserservice.extract.fdk
 
 import no.digdir.fdk.model.dataservice.DataService
 import no.digdir.fdk.model.dataset.Dataset
+import no.digdir.fdk.model.event.Event
 import no.digdir.fdk.model.informationmodel.InformationModel
 import no.digdir.fdk.model.service.Service
 import no.digdir.fdk.parserservice.extract.containsTriple
@@ -48,6 +49,15 @@ fun InformationModel.Builder.addFdkData(recordResource: Resource) {
  * @param recordResource The jena resource of the fdkRecord
  */
 fun Service.Builder.addFdkData(recordResource: Resource) {
+    setId(fdkIdFromRecord(recordResource))
+    setHarvest(harvestMetaData(recordResource))
+}
+
+/**
+ * Adds data to the event builder that has been added to the event graph by the FDK harvest process.
+ * @param recordResource The jena resource of the fdkRecord
+ */
+fun Event.Builder.addFdkData(recordResource: Resource) {
     setId(fdkIdFromRecord(recordResource))
     setHarvest(harvestMetaData(recordResource))
 }

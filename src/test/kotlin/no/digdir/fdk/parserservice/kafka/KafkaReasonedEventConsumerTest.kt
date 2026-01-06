@@ -44,7 +44,13 @@ class KafkaReasonedEventConsumerTest {
     private val ack: Acknowledgment = mockk()
     private val kafkaRdfParseEventProducer = KafkaRdfParseEventProducer(kafkaTemplate)
     private val circuitBreaker =
-        KafkaReasonedEventCircuitBreaker(kafkaRdfParseEventProducer, dataServiceHandler, datasetHandler, informationModelHandler, serviceHandler)
+        KafkaReasonedEventCircuitBreaker(
+            kafkaRdfParseEventProducer,
+            dataServiceHandler,
+            datasetHandler,
+            informationModelHandler,
+            serviceHandler,
+        )
     private val kafkaReasonedEventConsumer = KafkaReasonedEventConsumer(circuitBreaker)
     private val mapper = jacksonObjectMapper()
 

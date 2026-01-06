@@ -2,6 +2,7 @@ package no.digdir.fdk.parserservice.parser
 
 import no.digdir.fdk.model.dataservice.DataService
 import no.digdir.fdk.model.dataset.Dataset
+import no.digdir.fdk.model.event.Event
 import no.digdir.fdk.model.informationmodel.InformationModel
 import no.digdir.fdk.model.service.Service
 import org.apache.jena.rdf.model.Model
@@ -93,3 +94,14 @@ typealias InformationModelParserStrategy = RdfParserStrategy<InformationModel>
  * @see Service
  */
 typealias ServiceParserStrategy = RdfParserStrategy<Service>
+
+/**
+ * Type alias for 'event'-specific RDF parsing strategies.
+ *
+ * This alias provides a more specific interface for parsers that handle
+ * event resources according to different specifications.
+ *
+ * @see RdfParserStrategy
+ * @see Event
+ */
+typealias EventParserStrategy = RdfParserStrategy<Event>

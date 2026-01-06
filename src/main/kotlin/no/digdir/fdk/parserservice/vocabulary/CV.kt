@@ -34,6 +34,9 @@ class CV {
         val thematicArea: Property = ResourceFactory.createProperty("${URI}thematicArea")
         val value: Property = ResourceFactory.createProperty("${URI}value")
 
+        val Event: Resource = ResourceFactory.createResource("${URI}Event")
+        val BusinessEvent: Resource = ResourceFactory.createResource("${URI}BusinessEvent")
+        val LifeEvent: Resource = ResourceFactory.createResource("${URI}LifeEvent")
         val PublicOrganisation: Resource = ResourceFactory.createResource("${URI}PublicOrganisation")
     }
 }
