@@ -4,6 +4,7 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
 import io.micrometer.core.instrument.Metrics
 import no.digdir.fdk.parserservice.handler.DataServiceHandler
 import no.digdir.fdk.parserservice.handler.DatasetHandler
+import no.digdir.fdk.parserservice.handler.EventHandler
 import no.digdir.fdk.parserservice.handler.InformationModelHandler
 import no.digdir.fdk.parserservice.handler.ServiceHandler
 import no.digdir.fdk.parserservice.model.RecoverableParseException
@@ -12,6 +13,8 @@ import no.fdk.dataservice.DataServiceEvent
 import no.fdk.dataservice.DataServiceEventType
 import no.fdk.dataset.DatasetEvent
 import no.fdk.dataset.DatasetEventType
+import no.fdk.event.EventEvent
+import no.fdk.event.EventEventType
 import no.fdk.informationmodel.InformationModelEvent
 import no.fdk.informationmodel.InformationModelEventType
 import no.fdk.rdf.parse.RdfParseEvent
@@ -30,6 +33,7 @@ open class KafkaReasonedEventCircuitBreaker(
     private val producer: KafkaRdfParseEventProducer,
     private val dataServiceHandler: DataServiceHandler,
     private val datasetHandler: DatasetHandler,
+    private val eventHandler: EventHandler,
     private val informationModelHandler: InformationModelHandler,
     private val serviceHandler: ServiceHandler,
 ) {
@@ -40,6 +44,7 @@ open class KafkaReasonedEventCircuitBreaker(
             when (type) {
                 DataServiceEventType.DATA_SERVICE_REASONED.name -> RdfParseResourceType.DATA_SERVICE
                 DatasetEventType.DATASET_REASONED.name -> RdfParseResourceType.DATASET
+                EventEventType.EVENT_REASONED.name -> RdfParseResourceType.EVENT
                 InformationModelEventType.INFORMATION_MODEL_REASONED.name -> RdfParseResourceType.INFORMATION_MODEL
                 ServiceEventType.SERVICE_REASONED.name -> RdfParseResourceType.SERVICE
                 else -> null
@@ -146,6 +151,28 @@ open class KafkaReasonedEventCircuitBreaker(
         }
     }
 
+    @CircuitBreaker(name = "rdf-parse-event")
+    open fun processEvent(event: EventEvent) {
+        val type = runCatching { event.type }.getOrNull()
+        if (type == EventEventType.EVENT_REASONED) {
+            val fdkId = runCatching { event.fdkId.toString() }.getOrNull()
+            val graph = runCatching { event.graph.toString() }.getOrNull()
+            val timestamp = runCatching { event.timestamp }.getOrNull()
+
+            if (fdkId != null && graph != null && timestamp != null) {
+                handleRecord(fdkId, graph, timestamp, RdfParseResourceType.EVENT)
+            } else {
+                LOGGER.error(
+                    "Unable to get required event message values. fdkId: {}, graph: {}, timestamp: {}",
+                    fdkId,
+                    graph,
+                    timestamp,
+                )
+                throw UnrecoverableParseException("Unable to get required event message values")
+            }
+        }
+    }
+
     private fun handleRecord(
         fdkId: String,
         graph: String,
@@ -189,7 +216,7 @@ open class KafkaReasonedEventCircuitBreaker(
                         RdfParseResourceType.CONCEPT -> LOGGER.warn("Parse of concepts not implemented")
                         RdfParseResourceType.DATA_SERVICE -> dataServiceHandler.parseDataService(fdkId, graph)
                         RdfParseResourceType.DATASET -> datasetHandler.parseDataset(fdkId, graph)
-                        RdfParseResourceType.EVENT -> LOGGER.warn("Parse of events not implemented")
+                        RdfParseResourceType.EVENT -> eventHandler.parseEvent(fdkId, graph)
                         RdfParseResourceType.INFORMATION_MODEL -> informationModelHandler.parseInformationModel(fdkId, graph)
                         RdfParseResourceType.SERVICE -> serviceHandler.parseService(fdkId, graph)
                     }
