@@ -11,7 +11,6 @@ import no.digdir.fdk.parserservice.parser.EventParserStrategy
 import no.digdir.fdk.parserservice.vocabulary.CPSVNO
 import no.digdir.fdk.parserservice.vocabulary.CV
 import org.apache.jena.rdf.model.Resource
-import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDF
 import org.apache.jena.vocabulary.SKOS
@@ -78,10 +77,8 @@ abstract class BaseEventParser : EventParserStrategy {
 
         setIdentifier(eventResource.extractStringValue(DCTerms.identifier))
         setDctType(eventResource.extractListOfReferenceDataCodes(DCTerms.type, "#", SKOS.prefLabel))
-        setRelation(eventResource.extractListOfStrings(DCTerms.relation))
         setMayInitiate(eventResource.extractListOfStrings(CPSVNO.mayInitiate))
         setSubject(eventResource.extractListOfStrings(DCTerms.subject))
-        setDistribution(eventResource.extractListOfStrings(DCAT.distribution))
 
         val rdfTypes = eventResource.listResources(RDF.type) ?: emptyList()
         when {

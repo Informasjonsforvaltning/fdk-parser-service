@@ -2,7 +2,6 @@ package no.digdir.fdk.parserservice.parser.event
 
 import no.digdir.fdk.model.event.Event
 import no.digdir.fdk.parserservice.extract.containsTriple
-import no.digdir.fdk.parserservice.extract.extractListOfStrings
 import no.digdir.fdk.parserservice.extract.fdk.addFdkData
 import no.digdir.fdk.parserservice.extract.fdk.fdkRecord
 import no.digdir.fdk.parserservice.extract.fdk.resourceOfIRI
@@ -12,17 +11,15 @@ import no.digdir.fdk.parserservice.vocabulary.CV
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.rdf.model.ResourceFactory
-import org.apache.jena.vocabulary.DCAT
-import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDF
 import org.springframework.stereotype.Component
 import java.net.URI
 
 /**
- * Parser implementation for CPSVNO events.
+ * Parser implementation for CPSVNO events version 1.1.2.
  *
  * This parser handles the parsing of events according to the Norwegian
- * Core Public Service Vocabulary (CPSVNO) specification.
+ * Core Public Service Vocabulary (CPSVNO) specification version 1.1.2.
  *
  * The parser extracts event metadata including title, description, type,
  * relation, mayInitiate, subject, and distribution.
@@ -32,8 +29,8 @@ import java.net.URI
  * @version 1.0.0
  * @since 1.0.0
  */
-@Component(value = "EventCpsvNoV0Parser")
-class CpsvApNoV0Parser : BaseEventParser() {
+@Component(value = "EventCpsvNoV1Parser")
+class CpsvApNoV1Parser : BaseEventParser() {
     /**
      * Gets the default language for CPSVNO.
      *
@@ -44,9 +41,9 @@ class CpsvApNoV0Parser : BaseEventParser() {
     /**
      * Gets the version string for this parser.
      *
-     * @return "0.9"
+     * @return "1.1.2"
      */
-    override fun getVersion(): String = "0.9"
+    override fun getVersion(): String = "1.1.2"
 
     /**
      * Gets the source format identifier.
@@ -79,7 +76,7 @@ class CpsvApNoV0Parser : BaseEventParser() {
     ): Event = parseEvent(model, iri, fdkId)
 
     /**
-     * Parses an RDF model into an Event object according to CPSVNO.
+     * Parses an RDF model into an Event object according to CPSVNO version 1.1.2.
      *
      * This method extracts the FDK record when fdkId is present
      * and builds a complete Event object with all available metadata.
@@ -112,8 +109,9 @@ class CpsvApNoV0Parser : BaseEventParser() {
 
         builder.addCommonEventValues(eventResource)
 
-        builder.setRelation(eventResource.extractListOfStrings(DCTerms.relation))
-        builder.setDistribution(eventResource.extractListOfStrings(DCAT.distribution))
+        // The following properties are not implemented in CPSV-AP-NO v1.1.2
+        builder.setRelation(null)
+        builder.setDistribution(null)
 
         return builder.build()
     }
