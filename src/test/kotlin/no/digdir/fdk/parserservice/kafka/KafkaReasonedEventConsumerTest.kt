@@ -6,6 +6,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import no.digdir.fdk.parserservice.handler.DataServiceHandler
 import no.digdir.fdk.parserservice.handler.DatasetHandler
+import no.digdir.fdk.parserservice.handler.EventHandler
 import no.digdir.fdk.parserservice.handler.InformationModelHandler
 import no.digdir.fdk.parserservice.handler.ServiceHandler
 import no.digdir.fdk.parserservice.model.RecoverableParseException
@@ -14,6 +15,8 @@ import no.fdk.dataservice.DataServiceEvent
 import no.fdk.dataservice.DataServiceEventType
 import no.fdk.dataset.DatasetEvent
 import no.fdk.dataset.DatasetEventType
+import no.fdk.event.EventEvent
+import no.fdk.event.EventEventType
 import no.fdk.informationmodel.InformationModelEvent
 import no.fdk.informationmodel.InformationModelEventType
 import no.fdk.rdf.parse.RdfParseEvent
@@ -38,6 +41,7 @@ import kotlin.test.assertEquals
 class KafkaReasonedEventConsumerTest {
     private val datasetHandler: DatasetHandler = mockk()
     private val dataServiceHandler: DataServiceHandler = mockk()
+    private val eventHandler: EventHandler = mockk()
     private val informationModelHandler: InformationModelHandler = mockk()
     private val serviceHandler: ServiceHandler = mockk()
     private val kafkaTemplate: KafkaTemplate<String, RdfParseEvent> = mockk()
@@ -48,6 +52,7 @@ class KafkaReasonedEventConsumerTest {
             kafkaRdfParseEventProducer,
             dataServiceHandler,
             datasetHandler,
+            eventHandler,
             informationModelHandler,
             serviceHandler,
         )
@@ -412,6 +417,89 @@ class KafkaReasonedEventConsumerTest {
 
         verify {
             kafkaTemplate.send(any(), match { it.fdkId == "fdk-id" && it.resourceType == RdfParseResourceType.SERVICE })
+        }
+    }
+
+    @Test
+    fun `event listener should produce a rdf parse event`() {
+        val parsedJson = "{\"data\":\"my-parsed-rdf\"}"
+        every { eventHandler.parseEvent(any(), any()) } returns mapper.readTree(parsedJson)
+        every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
+        every { ack.acknowledge() } returns Unit
+        every { ack.nack(Duration.ZERO) } returns Unit
+
+        val eventEvent = EventEvent(EventEventType.EVENT_REASONED, "my-id", "uri", System.currentTimeMillis())
+        kafkaReasonedEventConsumer.eventListener(
+            record = ConsumerRecord("event-events", 0, 0, "my-id", eventEvent as Any),
+            ack = ack,
+        )
+
+        verify {
+            kafkaTemplate.send(
+                withArg {
+                    assertEquals("rdf-parse-events", it)
+                },
+                withArg {
+                    assertEquals(eventEvent.fdkId, it.fdkId)
+                    assertEquals(RdfParseResourceType.EVENT, it.resourceType)
+                    assertEquals(parsedJson, it.data)
+                    assertEquals(eventEvent.timestamp, it.timestamp)
+                },
+            )
+            ack.acknowledge()
+        }
+        confirmVerified(kafkaTemplate, ack)
+    }
+
+    @Test
+    fun `event listener should acknowledge when a recoverable exception occurs`() {
+        every { eventHandler.parseEvent(any(), any()) } throws RecoverableParseException("Error parsing RDF: invalid rdf")
+        every { ack.acknowledge() } returns Unit
+        every { ack.nack(Duration.ZERO) } returns Unit
+
+        val eventEvent = EventEvent(EventEventType.EVENT_REASONED, "my-id", "uri", System.currentTimeMillis())
+        kafkaReasonedEventConsumer.eventListener(
+            record = ConsumerRecord("event-events", 0, 0, "my-id", eventEvent as Any),
+            ack = ack,
+        )
+
+        verify(exactly = 0) { kafkaTemplate.send(any(), any()) }
+        verify(exactly = 1) { ack.acknowledge() }
+        verify(exactly = 0) { ack.nack(Duration.ZERO) }
+        confirmVerified(kafkaTemplate, ack)
+    }
+
+    @Test
+    fun `event listener should not acknowledge when a unrecoverable exception occurs`() {
+        every { eventHandler.parseEvent(any(), any()) } throws UnrecoverableParseException("Error parsing RDF")
+        every { ack.nack(Duration.ZERO) } returns Unit
+
+        val eventEvent = EventEvent(EventEventType.EVENT_REASONED, "my-id", "uri", System.currentTimeMillis())
+        kafkaReasonedEventConsumer.eventListener(
+            record = ConsumerRecord("event-events", 0, 0, "my-id", eventEvent as Any),
+            ack = ack,
+        )
+
+        verify(exactly = 0) { kafkaTemplate.send(any(), any()) }
+        verify(exactly = 0) { ack.acknowledge() }
+        verify(exactly = 1) { ack.nack(Duration.ZERO) }
+        confirmVerified(kafkaTemplate, ack)
+    }
+
+    @Test
+    fun `processEvent should handle valid event reasoned event`() {
+        val event = mockk<EventEvent>()
+        every { event.type } returns EventEventType.EVENT_REASONED
+        every { event.fdkId } returns "fdk-id"
+        every { event.graph } returns "graph"
+        every { event.timestamp } returns 12345L
+        every { eventHandler.parseEvent(any(), any()) } returns mapper.readTree("{\"ok\":true}")
+        every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
+
+        circuitBreaker.processEvent(event)
+
+        verify {
+            kafkaTemplate.send(any(), match { it.fdkId == "fdk-id" && it.resourceType == RdfParseResourceType.EVENT })
         }
     }
 }
