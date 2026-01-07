@@ -3,6 +3,7 @@ package no.digdir.fdk.parserservice.handler
 import no.digdir.fdk.parserservice.extract.fdk.topicUriOfRecordWithID
 import no.digdir.fdk.parserservice.model.NoAcceptableFDKRecordsException
 import no.digdir.fdk.parserservice.parser.EventParserRegistry
+import no.digdir.fdk.parserservice.utils.EventMerger
 import no.digdir.fdk.parserservice.utils.avroToJson
 import no.digdir.fdk.parserservice.utils.readTurtle
 import org.apache.jena.rdf.model.ModelFactory
@@ -29,7 +30,7 @@ class EventHandler(
      * This method processes a Turtle-formatted RDF graph containing event
      * information and converts it to a JSON representation using the registered
      * event parsers. It attempts to parse the event with all available
-     * parsers in priority order and uses the first successful result.
+     * parsers in priority order and merges the results.
      *
      * @param fdkId The FDK identifier for the event
      * @param graph The Turtle-formatted RDF graph containing the event
@@ -50,8 +51,8 @@ class EventHandler(
                     // Parse with all registered parsers in priority order
                     val parsedEvents = parserRegistry.parseWithAllParsers(model, resourceIRI, fdkId)
 
-                    // Use the first successfully parsed event (highest priority)
-                    parsedEvents.first()
+                    // Merge all successfully parsed events using the event merger
+                    EventMerger.merge(parsedEvents)
                 } else {
                     throw NoAcceptableFDKRecordsException("No event found with identifier '$fdkId'")
                 }

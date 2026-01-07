@@ -3,6 +3,7 @@ package no.digdir.fdk.parserservice.configuration
 import jakarta.annotation.PostConstruct
 import no.digdir.fdk.parserservice.parser.EventParserRegistry
 import no.digdir.fdk.parserservice.parser.event.CpsvApNoV0Parser
+import no.digdir.fdk.parserservice.parser.event.CpsvApNoV1Parser
 import org.springframework.context.annotation.Configuration
 
 /**
@@ -20,6 +21,7 @@ import org.springframework.context.annotation.Configuration
 open class EventParserConfiguration(
     private val parserRegistry: EventParserRegistry,
     private val cpsvApNoV0Parser: CpsvApNoV0Parser,
+    private val cpsvApNoV1Parser: CpsvApNoV1Parser,
 ) {
     /**
      * Registers all available event parsers with their priority levels.
@@ -28,5 +30,6 @@ open class EventParserConfiguration(
     @PostConstruct
     fun registerParsers() {
         parserRegistry.registerParser(cpsvApNoV0Parser, priority = 50, name = "CPSV-AP-NO-V0")
+        parserRegistry.registerParser(cpsvApNoV1Parser, priority = 100, name = "CPSV-AP-NO-V1")
     }
 }
