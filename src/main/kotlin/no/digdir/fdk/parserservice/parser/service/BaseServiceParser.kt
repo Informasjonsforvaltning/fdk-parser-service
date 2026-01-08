@@ -100,7 +100,7 @@ abstract class BaseServiceParser : ServiceParserStrategy {
         setHomepage(serviceResource.extractListOfStrings(FOAF.homepage))
         setLanguage(serviceResource.extractListOfReferenceDataCodes(DCTerms.language, EUAT.authorityCode, SKOS.prefLabel))
         setKeyword(serviceResource.extractLocalizedStringList(DCAT.keyword))
-        setSpatial(serviceResource.extractListOfStrings(DCTerms.spatial))
+        setSpatial(serviceResource.extractListOfReferenceDataCodes(DCTerms.spatial, DCTerms.identifier, DCTerms.title))
         setProcessingTime(serviceResource.extractStringValue(CV.processingTime))
         setAdmsStatus(serviceResource.extractReferenceDataCode(DCTerms.type, DC_11.identifier, SKOS.prefLabel))
 
