@@ -13,24 +13,49 @@ open class CircuitBreakerConsumerConfiguration(
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
     private val kafkaManager: KafkaManager,
 ) {
+    private val circuitBreakerToListenerMapping =
+        mapOf(
+            "rdf-parse-data-service" to "data-service-event-consumer",
+            "rdf-parse-dataset" to "dataset-event-consumer",
+            "rdf-parse-event" to "event-event-consumer",
+            "rdf-parse-information-model" to "information-model-event-consumer",
+            "rdf-parse-service" to "service-event-consumer",
+            "rdf-parse-generic" to null,
+        )
+
     init {
-        LOGGER.debug("Configuring circuit breaker event listener")
-        circuitBreakerRegistry.circuitBreaker("rdf-parse").eventPublisher.onStateTransition { event: CircuitBreakerOnStateTransitionEvent ->
-            when (event.stateTransition) {
-                StateTransition.CLOSED_TO_OPEN,
-                StateTransition.CLOSED_TO_FORCED_OPEN,
-                StateTransition.HALF_OPEN_TO_OPEN,
-                -> kafkaManager.pause("rdf-parse")
-
-                StateTransition.OPEN_TO_HALF_OPEN,
-                StateTransition.HALF_OPEN_TO_CLOSED,
-                StateTransition.FORCED_OPEN_TO_CLOSED,
-                StateTransition.FORCED_OPEN_TO_HALF_OPEN,
-                -> kafkaManager.resume("rdf-parse")
-
-                else -> throw IllegalStateException("Unknown transition state: " + event.stateTransition)
-            }
+        LOGGER.debug("Configuring circuit breaker event listeners")
+        circuitBreakerToListenerMapping.forEach { (circuitBreakerName, listenerId) ->
+            configureCircuitBreaker(circuitBreakerName, listenerId)
         }
+    }
+
+    private fun configureCircuitBreaker(
+        circuitBreakerName: String,
+        listenerId: String?,
+    ) {
+        circuitBreakerRegistry
+            .circuitBreaker(circuitBreakerName)
+            .eventPublisher
+            .onStateTransition { event: CircuitBreakerOnStateTransitionEvent ->
+                LOGGER.info("Circuit breaker '$circuitBreakerName' state transition: ${event.stateTransition}")
+                if (listenerId != null) {
+                    when (event.stateTransition) {
+                        StateTransition.CLOSED_TO_OPEN,
+                        StateTransition.CLOSED_TO_FORCED_OPEN,
+                        StateTransition.HALF_OPEN_TO_OPEN,
+                        -> kafkaManager.pause(listenerId)
+
+                        StateTransition.OPEN_TO_HALF_OPEN,
+                        StateTransition.HALF_OPEN_TO_CLOSED,
+                        StateTransition.FORCED_OPEN_TO_CLOSED,
+                        StateTransition.FORCED_OPEN_TO_HALF_OPEN,
+                        -> kafkaManager.resume(listenerId)
+
+                        else -> throw IllegalStateException("Unknown transition state: " + event.stateTransition)
+                    }
+                }
+            }
     }
 
     companion object {
