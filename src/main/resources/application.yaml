@@ -39,8 +39,8 @@ spring:
       ack-mode: manual_immediate
 resilience4j:
   circuitbreaker:
-    instances:
-      rdf-parse:
+    configs:
+      default:
         slidingWindowType: COUNT_BASED
         slidingWindowSize: 10
         failureRateThreshold: 50
@@ -49,6 +49,19 @@ resilience4j:
         automaticTransitionFromOpenToHalfOpenEnabled: true
         ignoreExceptions:
           - no.digdir.fdk.parserservice.model.RecoverableParseException
+    instances:
+      rdf-parse-data-service:
+        baseConfig: default
+      rdf-parse-dataset:
+        baseConfig: default
+      rdf-parse-event:
+        baseConfig: default
+      rdf-parse-information-model:
+        baseConfig: default
+      rdf-parse-service:
+        baseConfig: default
+      rdf-parse-generic:
+        baseConfig: default
 ---
 spring:
   config.activate.on-profile: develop
