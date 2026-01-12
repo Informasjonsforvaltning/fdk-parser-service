@@ -1,5 +1,6 @@
 package no.digdir.fdk.parserservice.vocabulary
 
+import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.rdf.model.ResourceFactory
 
@@ -15,19 +16,13 @@ import org.apache.jena.rdf.model.ResourceFactory
  */
 class EUVOC {
     companion object {
-        /**
-         * Base URI for the EUVOC vocabulary.
-         *
-         * This URI points to the European Union vocabulary namespace.
-         */
         const val URI = "http://publications.europa.eu/ontology/euvoc#"
 
-        /**
-         * Resource for file type classification.
-         *
-         * This resource is used to classify different types of files
-         * according to EU vocabulary standards.
-         */
+        val status: Property = ResourceFactory.createProperty("${URI}status")
+        val startDate: Property = ResourceFactory.createProperty("${URI}startDate")
+        val endDate: Property = ResourceFactory.createProperty("${URI}endDate")
+        val xlDefinition: Property = ResourceFactory.createProperty("${URI}xlDefinition")
+
         val FileType: Resource = ResourceFactory.createResource("${URI}FileType")
     }
 }

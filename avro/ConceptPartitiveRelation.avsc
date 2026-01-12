@@ -1,0 +1,32 @@
+{
+  "type": "record",
+  "name": "ConceptPartitiveRelation",
+  "namespace": "no.digdir.fdk.model.concept",
+  "doc": "A partitive relation between concepts (part-whole relationship)",
+  "fields": [
+    {
+      "name": "description",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Description of the relationship (criterion of subdivision)"
+    },
+    {
+      "name": "hasPart",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "URI of another concept (the partitive concept) that is part of this concept"
+    },
+    {
+      "name": "isPartOf",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "URI of another concept (the comprehensive concept) that contains this concept."
+    }
+  ]
+}

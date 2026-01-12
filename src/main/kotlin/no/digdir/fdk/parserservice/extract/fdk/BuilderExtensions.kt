@@ -1,5 +1,6 @@
 package no.digdir.fdk.parserservice.extract.fdk
 
+import no.digdir.fdk.model.concept.Concept
 import no.digdir.fdk.model.dataservice.DataService
 import no.digdir.fdk.model.dataset.Dataset
 import no.digdir.fdk.model.event.Event
@@ -58,6 +59,15 @@ fun Service.Builder.addFdkData(recordResource: Resource) {
  * @param recordResource The jena resource of the fdkRecord
  */
 fun Event.Builder.addFdkData(recordResource: Resource) {
+    setId(fdkIdFromRecord(recordResource))
+    setHarvest(harvestMetaData(recordResource))
+}
+
+/**
+ * Adds data to the concept builder that has been added to the concept graph by the FDK harvest process.
+ * @param recordResource The jena resource of the fdkRecord
+ */
+fun Concept.Builder.addFdkData(recordResource: Resource) {
     setId(fdkIdFromRecord(recordResource))
     setHarvest(harvestMetaData(recordResource))
 }

@@ -1,0 +1,32 @@
+{
+  "type": "record",
+  "name": "ConceptGenericRelation",
+  "namespace": "no.digdir.fdk.model.concept",
+  "doc": "A generic relation between concepts (broader-narrower relationship)",
+  "fields": [
+    {
+      "name": "divisioncriterion",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Division criterion for the relationship"
+    },
+    {
+      "name": "generalizes",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "URI of the more specific concept (this concept generalizes)"
+    },
+    {
+      "name": "specializes",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "URI of the more general concept (this concept specializes)"
+    }
+  ]
+}
