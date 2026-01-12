@@ -1,0 +1,163 @@
+{
+  "type": "record",
+  "name": "Concept",
+  "namespace": "no.digdir.fdk.model.concept",
+  "doc": "Internal Data.norge.no model for SKOS concepts according to SKOS-AP-NO",
+  "fields": [
+    {
+      "name": "id",
+      "type": ["null", "string"],
+      "doc": "Unique FDK identifier for the concept"
+    },
+    {
+      "name": "uri",
+      "type": ["null", "string"],
+      "doc": "URI of the FDK catalog record for this concept"
+    },
+    {
+      "name": "identifier",
+      "type": ["null", "string"],
+      "doc": "Original identifier URI of the concept"
+    },
+    {
+      "name": "harvest",
+      "type": ["null", "no.digdir.fdk.model.HarvestMetaData"],
+      "doc": "Meta data about the harvest of the concept to FDK"
+    },
+    {
+      "name": "collection",
+      "type": ["null", "no.digdir.fdk.model.concept.ConceptCollection"],
+      "doc": "The SKOS Collection this concept belongs to"
+    },
+    {
+      "name": "publisher",
+      "type": ["null", "no.digdir.fdk.model.Organization"],
+      "doc": "Publisher of the concept"
+    },
+    {
+      "name": "creator",
+      "type": ["null", "no.digdir.fdk.model.Organization"],
+      "doc": "Creator of the concept"
+    },
+    {
+      "name": "subject",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.concept.ConceptSubject"}],
+      "doc": "Subjects of the concept"
+    },
+    {
+      "name": "status",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Status of the concept"
+    },
+    {
+      "name": "example",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Example usage of the concept"
+    },
+    {
+      "name": "prefLabel",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Preferred label for the concept"
+    },
+    {
+      "name": "hiddenLabel",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.LocalizedStrings"}],
+      "doc": "Hidden labels for the concept"
+    },
+    {
+      "name": "altLabel",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.LocalizedStrings"}],
+      "doc": "Alternative labels for the concept"
+    },
+    {
+      "name": "contactPoint",
+      "type": ["null", "no.digdir.fdk.model.ContactPoint"],
+      "doc": "Contact point for the concept"
+    },
+    {
+      "name": "definition",
+      "type": ["null", "no.digdir.fdk.model.concept.ConceptDefinition"],
+      "doc": "Primary definition of the concept"
+    },
+    {
+      "name": "definitions",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.concept.ConceptDefinition"}],
+      "doc": "All definitions of the concept"
+    },
+    {
+      "name": "seeAlso",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "See also references (URIs)"
+    },
+    {
+      "name": "isReplacedBy",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "URIs of concepts that replace this concept"
+    },
+    {
+      "name": "replaces",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "URIs of concepts this concept replaces"
+    },
+    {
+      "name": "validFromIncluding",
+      "type": ["null", "string"],
+      "doc": "Date from which the concept is valid (inclusive)"
+    },
+    {
+      "name": "validToIncluding",
+      "type": ["null", "string"],
+      "doc": "Date until which the concept is valid (inclusive)"
+    },
+    {
+      "name": "associativeRelation",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.concept.ConceptAssociativeRelation"}],
+      "doc": "Associative relations to other concepts"
+    },
+    {
+      "name": "partitiveRelation",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.concept.ConceptPartitiveRelation"}],
+      "doc": "Partitive relations to other concepts"
+    },
+    {
+      "name": "genericRelation",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.concept.ConceptGenericRelation"}],
+      "doc": "Generic relations to other concepts"
+    },
+    {
+      "name": "created",
+      "type": ["null", "string"],
+      "doc": "Date when the concept was created"
+    },
+    {
+      "name": "exactMatch",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "URIs of concepts with exact match mapping"
+    },
+    {
+      "name": "closeMatch",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "URIs of concepts with close match mapping"
+    },
+    {
+      "name": "memberOf",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "URIs of collections this concept is a member of"
+    },
+    {
+      "name": "remark",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Additional remarks or scope notes"
+    },
+    {
+      "name": "range",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.UriWithText"}],
+      "doc": "Value range for the concept"
+    },
+    {
+      "name": "type",
+      "type": ["null", "no.digdir.fdk.model.ResourceType"],
+      "doc": "Resource type"
+    }
+  ]
+}

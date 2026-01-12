@@ -1,5 +1,6 @@
 package no.digdir.fdk.parserservice.parser
 
+import no.digdir.fdk.model.concept.Concept
 import no.digdir.fdk.model.dataservice.DataService
 import no.digdir.fdk.model.dataset.Dataset
 import no.digdir.fdk.model.event.Event
@@ -105,3 +106,14 @@ typealias ServiceParserStrategy = RdfParserStrategy<Service>
  * @see Event
  */
 typealias EventParserStrategy = RdfParserStrategy<Event>
+
+/**
+ * Type alias for 'concept'-specific RDF parsing strategies.
+ *
+ * This alias provides a more specific interface for parsers that handle
+ * concept resources according to the SKOS-AP-NO specification.
+ *
+ * @see RdfParserStrategy
+ * @see Concept
+ */
+typealias ConceptParserStrategy = RdfParserStrategy<Concept>

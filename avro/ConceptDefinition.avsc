@@ -1,0 +1,43 @@
+{
+  "type": "record",
+  "name": "ConceptDefinition",
+  "namespace": "no.digdir.fdk.model.concept",
+  "doc": "Definition of a concept with source and audience information",
+  "fields": [
+    {
+      "name": "text",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual definition text"
+    },
+    {
+      "name": "targetGroup",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Specify the target audience of the definition."
+    },
+    {
+      "name": "sourceRelationship",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Specifies the relationship between the definition and the sources."
+    },
+    {
+      "name": "sources",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.UriWithText"
+        }
+      ],
+      "doc": "List of sources for the definition"
+    }
+  ]
+}

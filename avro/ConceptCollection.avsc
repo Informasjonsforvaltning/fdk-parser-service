@@ -1,0 +1,48 @@
+{
+  "type": "record",
+  "name": "ConceptCollection",
+  "namespace": "no.digdir.fdk.model.concept",
+  "doc": "A SKOS Collection that contains concepts",
+  "fields": [
+    {
+      "name": "id",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Unique identifier for the collection"
+    },
+    {
+      "name": "uri",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "URI of the collection"
+    },
+    {
+      "name": "label",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual label of the collection"
+    },
+    {
+      "name": "description",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Multilingual description of the collection"
+    },
+    {
+      "name": "publisher",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.Organization"
+      ],
+      "doc": "Publisher of the collection"
+    }
+  ]
+}

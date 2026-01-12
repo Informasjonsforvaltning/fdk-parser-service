@@ -1,0 +1,24 @@
+{
+  "type": "record",
+  "name": "ConceptAssociativeRelation",
+  "namespace": "no.digdir.fdk.model.concept",
+  "doc": "An associative relation between concepts (SKOS related)",
+  "fields": [
+    {
+      "name": "description",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.LocalizedStrings"
+      ],
+      "doc": "Description of the relationship"
+    },
+    {
+      "name": "related",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "URI of the related concept"
+    }
+  ]
+}
