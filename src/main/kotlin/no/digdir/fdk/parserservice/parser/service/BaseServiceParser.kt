@@ -27,6 +27,7 @@ import no.digdir.fdk.parserservice.parser.ServiceParserStrategy
 import no.digdir.fdk.parserservice.vocabulary.CPSV
 import no.digdir.fdk.parserservice.vocabulary.CPSVNO
 import no.digdir.fdk.parserservice.vocabulary.CV
+import no.digdir.fdk.parserservice.vocabulary.DCATNO
 import no.digdir.fdk.parserservice.vocabulary.EUAT
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.sparql.vocabulary.FOAF
@@ -91,7 +92,7 @@ abstract class BaseServiceParser : ServiceParserStrategy {
      */
     protected fun Service.Builder.addCommonServiceValues(serviceResource: Resource) {
         setUri(serviceResource.uri)
-        setCatalog(serviceResource.extractCatalogData())
+        setCatalog(serviceResource.extractCatalogData(DCATNO.containsService))
 
         setTitle(serviceResource.extractLocalizedStrings(DCTerms.title))
         setDescription(serviceResource.extractLocalizedStrings(DCTerms.description))

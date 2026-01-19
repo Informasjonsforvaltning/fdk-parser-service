@@ -10,6 +10,7 @@ import no.digdir.fdk.parserservice.extract.listResources
 import no.digdir.fdk.parserservice.parser.EventParserStrategy
 import no.digdir.fdk.parserservice.vocabulary.CPSVNO
 import no.digdir.fdk.parserservice.vocabulary.CV
+import no.digdir.fdk.parserservice.vocabulary.DCATNO
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDF
@@ -70,7 +71,7 @@ abstract class BaseEventParser : EventParserStrategy {
      */
     protected fun Event.Builder.addCommonEventValues(eventResource: Resource) {
         setUri(eventResource.uri)
-        setCatalog(eventResource.extractCatalogData())
+        setCatalog(eventResource.extractCatalogData(DCATNO.containsEvent))
 
         setTitle(eventResource.extractLocalizedStrings(DCTerms.title))
         setDescription(eventResource.extractLocalizedStrings(DCTerms.description))

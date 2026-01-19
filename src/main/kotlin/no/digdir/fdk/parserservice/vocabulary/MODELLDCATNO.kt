@@ -27,6 +27,7 @@ class MODELLDCATNO {
         val formsSymmetryWith: Property = ResourceFactory.createProperty("${URI}formsSymmetryWith")
         val minOccurs: Property = ResourceFactory.createProperty("${URI}minOccurs")
         val maxOccurs: Property = ResourceFactory.createProperty("${URI}maxOccurs")
+        val model: Property = ResourceFactory.createProperty("${URI}model")
         val relationPropertyLabel: Property = ResourceFactory.createProperty("${URI}relationPropertyLabel")
         val sequenceNumber: Property = ResourceFactory.createProperty("${URI}sequenceNumber")
         val notification: Property = ResourceFactory.createProperty("${URI}notification")

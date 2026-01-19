@@ -88,7 +88,7 @@ abstract class BaseDataServiceParser : DataServiceParserStrategy {
         val formattedDescription = dataServiceResource.extractLocalizedStrings(DCTerms.description)
 
         setUri(dataServiceResource.uri)
-        setCatalog(dataServiceResource.extractCatalogData())
+        setCatalog(dataServiceResource.extractCatalogData(DCAT.service))
 
         setTitle(dataServiceResource.extractLocalizedStrings(DCTerms.title))
         setDescriptionFormatted(formattedDescription)

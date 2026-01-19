@@ -91,7 +91,7 @@ abstract class BaseDatasetParser : DatasetParserStrategy {
         val formattedDescription = datasetResource.extractLocalizedStrings(DCTerms.description)
 
         setUri(datasetResource.uri)
-        setCatalog(datasetResource.extractCatalogData())
+        setCatalog(datasetResource.extractCatalogData(DCAT.dataset))
 
         setTitle(datasetResource.extractLocalizedStrings(DCTerms.title))
         setDescriptionFormatted(formattedDescription)
