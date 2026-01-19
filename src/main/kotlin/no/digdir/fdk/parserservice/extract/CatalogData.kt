@@ -2,6 +2,7 @@ package no.digdir.fdk.parserservice.extract
 
 import no.digdir.fdk.model.Catalog
 import no.digdir.fdk.parserservice.LOGGER
+import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms
@@ -16,8 +17,8 @@ private fun Catalog.hasData(): Boolean = uri != null || id != null || title != n
  *
  * @return a populated `Catalog` instance or `null` when no catalog context is available
  */
-fun Resource.extractCatalogData(): Catalog? {
-    val catalogResource = getCatalogResource()
+fun Resource.extractCatalogData(memberPredicate: Property): Catalog? {
+    val catalogResource = getCatalogResource(memberPredicate)
 
     if (catalogResource == null) {
         return null
@@ -37,13 +38,13 @@ fun Resource.extractCatalogData(): Catalog? {
     }
 }
 
-private fun Resource.getCatalogResource(): Resource? {
+private fun Resource.getCatalogResource(memberPredicate: Property): Resource? {
     val catalogs =
         model
             .listSubjectsWithProperty(RDF.type, DCAT.Catalog)
             .asSequence()
             .filter { it.isURIResource }
-            .filter { model.containsTriple(it.uri, DCAT.dataset.uri, URI.create(uri)) }
+            .filter { model.containsTriple(it.uri, memberPredicate.uri, URI.create(uri)) }
             .toList()
 
     return when {

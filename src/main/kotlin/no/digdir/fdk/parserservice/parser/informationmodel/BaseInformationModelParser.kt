@@ -92,7 +92,7 @@ abstract class BaseInformationModelParser : InformationModelParserStrategy {
         val formattedDescription = infoModelResource.extractLocalizedStrings(DCTerms.description)
 
         setUri(infoModelResource.uri)
-        setCatalog(infoModelResource.extractCatalogData())
+        setCatalog(infoModelResource.extractCatalogData(MODELLDCATNO.model))
 
         setTitle(infoModelResource.extractLocalizedStrings(DCTerms.title))
         setDescriptionFormatted(formattedDescription)

@@ -102,7 +102,41 @@ class InformationModelHandlerTest {
                 "firstHarvested": "2020-06-22T13:39:27.353Z",
                 "modified": "2020-06-22T13:39:27.353Z"
               },
-              "catalog": null,
+              "catalog": {
+                "id": "https://id.no",
+                "uri": "https://testdirektoratet.no/model/catalog",
+                "publisher": {
+                  "id": "112233445",
+                  "uri": "https://testdirektoratet.no/publisher",
+                  "name": "Digitaliseringsdirektoratet",
+                  "orgPath": null,
+                  "title": {
+                    "no": "Digitaliseringsdirektoratet",
+                    "nb": null,
+                    "nn": null,
+                    "en": null
+                  },
+                  "prefLabel": {
+                    "no": "Digitaliseringsdirektoratet",
+                    "nb": null,
+                    "nn": null,
+                    "en": null
+                  },
+                  "organisasjonsform": null
+                },
+                "title": {
+                  "no": "Katalog",
+                  "nb": null,
+                  "nn": null,
+                  "en": null
+                },
+                "description": {
+                  "no": "Beskrivelse av katalog",
+                  "nb": null,
+                  "nn": null,
+                  "en": null
+                }
+              },
               "title": {
                 "no": "Test Informasjonsmodell",
                 "nb": null,

@@ -57,7 +57,7 @@ class ExtractCatalog {
                 it.publisher = expectedPublisher
             }
 
-        assertEquals(expected, subject.extractCatalogData())
+        assertEquals(expected, subject.extractCatalogData(DCAT.dataset))
     }
 
     @Test
@@ -94,7 +94,7 @@ class ExtractCatalog {
                 "https://testdirektoratet.no/model/catalog/1",
             )
 
-        val extractedCatalog = subject.extractCatalogData()
+        val extractedCatalog = subject.extractCatalogData(DCAT.dataset)
 
         assertTrue(oneOfExpectedURIs.any { it == extractedCatalog!!.uri })
     }
