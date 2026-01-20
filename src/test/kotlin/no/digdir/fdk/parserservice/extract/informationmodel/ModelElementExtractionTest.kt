@@ -119,7 +119,7 @@ class ModelElementExtractionTest {
             @prefix modelldcatno: <https://data.norge.no/vocabulary/modelldcatno#> .
             @prefix testdir: <https://testdirektoratet.no/model#> .
             @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
-            @prefix xkos:  <https://rdf-vocabulary.ddialliance.org/xkos/> .
+            @prefix xkos:  <http://rdf-vocabulary.ddialliance.org/xkos#> .
 
             testdir:Kjønn  a         modelldcatno:CodeList ;
                 dct:identifier  "Kjønn" ;
