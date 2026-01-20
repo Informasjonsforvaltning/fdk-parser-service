@@ -5,7 +5,7 @@ import org.apache.jena.rdf.model.ResourceFactory
 
 class XKOS {
     companion object {
-        const val URI = "https://rdf-vocabulary.ddialliance.org/xkos/"
+        const val URI = "http://rdf-vocabulary.ddialliance.org/xkos#"
 
         val exclusionNote: Property = ResourceFactory.createProperty("${URI}exclusionNote")
         val inclusionNote: Property = ResourceFactory.createProperty("${URI}inclusionNote")
