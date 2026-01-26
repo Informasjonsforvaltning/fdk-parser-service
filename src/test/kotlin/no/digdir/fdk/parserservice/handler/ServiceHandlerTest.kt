@@ -337,7 +337,7 @@ class ServiceHandlerTest {
         val result = handler.parseService("adms-test", turtle)
 
         val expectedAdms = """{
-          "uri": "http://example.org/status/published",
+          "uri": "http://purl.org/adms/status/Completed",
           "code": "PUBLISHED",
           "prefLabel": {
             "no": null,
