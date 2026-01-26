@@ -316,7 +316,7 @@ class ServiceHandlerTest {
 
             <https://raw.example.org/service/with-adms-status>
                     a cpsvno:Service ;
-                    adms:status <http://example.org/status/published> ;
+                    adms:status <http://purl.org/adms/status/Completed> ;
                     dct:identifier "https://raw.example.org/service/with-adms-status"^^xsd:anyURI ;
                     dct:title "Service with ADMS status"@en .
 
