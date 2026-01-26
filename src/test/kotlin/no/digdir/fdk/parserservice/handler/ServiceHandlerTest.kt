@@ -338,7 +338,7 @@ class ServiceHandlerTest {
 
         val expectedAdms = """{
           "uri": "http://purl.org/adms/status/Completed",
-          "code": "PUBLISHED",
+          "code": "Completed",
           "prefLabel": {
             "no": null,
             "nb": null,
