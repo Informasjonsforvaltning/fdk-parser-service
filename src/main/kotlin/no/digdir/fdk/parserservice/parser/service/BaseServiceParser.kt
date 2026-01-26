@@ -104,7 +104,7 @@ abstract class BaseServiceParser : ServiceParserStrategy {
         setKeyword(serviceResource.extractLocalizedStringList(DCAT.keyword))
         setSpatial(serviceResource.extractListOfReferenceDataCodes(DCTerms.spatial, DCTerms.identifier, DCTerms.title))
         setProcessingTime(serviceResource.extractStringValue(CV.processingTime))
-        setAdmsStatus(serviceResource.extractReferenceDataCode(ADMS.status, DC_11.identifier, SKOS.prefLabel))
+        setAdmsStatus(serviceResource.extractReferenceDataCode(ADMS.status, SKOS.notation, SKOS.prefLabel))
 
         setHasParticipation(serviceResource.extractListOfStrings(CV.hasParticipation))
         setIsGroupedBy(serviceResource.extractListOfStrings(CV.isGroupedBy))
