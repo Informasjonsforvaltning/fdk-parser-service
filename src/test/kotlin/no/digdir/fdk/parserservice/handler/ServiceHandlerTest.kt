@@ -321,7 +321,7 @@ class ServiceHandlerTest {
                     dct:title "Service with ADMS status"@en .
 
             <http://purl.org/adms/status/Completed>
-                rdf:type        owl:NamedIndividual , skos:Concept;
+                rdf:type        skos:Concept;
                 skos:inScheme   <http://purl.org/adms/status/1.0>;
                 skos:notation   "Completed";
                 skos:prefLabel  "Ferdigstilt"@nn , "Ferdigstilt"@nb , "Completed"@en .
