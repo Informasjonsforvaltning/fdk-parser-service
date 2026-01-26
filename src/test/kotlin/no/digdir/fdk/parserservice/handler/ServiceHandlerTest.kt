@@ -341,9 +341,9 @@ class ServiceHandlerTest {
           "code": "Completed",
           "prefLabel": {
             "no": null,
-            "nb": null,
-            "nn": null,
-            "en": "Published"
+            "nb":"Ferdigstilt",
+            "nn":"Ferdigstilt",
+            "en": "Completed"
           }
         }"""
 
