@@ -24,6 +24,7 @@ import no.digdir.fdk.parserservice.extract.service.extractListOfServiceLegalReso
 import no.digdir.fdk.parserservice.extract.service.extractListOfServiceRequirements
 import no.digdir.fdk.parserservice.extract.service.extractListOfServiceRules
 import no.digdir.fdk.parserservice.parser.ServiceParserStrategy
+import no.digdir.fdk.parserservice.vocabulary.ADMS
 import no.digdir.fdk.parserservice.vocabulary.CPSV
 import no.digdir.fdk.parserservice.vocabulary.CPSVNO
 import no.digdir.fdk.parserservice.vocabulary.CV
@@ -103,7 +104,7 @@ abstract class BaseServiceParser : ServiceParserStrategy {
         setKeyword(serviceResource.extractLocalizedStringList(DCAT.keyword))
         setSpatial(serviceResource.extractListOfReferenceDataCodes(DCTerms.spatial, DCTerms.identifier, DCTerms.title))
         setProcessingTime(serviceResource.extractStringValue(CV.processingTime))
-        setAdmsStatus(serviceResource.extractReferenceDataCode(DCTerms.type, DC_11.identifier, SKOS.prefLabel))
+        setAdmsStatus(serviceResource.extractReferenceDataCode(ADMS.status, SKOS.notation, SKOS.prefLabel))
 
         setHasParticipation(serviceResource.extractListOfStrings(CV.hasParticipation))
         setIsGroupedBy(serviceResource.extractListOfStrings(CV.isGroupedBy))

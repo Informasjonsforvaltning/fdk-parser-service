@@ -301,6 +301,58 @@ class ServiceHandlerTest {
     }
 
     @Test
+    fun parseServiceWithAdmsStatus() {
+        val turtle =
+            """
+            @prefix adms:  <http://www.w3.org/ns/adms#> .
+            @prefix cpsvno: <https://data.norge.no/vocabulary/cpsvno#> .
+            @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+            @prefix dc:    <http://purl.org/dc/elements/1.1/> .
+            @prefix dct:   <http://purl.org/dc/terms/> .
+            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+            @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+            @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+            <https://raw.example.org/service/with-adms-status>
+                    a cpsvno:Service ;
+                    adms:status <http://purl.org/adms/status/Completed> ;
+                    dct:identifier "https://raw.example.org/service/with-adms-status"^^xsd:anyURI ;
+                    dct:title "Service with ADMS status"@en .
+
+            <http://purl.org/adms/status/Completed>
+                rdf:type        skos:Concept;
+                skos:inScheme   <http://purl.org/adms/status/1.0>;
+                skos:notation   "Completed";
+                skos:prefLabel  "Ferdigstilt"@nn , "Ferdigstilt"@nb , "Completed"@en .
+
+            <https://www.staging.fellesdatakatalog.digdir.no/public-services/adms-test>
+                    a dcat:CatalogRecord ;
+                    dct:identifier "adms-test" ;
+                    dct:issued "2022-01-01T00:00:00Z"^^xsd:dateTime ;
+                    dct:modified "2022-01-01T00:00:00Z"^^xsd:dateTime ;
+                    foaf:primaryTopic <https://raw.example.org/service/with-adms-status> .
+            """.trimIndent()
+
+        val result = handler.parseService("adms-test", turtle)
+
+        val expectedAdms = """{
+          "uri": "http://purl.org/adms/status/Completed",
+          "code": "Completed",
+          "prefLabel": {
+            "no": null,
+            "nb":"Ferdigstilt",
+            "nn":"Ferdigstilt",
+            "en": "Completed"
+          }
+        }"""
+
+        // Extract only the admsStatus part and assert it's present and correct
+        val admsNode = result.get("admsStatus")
+        admsNode.toString().shouldEqualJson(expectedAdms)
+    }
+
+    @Test
     fun parseServiceWithEvidenceCollection() {
         val turtle =
             """
