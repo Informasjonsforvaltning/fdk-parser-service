@@ -2,28 +2,14 @@ package no.digdir.fdk.parserservice.parser.concept
 
 import no.digdir.fdk.model.ResourceType
 import no.digdir.fdk.model.concept.Concept
-import no.digdir.fdk.parserservice.extract.concept.extractAssociativeRelations
-import no.digdir.fdk.parserservice.extract.concept.extractConceptCollection
-import no.digdir.fdk.parserservice.extract.concept.extractDefinitions
-import no.digdir.fdk.parserservice.extract.concept.extractGenericRelations
-import no.digdir.fdk.parserservice.extract.concept.extractListOfConceptSubjects
-import no.digdir.fdk.parserservice.extract.concept.extractPartitiveRelations
-import no.digdir.fdk.parserservice.extract.concept.extractValueRange
 import no.digdir.fdk.parserservice.extract.extractListOfContactPoints
 import no.digdir.fdk.parserservice.extract.extractListOfStrings
-import no.digdir.fdk.parserservice.extract.extractLocalizedStringList
-import no.digdir.fdk.parserservice.extract.extractLocalizedStrings
 import no.digdir.fdk.parserservice.extract.extractOrganization
-import no.digdir.fdk.parserservice.extract.extractReferenceDataCode
 import no.digdir.fdk.parserservice.extract.extractStringValue
 import no.digdir.fdk.parserservice.parser.ConceptParserStrategy
-import no.digdir.fdk.parserservice.vocabulary.EUVOC
-import no.digdir.fdk.parserservice.vocabulary.UNESKOS
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCTerms
-import org.apache.jena.vocabulary.DC_11
 import org.apache.jena.vocabulary.RDFS
-import org.apache.jena.vocabulary.SKOS
 
 /**
  * Abstract base class for concept parsers implementing SKOS-AP-NO.
@@ -74,51 +60,12 @@ abstract class BaseConceptParser : ConceptParserStrategy {
         setIdentifier(conceptResource.extractStringValue(DCTerms.identifier) ?: conceptResource.uri)
         setType(ResourceType.concept)
 
-        setPrefLabel(conceptResource.extractLocalizedStrings(SKOS.prefLabel))
-        setAltLabel(conceptResource.extractLocalizedStringList(SKOS.altLabel))
-        setHiddenLabel(conceptResource.extractLocalizedStringList(SKOS.hiddenLabel))
-
         setPublisher(conceptResource.extractOrganization(DCTerms.publisher))
-        setCreator(conceptResource.extractOrganization(DCTerms.creator))
 
-        val definitions = conceptResource.extractDefinitions()
-        setDefinitions(definitions)
-        setDefinition(
-            definitions
-                ?.firstOrNull { it.targetGroup == null }
-                ?: definitions?.firstOrNull(),
-        )
+        setContactPoint(conceptResource.extractListOfContactPoints()?.firstOrNull())
 
-        setStatus(
-            conceptResource
-                .extractReferenceDataCode(
-                    EUVOC.status,
-                    DC_11.identifier,
-                    SKOS.prefLabel,
-                )?.prefLabel,
-        )
-
-        setExample(conceptResource.extractLocalizedStrings(SKOS.example))
-        setRemark(conceptResource.extractLocalizedStrings(SKOS.scopeNote))
-        setSubject(conceptResource.extractListOfConceptSubjects())
-
-        setCreated(conceptResource.extractStringValue(DCTerms.created))
-        setValidFromIncluding(conceptResource.extractStringValue(EUVOC.startDate))
-        setValidToIncluding(conceptResource.extractStringValue(EUVOC.endDate))
-
-        // Relations
-        setAssociativeRelation(conceptResource.extractAssociativeRelations())
-        setPartitiveRelation(conceptResource.extractPartitiveRelations())
-        setGenericRelation(conceptResource.extractGenericRelations())
-        setExactMatch(conceptResource.extractListOfStrings(SKOS.exactMatch))
-        setCloseMatch(conceptResource.extractListOfStrings(SKOS.closeMatch))
         setSeeAlso(conceptResource.extractListOfStrings(RDFS.seeAlso))
         setIsReplacedBy(conceptResource.extractListOfStrings(DCTerms.isReplacedBy))
         setReplaces(conceptResource.extractListOfStrings(DCTerms.replaces))
-        setMemberOf(conceptResource.extractListOfStrings(UNESKOS.memberOf))
-
-        setRange(conceptResource.extractValueRange())
-        setContactPoint(conceptResource.extractListOfContactPoints()?.firstOrNull())
-        setCollection(conceptResource.extractConceptCollection())
     }
 }

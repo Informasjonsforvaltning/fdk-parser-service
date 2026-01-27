@@ -10,6 +10,7 @@ import no.digdir.fdk.parserservice.extract.extractURIStringValue
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDF
+import org.apache.jena.vocabulary.RDFS
 import org.apache.jena.vocabulary.SKOS
 import java.net.URI
 
@@ -41,6 +42,32 @@ fun Resource.extractConceptCollection(): ConceptCollection? {
                 .setUri(collectionResource.extractURIStringValue())
                 .setId(collectionResource.extractStringValue(DCTerms.identifier))
                 .setLabel(collectionResource.extractLocalizedStrings(DCTerms.title))
+                .setDescription(collectionResource.extractLocalizedStrings(DCTerms.description))
+                .setPublisher(collectionResource.extractOrganization(DCTerms.publisher))
+                .build()
+
+        return if (collection.hasData()) collection else null
+    }
+}
+
+/**
+ * Extracts collection metadata for the concept using the V1 (deprecated) approach.
+ *
+ * @return a populated `ConceptCollection` instance or `null` when no collection context is available
+ */
+fun Resource.extractConceptCollectionV1(): ConceptCollection? {
+    val collectionResource = getCollectionResource()
+
+    if (collectionResource == null) {
+        return null
+    } else {
+        val builder = ConceptCollection.newBuilder()
+
+        val collection =
+            builder
+                .setUri(collectionResource.extractURIStringValue())
+                .setId(collectionResource.extractStringValue(DCTerms.identifier))
+                .setLabel(collectionResource.extractLocalizedStrings(RDFS.label))
                 .setDescription(collectionResource.extractLocalizedStrings(DCTerms.description))
                 .setPublisher(collectionResource.extractOrganization(DCTerms.publisher))
                 .build()
