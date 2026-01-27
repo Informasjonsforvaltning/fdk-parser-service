@@ -2,6 +2,7 @@ package no.digdir.fdk.parserservice.configuration
 
 import jakarta.annotation.PostConstruct
 import no.digdir.fdk.parserservice.parser.ConceptParserRegistry
+import no.digdir.fdk.parserservice.parser.concept.SkosApNoV1Parser
 import no.digdir.fdk.parserservice.parser.concept.SkosApNoV2Parser
 import org.springframework.context.annotation.Configuration
 
@@ -19,6 +20,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 open class ConceptParserConfiguration(
     private val parserRegistry: ConceptParserRegistry,
+    private val skosApNoV1Parser: SkosApNoV1Parser,
     private val skosApNoV2Parser: SkosApNoV2Parser,
 ) {
     /**
@@ -27,6 +29,10 @@ open class ConceptParserConfiguration(
      */
     @PostConstruct
     fun registerParsers() {
-        parserRegistry.registerParser(skosApNoV2Parser, priority = 100, name = "SKOS-AP-NO-V1")
+        // Register V2 parser with highest priority (based on SKOS-AP-NO-V2)
+        parserRegistry.registerParser(skosApNoV2Parser, priority = 100, name = "SKOS-AP-NO-V2")
+
+        // Register V1 parser with lowest priority (fallback, based on SKOS-AP-NO-V1)
+        parserRegistry.registerParser(skosApNoV1Parser, priority = 50, name = "SKOS-AP-NO-V1")
     }
 }
