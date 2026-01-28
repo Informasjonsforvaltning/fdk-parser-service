@@ -11,5 +11,7 @@ class XKOS {
         val inclusionNote: Property = ResourceFactory.createProperty("${URI}inclusionNote")
         val next: Property = ResourceFactory.createProperty("${URI}next")
         val previous: Property = ResourceFactory.createProperty("${URI}previous")
+        val generalizes: Property = ResourceFactory.createProperty("${URI}generalizes")
+        val specializes: Property = ResourceFactory.createProperty("${URI}specializes")
     }
 }

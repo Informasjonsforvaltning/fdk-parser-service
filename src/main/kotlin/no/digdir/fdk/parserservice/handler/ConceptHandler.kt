@@ -4,6 +4,7 @@ import no.digdir.fdk.model.concept.Concept
 import no.digdir.fdk.parserservice.extract.fdk.topicUriOfRecordWithID
 import no.digdir.fdk.parserservice.model.NoAcceptableFDKRecordsException
 import no.digdir.fdk.parserservice.parser.ConceptParserRegistry
+import no.digdir.fdk.parserservice.utils.ConceptMerger
 import no.digdir.fdk.parserservice.utils.avroToJson
 import no.digdir.fdk.parserservice.utils.readTurtle
 import org.apache.jena.rdf.model.ModelFactory
@@ -51,8 +52,8 @@ class ConceptHandler(
                     // Parse with all registered parsers in priority order
                     val parsedConcepts = parserRegistry.parseWithAllParsers(model, resourceIRI, fdkId)
 
-                    // Use the first successfully parsed concept
-                    parsedConcepts.first()
+                    // Merge all successfully parsed concepts using the concept merger
+                    ConceptMerger.merge(parsedConcepts)
                 } else {
                     throw NoAcceptableFDKRecordsException("No concept found with identifier '$fdkId'")
                 }

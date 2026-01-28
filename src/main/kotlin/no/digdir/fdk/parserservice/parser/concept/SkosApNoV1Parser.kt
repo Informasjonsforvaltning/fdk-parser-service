@@ -1,41 +1,37 @@
 package no.digdir.fdk.parserservice.parser.concept
 
 import no.digdir.fdk.model.concept.Concept
-import no.digdir.fdk.parserservice.extract.concept.extractAssociativeRelations
-import no.digdir.fdk.parserservice.extract.concept.extractConceptCollection
-import no.digdir.fdk.parserservice.extract.concept.extractDefinitions
-import no.digdir.fdk.parserservice.extract.concept.extractGenericRelations
-import no.digdir.fdk.parserservice.extract.concept.extractListOfConceptSubjects
-import no.digdir.fdk.parserservice.extract.concept.extractPartitiveRelations
-import no.digdir.fdk.parserservice.extract.concept.extractValueRange
+import no.digdir.fdk.parserservice.extract.concept.extractAssociativeRelationsV1
+import no.digdir.fdk.parserservice.extract.concept.extractConceptCollectionV1
+import no.digdir.fdk.parserservice.extract.concept.extractDefinitionsV1
+import no.digdir.fdk.parserservice.extract.concept.extractGenericRelationsV1
+import no.digdir.fdk.parserservice.extract.concept.extractLabelsV1
+import no.digdir.fdk.parserservice.extract.concept.extractListOfConceptSubjectsV1
+import no.digdir.fdk.parserservice.extract.concept.extractPartitiveRelationsV1
+import no.digdir.fdk.parserservice.extract.concept.extractPrefLabelV1
 import no.digdir.fdk.parserservice.extract.containsTriple
-import no.digdir.fdk.parserservice.extract.extractListOfStrings
-import no.digdir.fdk.parserservice.extract.extractLocalizedStringList
-import no.digdir.fdk.parserservice.extract.extractLocalizedStrings
-import no.digdir.fdk.parserservice.extract.extractOrganization
-import no.digdir.fdk.parserservice.extract.extractReferenceDataCode
 import no.digdir.fdk.parserservice.extract.extractStringValue
 import no.digdir.fdk.parserservice.extract.fdk.addFdkData
 import no.digdir.fdk.parserservice.extract.fdk.fdkRecord
 import no.digdir.fdk.parserservice.extract.fdk.resourceOfIRI
+import no.digdir.fdk.parserservice.extract.singleResource
 import no.digdir.fdk.parserservice.model.LanguageCodes
 import no.digdir.fdk.parserservice.model.NoAcceptableTypesException
-import no.digdir.fdk.parserservice.vocabulary.EUVOC
-import no.digdir.fdk.parserservice.vocabulary.UNESKOS
+import no.digdir.fdk.parserservice.vocabulary.SCHEMA
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCTerms
-import org.apache.jena.vocabulary.DC_11
 import org.apache.jena.vocabulary.RDF
 import org.apache.jena.vocabulary.SKOS
+import org.apache.jena.vocabulary.SKOSXL
 import org.springframework.stereotype.Component
 import java.net.URI
 
 /**
  * Parser implementation for SKOS-AP-NO concepts.
  *
- * This parser handles the parsing of concepts according to the Norwegian
- * Application Profile for SKOS (SKOS-AP-NO) specification.
+ * This parser handles the parsing of concepts according to the deprecated
+ * version 1.1.1 of the Norwegian Application Profile for SKOS (SKOS-AP-NO) specification.
  *
  * The parser extracts concept metadata including labels, definitions,
  * relations, mappings, and other concept properties.
@@ -45,8 +41,8 @@ import java.net.URI
  * @version 1.0.0
  * @since 1.0.0
  */
-@Component(value = "ConceptSkosApNoV2Parser")
-class SkosApNoV2Parser : BaseConceptParser() {
+@Component(value = "ConceptSkosApNoV1Parser")
+class SkosApNoV1Parser : BaseConceptParser() {
     /**
      * Gets the default language for SKOS-AP-NO.
      *
@@ -59,7 +55,7 @@ class SkosApNoV2Parser : BaseConceptParser() {
      *
      * @return "1.0"
      */
-    override fun getVersion(): String = "2.0.15"
+    override fun getVersion(): String = "1.1.1"
 
     /**
      * Gets the source format identifier.
@@ -87,7 +83,7 @@ class SkosApNoV2Parser : BaseConceptParser() {
     ): Concept = parseConcept(model, iri, fdkId)
 
     /**
-     * Parses an RDF model into a Concept object according to SKOS-AP-NO.
+     * Parses an RDF model into a Concept object according to SKOS-AP-NO v1.1.1.
      *
      * This method extracts the FDK record when fdkId is present
      * and builds a complete Concept object with all available metadata.
@@ -120,13 +116,13 @@ class SkosApNoV2Parser : BaseConceptParser() {
 
         builder.addCommonConceptValues(conceptResource)
 
-        builder.setCollection(conceptResource.extractConceptCollection())
+        builder.setCollection(conceptResource.extractConceptCollectionV1())
 
-        builder.setPrefLabel(conceptResource.extractLocalizedStrings(SKOS.prefLabel))
-        builder.setAltLabel(conceptResource.extractLocalizedStringList(SKOS.altLabel))
-        builder.setHiddenLabel(conceptResource.extractLocalizedStringList(SKOS.hiddenLabel))
+        builder.setPrefLabel(conceptResource.extractPrefLabelV1())
+        builder.setAltLabel(conceptResource.extractLabelsV1(SKOSXL.altLabel))
+        builder.setHiddenLabel(conceptResource.extractLabelsV1(SKOSXL.hiddenLabel))
 
-        val definitions = conceptResource.extractDefinitions()
+        val definitions = conceptResource.extractDefinitionsV1()
         builder.setDefinitions(definitions)
         builder.setDefinition(
             definitions
@@ -134,33 +130,26 @@ class SkosApNoV2Parser : BaseConceptParser() {
                 ?: definitions?.firstOrNull(),
         )
 
-        builder.setStatus(
-            conceptResource
-                .extractReferenceDataCode(
-                    EUVOC.status,
-                    DC_11.identifier,
-                    SKOS.prefLabel,
-                )?.prefLabel,
-        )
+        builder.setSubject(conceptResource.extractListOfConceptSubjectsV1())
 
-        builder.setSubject(conceptResource.extractListOfConceptSubjects())
-        builder.setExample(conceptResource.extractLocalizedStrings(SKOS.example))
-        builder.setRemark(conceptResource.extractLocalizedStrings(SKOS.scopeNote))
-        builder.setRange(conceptResource.extractValueRange())
+        val temporalResource = conceptResource.singleResource(DCTerms.temporal)
+        builder.setValidFromIncluding(temporalResource?.extractStringValue(SCHEMA.startDate))
+        builder.setValidToIncluding(temporalResource?.extractStringValue(SCHEMA.endDate))
 
-        builder.setCreated(conceptResource.extractStringValue(DCTerms.created))
-        builder.setCreator(conceptResource.extractOrganization(DCTerms.creator))
+        builder.setAssociativeRelation(conceptResource.extractAssociativeRelationsV1())
+        builder.setPartitiveRelation(conceptResource.extractPartitiveRelationsV1())
+        builder.setGenericRelation(conceptResource.extractGenericRelationsV1())
 
-        builder.setValidFromIncluding(conceptResource.extractStringValue(EUVOC.startDate))
-        builder.setValidToIncluding(conceptResource.extractStringValue(EUVOC.endDate))
-
-        builder.setExactMatch(conceptResource.extractListOfStrings(SKOS.exactMatch))
-        builder.setCloseMatch(conceptResource.extractListOfStrings(SKOS.closeMatch))
-        builder.setMemberOf(conceptResource.extractListOfStrings(UNESKOS.memberOf))
-
-        builder.setAssociativeRelation(conceptResource.extractAssociativeRelations())
-        builder.setPartitiveRelation(conceptResource.extractPartitiveRelations())
-        builder.setGenericRelation(conceptResource.extractGenericRelations())
+        // The following properties are not implemented in SKOS-AP-NO v1.1.1
+        builder.setCloseMatch(null)
+        builder.setCreated(null)
+        builder.setCreator(null)
+        builder.setExactMatch(null)
+        builder.setExample(null)
+        builder.setMemberOf(null)
+        builder.setRange(null)
+        builder.setRemark(null)
+        builder.setStatus(null)
 
         return builder.build()
     }
