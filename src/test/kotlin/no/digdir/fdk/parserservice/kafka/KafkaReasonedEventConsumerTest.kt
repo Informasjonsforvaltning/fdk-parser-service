@@ -4,6 +4,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import no.digdir.fdk.parserservice.handler.ConceptHandler
 import no.digdir.fdk.parserservice.handler.DataServiceHandler
 import no.digdir.fdk.parserservice.handler.DatasetHandler
 import no.digdir.fdk.parserservice.handler.EventHandler
@@ -11,6 +12,8 @@ import no.digdir.fdk.parserservice.handler.InformationModelHandler
 import no.digdir.fdk.parserservice.handler.ServiceHandler
 import no.digdir.fdk.parserservice.model.RecoverableParseException
 import no.digdir.fdk.parserservice.model.UnrecoverableParseException
+import no.fdk.concept.ConceptEvent
+import no.fdk.concept.ConceptEventType
 import no.fdk.dataservice.DataServiceEvent
 import no.fdk.dataservice.DataServiceEventType
 import no.fdk.dataset.DatasetEvent
@@ -39,6 +42,7 @@ import kotlin.test.assertEquals
 @ActiveProfiles("test")
 @Tag("unit")
 class KafkaReasonedEventConsumerTest {
+    private val conceptHandler: ConceptHandler = mockk()
     private val datasetHandler: DatasetHandler = mockk()
     private val dataServiceHandler: DataServiceHandler = mockk()
     private val eventHandler: EventHandler = mockk()
@@ -50,6 +54,7 @@ class KafkaReasonedEventConsumerTest {
     private val circuitBreaker =
         KafkaReasonedEventCircuitBreaker(
             kafkaRdfParseEventProducer,
+            conceptHandler,
             dataServiceHandler,
             datasetHandler,
             eventHandler,
@@ -58,6 +63,89 @@ class KafkaReasonedEventConsumerTest {
         )
     private val kafkaReasonedEventConsumer = KafkaReasonedEventConsumer(circuitBreaker)
     private val mapper = jacksonObjectMapper()
+
+    @Test
+    fun `concept listener should produce a rdf parse event`() {
+        val parsedJson = "{\"data\":\"my-parsed-rdf\"}"
+        every { conceptHandler.parseConcept(any(), any()) } returns mapper.readTree(parsedJson)
+        every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
+        every { ack.acknowledge() } returns Unit
+        every { ack.nack(Duration.ZERO) } returns Unit
+
+        val conceptEvent = ConceptEvent(ConceptEventType.CONCEPT_REASONED, "my-id", "uri", System.currentTimeMillis())
+        kafkaReasonedEventConsumer.conceptListener(
+            record = ConsumerRecord("concept-events", 0, 0, "my-id", conceptEvent as Any),
+            ack = ack,
+        )
+
+        verify {
+            kafkaTemplate.send(
+                withArg {
+                    assertEquals("rdf-parse-events", it)
+                },
+                withArg {
+                    assertEquals(conceptEvent.fdkId, it.fdkId)
+                    assertEquals(RdfParseResourceType.CONCEPT, it.resourceType)
+                    assertEquals(parsedJson, it.data)
+                    assertEquals(conceptEvent.timestamp, it.timestamp)
+                },
+            )
+            ack.acknowledge()
+        }
+        confirmVerified(kafkaTemplate, ack)
+    }
+
+    @Test
+    fun `concept listener should acknowledge when a recoverable exception occurs`() {
+        every { conceptHandler.parseConcept(any(), any()) } throws RecoverableParseException("Error parsing RDF: invalid rdf")
+        every { ack.acknowledge() } returns Unit
+        every { ack.nack(Duration.ZERO) } returns Unit
+
+        val conceptEvent = ConceptEvent(ConceptEventType.CONCEPT_REASONED, "my-id", "uri", System.currentTimeMillis())
+        kafkaReasonedEventConsumer.conceptListener(
+            record = ConsumerRecord("concept-events", 0, 0, "my-id", conceptEvent as Any),
+            ack = ack,
+        )
+
+        verify(exactly = 0) { kafkaTemplate.send(any(), any()) }
+        verify(exactly = 1) { ack.acknowledge() }
+        verify(exactly = 0) { ack.nack(Duration.ZERO) }
+        confirmVerified(kafkaTemplate, ack)
+    }
+
+    @Test
+    fun `concept listener should not acknowledge when a unrecoverable exception occurs`() {
+        every { conceptHandler.parseConcept(any(), any()) } throws UnrecoverableParseException("Error parsing RDF")
+        every { ack.nack(Duration.ZERO) } returns Unit
+
+        val conceptEvent = ConceptEvent(ConceptEventType.CONCEPT_REASONED, "my-id", "uri", System.currentTimeMillis())
+        kafkaReasonedEventConsumer.conceptListener(
+            record = ConsumerRecord("concept-events", 0, 0, "my-id", conceptEvent as Any),
+            ack = ack,
+        )
+
+        verify(exactly = 0) { kafkaTemplate.send(any(), any()) }
+        verify(exactly = 0) { ack.acknowledge() }
+        verify(exactly = 1) { ack.nack(Duration.ZERO) }
+        confirmVerified(kafkaTemplate, ack)
+    }
+
+    @Test
+    fun `processConcept should handle valid concept reasoned event`() {
+        val event = mockk<ConceptEvent>()
+        every { event.type } returns ConceptEventType.CONCEPT_REASONED
+        every { event.fdkId } returns "fdk-id"
+        every { event.graph } returns "graph"
+        every { event.timestamp } returns 12345L
+        every { conceptHandler.parseConcept(any(), any()) } returns mapper.readTree("{\"ok\":true}")
+        every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
+
+        circuitBreaker.processConcept(event)
+
+        verify {
+            kafkaTemplate.send(any(), match { it.fdkId == "fdk-id" && it.resourceType == RdfParseResourceType.CONCEPT })
+        }
+    }
 
     @Test
     fun `dataset listener should produce a rdf parse event`() {
@@ -131,6 +219,23 @@ class KafkaReasonedEventConsumerTest {
     fun `processGeneric should throw error when required fields are missing`() {
         val event = mockk<GenericRecord>()
         assertThrows<UnrecoverableParseException> { circuitBreaker.processGeneric(event) }
+    }
+
+    @Test
+    fun `processGeneric should handle valid concept reasoned event`() {
+        val event = mockk<GenericRecord>()
+        every { event.get("type") } returns ConceptEventType.CONCEPT_REASONED.name
+        every { event.get("fdkId") } returns "fdk-id"
+        every { event.get("graph") } returns "graph"
+        every { event.get("timestamp") } returns 12345L
+        every { conceptHandler.parseConcept(any(), any()) } returns mapper.readTree("{\"ok\":true}")
+        every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
+
+        circuitBreaker.processGeneric(event)
+
+        verify {
+            kafkaTemplate.send(any(), match { it.fdkId == "fdk-id" && it.resourceType == RdfParseResourceType.CONCEPT })
+        }
     }
 
     @Test

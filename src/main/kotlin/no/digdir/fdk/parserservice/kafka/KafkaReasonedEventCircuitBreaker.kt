@@ -2,6 +2,7 @@ package no.digdir.fdk.parserservice.kafka
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
 import io.micrometer.core.instrument.Metrics
+import no.digdir.fdk.parserservice.handler.ConceptHandler
 import no.digdir.fdk.parserservice.handler.DataServiceHandler
 import no.digdir.fdk.parserservice.handler.DatasetHandler
 import no.digdir.fdk.parserservice.handler.EventHandler
@@ -9,6 +10,8 @@ import no.digdir.fdk.parserservice.handler.InformationModelHandler
 import no.digdir.fdk.parserservice.handler.ServiceHandler
 import no.digdir.fdk.parserservice.model.RecoverableParseException
 import no.digdir.fdk.parserservice.model.UnrecoverableParseException
+import no.fdk.concept.ConceptEvent
+import no.fdk.concept.ConceptEventType
 import no.fdk.dataservice.DataServiceEvent
 import no.fdk.dataservice.DataServiceEventType
 import no.fdk.dataset.DatasetEvent
@@ -31,6 +34,7 @@ import kotlin.time.toJavaDuration
 @Component
 open class KafkaReasonedEventCircuitBreaker(
     private val producer: KafkaRdfParseEventProducer,
+    private val conceptHandler: ConceptHandler,
     private val dataServiceHandler: DataServiceHandler,
     private val datasetHandler: DatasetHandler,
     private val eventHandler: EventHandler,
@@ -42,6 +46,7 @@ open class KafkaReasonedEventCircuitBreaker(
         val type = runCatching { event.get("type") as String }.getOrNull()
         val resourceType =
             when (type) {
+                ConceptEventType.CONCEPT_REASONED.name -> RdfParseResourceType.CONCEPT
                 DataServiceEventType.DATA_SERVICE_REASONED.name -> RdfParseResourceType.DATA_SERVICE
                 DatasetEventType.DATASET_REASONED.name -> RdfParseResourceType.DATASET
                 EventEventType.EVENT_REASONED.name -> RdfParseResourceType.EVENT
@@ -65,6 +70,28 @@ open class KafkaReasonedEventCircuitBreaker(
                 resourceType,
             )
             throw UnrecoverableParseException("Unable to get required message values")
+        }
+    }
+
+    @CircuitBreaker(name = "rdf-parse-concept")
+    open fun processConcept(event: ConceptEvent) {
+        val type = runCatching { event.type }.getOrNull()
+        if (type == ConceptEventType.CONCEPT_REASONED) {
+            val fdkId = runCatching { event.fdkId.toString() }.getOrNull()
+            val graph = runCatching { event.graph.toString() }.getOrNull()
+            val timestamp = runCatching { event.timestamp }.getOrNull()
+
+            if (fdkId != null && graph != null && timestamp != null) {
+                handleRecord(fdkId, graph, timestamp, RdfParseResourceType.CONCEPT)
+            } else {
+                LOGGER.error(
+                    "Unable to get required concept message values. fdkId: {}, graph: {}, timestamp: {}",
+                    fdkId,
+                    graph,
+                    timestamp,
+                )
+                throw UnrecoverableParseException("Unable to get required concept message values")
+            }
         }
     }
 
@@ -210,10 +237,10 @@ open class KafkaReasonedEventCircuitBreaker(
     ) {
         val timeElapsed =
             measureTimedValue {
-                LOGGER.debug("Parse dataset - id: $fdkId")
+                LOGGER.debug("Parse ${type.toString().lowercase()} - id: $fdkId")
                 val json =
                     when (type) {
-                        RdfParseResourceType.CONCEPT -> LOGGER.warn("Parse of concepts not implemented")
+                        RdfParseResourceType.CONCEPT -> conceptHandler.parseConcept(fdkId, graph)
                         RdfParseResourceType.DATA_SERVICE -> dataServiceHandler.parseDataService(fdkId, graph)
                         RdfParseResourceType.DATASET -> datasetHandler.parseDataset(fdkId, graph)
                         RdfParseResourceType.EVENT -> eventHandler.parseEvent(fdkId, graph)

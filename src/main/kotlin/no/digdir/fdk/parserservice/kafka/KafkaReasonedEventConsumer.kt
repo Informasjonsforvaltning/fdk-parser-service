@@ -2,6 +2,7 @@ package no.digdir.fdk.parserservice.kafka
 
 import no.digdir.fdk.parserservice.model.RecoverableParseException
 import no.digdir.fdk.parserservice.model.UnrecoverableParseException
+import no.fdk.concept.ConceptEvent
 import no.fdk.dataservice.DataServiceEvent
 import no.fdk.dataset.DatasetEvent
 import no.fdk.event.EventEvent
@@ -44,6 +45,41 @@ class KafkaReasonedEventConsumer(
                             throw UnrecoverableParseException("Error parsing data service message")
                         }
                     circuitBreaker.processDataService(dataServiceEvent)
+                }
+                is GenericRecord -> circuitBreaker.processGeneric(message)
+                else -> LOGGER.warn("Unknown message type: {}", message?.javaClass)
+            }
+            ack.acknowledge()
+        } catch (e: RecoverableParseException) {
+            ack.acknowledge()
+        } catch (e: UnrecoverableParseException) {
+            ack.nack(Duration.ZERO)
+        }
+    }
+
+    @KafkaListener(
+        topics = ["concept-events"],
+        groupId = "fdk-parser-service",
+        concurrency = "4",
+        containerFactory = "kafkaListenerContainerFactory",
+        id = "concept-event-consumer",
+    )
+    fun conceptListener(
+        record: ConsumerRecord<String, Any>,
+        ack: Acknowledgment,
+    ) {
+        LOGGER.debug("Received concept message - offset: " + record.offset())
+        try {
+            when (val message = runCatching { record.value() }.getOrNull()) {
+                is SpecificRecord -> {
+                    val conceptEvent =
+                        try {
+                            message as ConceptEvent
+                        } catch (ex: Exception) {
+                            LOGGER.error("Error parsing concept message", ex)
+                            throw UnrecoverableParseException("Error parsing concept message")
+                        }
+                    circuitBreaker.processConcept(conceptEvent)
                 }
                 is GenericRecord -> circuitBreaker.processGeneric(message)
                 else -> LOGGER.warn("Unknown message type: {}", message?.javaClass)
