@@ -50,6 +50,8 @@ resilience4j:
         ignoreExceptions:
           - no.digdir.fdk.parserservice.model.RecoverableParseException
     instances:
+      rdf-parse-concept:
+        baseConfig: default
       rdf-parse-data-service:
         baseConfig: default
       rdf-parse-dataset:
