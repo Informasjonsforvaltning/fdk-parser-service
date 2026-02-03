@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.io.StringReader
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @Tag("unit")
@@ -374,6 +375,170 @@ class ExtractDatasetDistributions {
             val result = subject.extractListOfDistributionsV2(DCAT.distribution)!!.first()
 
             assertTrue(result.accessService.containsAll(expected))
+        }
+    }
+
+    @Nested
+    internal inner class V3 {
+        @Test
+        fun extractDistribution() {
+            val turtle =
+                """
+                @prefix dc:   <http://purl.org/dc/elements/1.1/> .
+                @prefix dct: <http://purl.org/dc/terms/> .
+                @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+                @prefix adms:  <http://www.w3.org/ns/adms#> .
+                @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+
+                <https://testdirektoratet.no/model/dataset/0>
+                    a                   dcat:Dataset ;
+                    dcat:distribution   [  a                    dcat:Distribution ;
+                                           dct:title            "V3 Distribution"@en ;
+                                           dcat:accessURL       <https://testdirektoratet.no/access> ;
+                                           dct:rights           <https://example.org/rights/statement> ;
+                                           dcat:accessService   <https://testdirektoratet.no/access-service/v3> ;
+                                           adms:status          <http://publications.europa.eu/resource/authority/distribution-status/COMPLETED>
+                                        ] .
+
+                <https://testdirektoratet.no/accessservice/v3>
+                    a                         dcat:DataService ;
+                    dct:title                 "V3 Access Service"@en ;
+                    dcat:endpointDescription  <https://api.example.org/openapi.json> ;
+                    dct:description           "Access service for V3"@en .
+
+                <https://api.example.org/openapi.json>
+                    skos:prefLabel   "OpenAPI Specification"@en .
+
+                <https://example.org/rights/statement>
+                    a                dct:RightsStatement ;
+                    dct:description  "Rights statement for V3"@en .
+
+                <http://publications.europa.eu/resource/authority/distribution-status/COMPLETED>
+                    dc:identifier   "COMPLETED" ;
+                    skos:prefLabel  "Completed"@en , "Fullført"@nb .
+                """.trimIndent()
+
+            val m = ModelFactory.createDefaultModel()
+            m.read(StringReader(turtle), null, "TURTLE")
+            val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
+
+            val result = subject.extractListOfDistributionsV3(DCAT.distribution)
+
+            val expected =
+                listOf(
+                    Distribution().apply {
+                        title = LocalizedStrings().apply { en = "V3 Distribution" }
+                        accessURL = listOf("https://testdirektoratet.no/access")
+                        accessService = listOf(AccessService().apply { uri = "https://testdirektoratet.no/access-service/v3" })
+                        rights = RightsStatement().apply { description = LocalizedStrings().apply { en = "Rights statement for V3" } }
+                        status =
+                            ReferenceDataCode().apply {
+                                uri = "http://publications.europa.eu/resource/authority/distribution-status/COMPLETED"
+                                code = "COMPLETED"
+                                prefLabel =
+                                    LocalizedStrings().apply {
+                                        nb = "Fullført"
+                                        en = "Completed"
+                                    }
+                            }
+                    },
+                )
+
+            assertEquals(expected, result)
+        }
+
+        @Test
+        fun extractDistributionFormats() {
+            val turtle =
+                """
+                @prefix dc:   <http://purl.org/dc/elements/1.1/> .
+                @prefix dct: <http://purl.org/dc/terms/> .
+                @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+
+                <https://testdirektoratet.no/model/dataset/0>
+                    a                   dcat:Dataset ;
+                    dcat:distribution   [  a                    dcat:Distribution ;
+                                           dcat:compressFormat  "zip" ;
+                                           dcat:packageFormat   <https://www.iana.org/assignments/media-types/application/json> ;
+                                           dcat:mediaType       <https://www.iana.org/assignments/media-types/application/json> ;
+                                           dct:format           <http://publications.europa.eu/resource/authority/file-type/JSON>
+                                        ] .
+
+                <https://www.iana.org/assignments/media-types/application/json>
+                    a               dct:MediaType ;
+                    dct:identifier  "application/json" ;
+                    dct:title       "JSON" .
+
+                <http://publications.europa.eu/resource/authority/file-type/JSON>
+                    a               <http://publications.europa.eu/ontology/euvoc#FileType> ;
+                    dc:identifier   "JSON" .
+                """.trimIndent()
+
+            val m = ModelFactory.createDefaultModel()
+            m.read(StringReader(turtle), null, "TURTLE")
+            val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
+
+            val result = subject.extractListOfDistributionsV3(DCAT.distribution)
+
+            assertEquals(
+                Format().apply {
+                    name = "zip"
+                    code = "zip"
+                    type = FormatType.UNKNOWN
+                },
+                result!!.first().compressFormat,
+            )
+
+            assertEquals(
+                Format().apply {
+                    uri = "https://www.iana.org/assignments/media-types/application/json"
+                    name = "JSON"
+                    code = "application/json"
+                    type = FormatType.MEDIA_TYPE
+                },
+                result.first().packageFormat,
+            )
+
+            assertEquals(2, result.first().fdkFormat.size)
+            assertTrue(
+                result.first().fdkFormat.contains(
+                    Format().apply {
+                        uri = "https://www.iana.org/assignments/media-types/application/json"
+                        name = "JSON"
+                        code = "application/json"
+                        type = FormatType.MEDIA_TYPE
+                    },
+                ),
+            )
+            assertTrue(
+                result.first().fdkFormat.contains(
+                    Format().apply {
+                        uri = "http://publications.europa.eu/resource/authority/file-type/JSON"
+                        name = "JSON"
+                        code = "JSON"
+                        type = FormatType.FILE_TYPE
+                    },
+                ),
+            )
+        }
+
+        @Test
+        fun extractIsNullWhenNoDistributionsIsPresent() {
+            val turtle =
+                """
+                @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+
+                <https://testdirektoratet.no/model/dataset/0>
+                    a dcat:Dataset .
+                """.trimIndent()
+
+            val m = ModelFactory.createDefaultModel()
+            m.read(StringReader(turtle), null, "TURTLE")
+            val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
+
+            val result = subject.extractListOfDistributionsV3(DCAT.distribution)
+
+            assertNull(result)
         }
     }
 

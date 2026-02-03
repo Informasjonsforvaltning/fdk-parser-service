@@ -95,6 +95,31 @@ private fun Resource.buildDistributionV2(): Distribution? {
     return builder.build().takeIf { it.hasContent() }
 }
 
+private fun Resource.buildDistributionV3(): Distribution? {
+    val builder = Distribution.newBuilder()
+
+    addCommonDistributionValuesToBuilder(builder)
+
+    val formats = extractListOfFormats(DCTerms.format) ?: emptyList()
+    val mediaTypes = extractListOfFormats(DCAT.mediaType) ?: emptyList()
+    val allFormats = formats + mediaTypes
+
+    builder
+        .setAccessURL(extractListOfStrings(DCAT.accessURL))
+        .setFdkFormat(allFormats.takeIf { it.isNotEmpty() })
+        .setCompressFormat(extractFormat(DCAT.compressFormat))
+        .setPackageFormat(extractFormat(DCAT.packageFormat))
+        .setAccessService(extractListOfAccessServices())
+        .setStatus(extractReferenceDataCode(ADMS.status, DC_11.identifier, SKOS.prefLabel))
+        .setRights(extractRightsStatement())
+
+    // The following properties are not implemented in DCAT-AP-NO v3
+    builder
+        .setMobilityDataStandard(null)
+
+    return builder.build().takeIf { it.hasContent() }
+}
+
 private fun Resource.addCommonMobilityDistributionValuesToBuilder(builder: Distribution.Builder) {
     addCommonDistributionValuesToBuilder(builder)
 
@@ -156,6 +181,17 @@ fun Resource.extractListOfDistributionsV1(mainPredicate: Property): List<Distrib
 fun Resource.extractListOfDistributionsV2(mainPredicate: Property): List<Distribution>? =
     listResources(mainPredicate)
         ?.mapNotNull { it.buildDistributionV2() }
+        ?.takeIf { it.isNotEmpty() }
+
+/**
+ * Extracts distributions compliant with DCAT-AP-NO v3 by following the predicate.
+ *
+ * @param mainPredicate predicate referencing distribution resources
+ * @return list of distributions or `null` when no resources are available
+ */
+fun Resource.extractListOfDistributionsV3(mainPredicate: Property): List<Distribution>? =
+    listResources(mainPredicate)
+        ?.mapNotNull { it.buildDistributionV3() }
         ?.takeIf { it.isNotEmpty() }
 
 /**

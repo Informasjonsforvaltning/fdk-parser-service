@@ -5,14 +5,19 @@ import no.digdir.fdk.model.EuDataTheme
 import no.digdir.fdk.model.Eurovoc
 import no.digdir.fdk.model.LocalizedStrings
 import no.digdir.fdk.model.LosNode
+import no.digdir.fdk.model.Organization
 import no.digdir.fdk.model.ReferenceDataCode
 import no.digdir.fdk.model.ResourceType
 import no.digdir.fdk.model.UriWithLabelAndType
 import no.digdir.fdk.model.dataset.Dataset
 import no.digdir.fdk.model.dataset.DatasetType
 import no.digdir.fdk.model.dataset.Distribution
+import no.digdir.fdk.model.dataset.InSeries
+import no.digdir.fdk.model.dataset.QualifiedAttribution
+import no.digdir.fdk.model.dataset.Subject
 import no.digdir.fdk.parserservice.parser.dataset.DcatApNoV1Parser
 import no.digdir.fdk.parserservice.parser.dataset.DcatApNoV2Parser
+import no.digdir.fdk.parserservice.parser.dataset.DcatApNoV3Parser
 import org.apache.jena.rdf.model.ModelFactory
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
@@ -597,6 +602,115 @@ class DatasetExtractionTest {
             val result = parser.parse(m, datasetIRI, fdkId)
 
             assertEquals(expected, result)
+        }
+    }
+
+    @Nested
+    inner class DcatApNoV3 {
+        val parser = DcatApNoV3Parser()
+        val datasetIRI = "https://testdirektoratet.no/dataset/v3-test"
+        val fdkId = "v3-test-fdk-id"
+
+        @Test
+        fun `parser extracts DCAT-AP-NO v3 dataset`() {
+            val turtle =
+                """
+                @prefix dcat: <http://www.w3.org/ns/dcat#> .
+                @prefix dct: <http://purl.org/dc/terms/> .
+                @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+                @prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+                @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+                @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+                @prefix prov: <http://www.w3.org/ns/prov#> .
+                @prefix dqv: <http://www.w3.org/ns/dqv#> .
+                @prefix cpsvno: <https://data.norge.no/vocabulary/cpsvno#> .
+                @prefix eli: <http://data.europa.eu/eli/ontology#> .
+                @prefix adms: <http://www.w3.org/ns/adms#> .
+
+                <http://test.fellesdatakatalog.digdir.no/datasets/$fdkId>
+                    a dcat:CatalogRecord ;
+                    dct:identifier "$fdkId" ;
+                    foaf:primaryTopic <$datasetIRI> .
+
+                <$datasetIRI>
+                    a dcat:Dataset ;
+                    dct:title "V3 Dataset"@nb , "V3 Dataset"@en ;
+                    dct:description "A test dataset for DCAT-AP-NO v3.0"@nb ;
+                    dct:publisher <https://organization-catalog.fellesdatakatalog.digdir.no/organizations/991825827> ;
+                    dcat:theme <http://publications.europa.eu/resource/authority/data-theme/GOVE> ;
+                    dcat:contactPoint [ vcard:fn "Testkontakt"@nb ; vcard:hasEmail <mailto:test@digdir.no> ] ;
+
+                    dct:subject <https://example.org/concept/test> ;
+                    dct:spatial <http://publications.europa.eu/resource/authority/country/NOR> ;
+                    dcat:keyword "v3"@nb ;
+                    dct:temporal [ dcat:startDate "2024-01-01"^^xsd:date ; dcat:endDate "2024-12-31"^^xsd:date ] ;
+                    dct:accessRights <http://publications.europa.eu/resource/authority/access-right/PUBLIC> ;
+
+                    prov:qualifiedAttribution [ prov:agent <https://example.org/contributor> ] ;
+                    dcat:prev <https://example.org/dataset/v2> ;
+                    dcat:inSeries <https://example.org/series/version-history> .
+
+                <https://organization-catalog.fellesdatakatalog.digdir.no/organizations/991825827>
+                    a foaf:Agent ;
+                    dct:identifier "991825827" ;
+                    foaf:name "Digitaliseringsdirektoratet"@nb .
+
+                <https://example.org/dist/v3>
+                    a dcat:Distribution ;
+                    dcat:accessURL <https://example.org/data> .
+
+                <https://example.org/sample>
+                    a dcat:Distribution ;
+                    dcat:accessURL <https://example.org/sample-data> .
+
+                <https://example.org/series/version-history>
+                    a dcat:DatasetSeries ;
+                    dct:title "Version History"@en .
+                """.trimIndent()
+
+            val model = ModelFactory.createDefaultModel()
+            model.read(StringReader(turtle), null, "TURTLE")
+
+            val result = parser.parse(model, datasetIRI, fdkId)
+
+            assertEquals("V3 Dataset", result.title?.nb)
+            assertEquals("A test dataset for DCAT-AP-NO v3.0", result.description?.nb)
+            assertEquals(listOf("http://publications.europa.eu/resource/authority/data-theme/GOVE"), result.themeUris)
+
+            assertEquals(
+                listOf(
+                    ContactPoint().apply {
+                        formattedName = LocalizedStrings().apply { nb = "Testkontakt" }
+                        fullname = "Testkontakt"
+                        email = "test@digdir.no"
+                    },
+                ),
+                result.contactPoint,
+            )
+
+            assertEquals(listOf(Subject().apply { uri = "https://example.org/concept/test" }), result.subject)
+            assertEquals(
+                listOf(ReferenceDataCode().apply { uri = "http://publications.europa.eu/resource/authority/country/NOR" }),
+                result.spatial,
+            )
+            assertEquals(listOf(LocalizedStrings().apply { nb = "v3" }), result.keyword)
+
+            assertEquals("2024-01-01", result.temporal?.first()?.startDate)
+            assertEquals("2024-12-31", result.temporal?.first()?.endDate)
+
+            assertEquals(
+                listOf(QualifiedAttribution().apply { agent = Organization().apply { uri = "https://example.org/contributor" } }),
+                result.qualifiedAttributions,
+            )
+
+            assertEquals("https://example.org/dataset/v2", result.prev)
+            assertEquals(
+                InSeries().apply {
+                    uri = "https://example.org/series/version-history"
+                    title = LocalizedStrings().apply { en = "Version History" }
+                },
+                result.inSeries,
+            )
         }
     }
 }
