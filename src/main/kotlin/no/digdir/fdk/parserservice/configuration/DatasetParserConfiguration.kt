@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct
 import no.digdir.fdk.parserservice.parser.DatasetParserRegistry
 import no.digdir.fdk.parserservice.parser.dataset.DcatApNoV1Parser
 import no.digdir.fdk.parserservice.parser.dataset.DcatApNoV2Parser
+import no.digdir.fdk.parserservice.parser.dataset.DcatApNoV3Parser
 import no.digdir.fdk.parserservice.parser.dataset.MobilityDcatApV3Parser
 import org.springframework.context.annotation.Configuration
 
@@ -23,6 +24,7 @@ open class DatasetParserConfiguration(
     private val parserRegistry: DatasetParserRegistry,
     private val v1Parser: DcatApNoV1Parser,
     private val v2Parser: DcatApNoV2Parser,
+    private val v3Parser: DcatApNoV3Parser,
     private val mobilityV3Parser: MobilityDcatApV3Parser,
 ) {
     /**
@@ -34,10 +36,13 @@ open class DatasetParserConfiguration(
         // Register Mobility V3 parser with highest priority (most specialized, based on DCAT-V3)
         parserRegistry.registerParser(mobilityV3Parser, priority = 200, name = "MOBILITY-DCAT-AP-V3")
 
-        // Register V2 parser with medium priority (based on DCAT-V2)
+        // Register V3 parser with high priority (latest standard DCAT-AP-NO, based on DCAT-V3)
+        parserRegistry.registerParser(v3Parser, priority = 150, name = "DCAT-AP-NO-V3")
+
+        // Register V2 parser with medium priority (previous standard, based on DCAT-V2)
         parserRegistry.registerParser(v2Parser, priority = 100, name = "DCAT-AP-NO-V2")
 
-        // Register V1 parser with lowest priority (fallback, based on DCAT-V1)
+        // Register V1 parser with lowest priority (legacy fallback, based on DCAT-V1)
         parserRegistry.registerParser(v1Parser, priority = 50, name = "DCAT-AP-NO-V1")
     }
 }
