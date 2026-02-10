@@ -5,7 +5,6 @@ import no.digdir.fdk.parserservice.extract.containsTriple
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfMobilityDistributions
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfMobilitySampleData
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfQualifiedAttributions
-import no.digdir.fdk.parserservice.extract.dataset.extractQualityAnnotation
 import no.digdir.fdk.parserservice.extract.extractListOfReferenceDataCodes
 import no.digdir.fdk.parserservice.extract.extractListOfTemporal
 import no.digdir.fdk.parserservice.extract.fdk.addFdkData
@@ -13,7 +12,6 @@ import no.digdir.fdk.parserservice.extract.fdk.fdkRecord
 import no.digdir.fdk.parserservice.extract.fdk.resourceOfIRI
 import no.digdir.fdk.parserservice.model.LanguageCodes
 import no.digdir.fdk.parserservice.model.NoAcceptableTypesException
-import no.digdir.fdk.parserservice.vocabulary.DQVISO
 import no.digdir.fdk.parserservice.vocabulary.MobilityDCAT
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
@@ -141,11 +139,6 @@ class MobilityDcatApV3Parser : BaseDatasetParser() {
         builder.setDistribution(datasetResource.extractListOfMobilityDistributions())
         builder.setSample(datasetResource.extractListOfMobilitySampleData())
 
-        builder.setHasRelevanceAnnotation(datasetResource.extractQualityAnnotation(DQVISO.Relevance))
-        builder.setHasCurrentnessAnnotation(datasetResource.extractQualityAnnotation(DQVISO.Currentness))
-        builder.setHasCompletenessAnnotation(datasetResource.extractQualityAnnotation(DQVISO.Completeness))
-        builder.setHasAvailabilityAnnotation(datasetResource.extractQualityAnnotation(DQVISO.Availability))
-        builder.setHasAccuracyAnnotation(datasetResource.extractQualityAnnotation(DQVISO.Accuracy))
         builder.setQualifiedAttributions(datasetResource.extractListOfQualifiedAttributions())
 
         // The following properties are not implemented in mobilityDCAT-AP v3.0.0
@@ -157,6 +150,11 @@ class MobilityDcatApV3Parser : BaseDatasetParser() {
         builder.setLegalBasisForRestriction(null)
         builder.setLegalBasisForAccess(null)
         builder.setSpecializedType(null)
+        builder.setHasRelevanceAnnotation(null)
+        builder.setHasCurrentnessAnnotation(null)
+        builder.setHasCompletenessAnnotation(null)
+        builder.setHasAvailabilityAnnotation(null)
+        builder.setHasAccuracyAnnotation(null)
 
         return builder.build()
     }
