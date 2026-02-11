@@ -210,6 +210,7 @@ class DatasetHandlerTest {
               "spatial": null,
               "provenance": null,
               "accrualPeriodicity": null,
+              "applicableLegislation": null,
               "legalBasisForRestriction": null,
               "legalBasisForProcessing": null,
               "legalBasisForAccess": null,

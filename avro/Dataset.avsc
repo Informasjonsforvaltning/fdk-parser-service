@@ -306,7 +306,7 @@
           "items": "no.digdir.fdk.model.UriWithLabelAndType"
         }
       ],
-      "doc": "Restriction rules for the dataset"
+      "doc": "[DEPRECATED] Restriction rules for the dataset"
     },
     {
       "name": "legalBasisForProcessing",
@@ -317,7 +317,7 @@
           "items": "no.digdir.fdk.model.UriWithLabelAndType"
         }
       ],
-      "doc": "Processing rules for the dataset"
+      "doc": "[DEPRECATED] Processing rules for the dataset"
     },
     {
       "name": "legalBasisForAccess",
@@ -328,7 +328,18 @@
           "items": "no.digdir.fdk.model.UriWithLabelAndType"
         }
       ],
-      "doc": "Access rules for the dataset"
+      "doc": "[DEPRECATED] Access rules for the dataset"
+    },
+    {
+      "name": "applicableLegislation",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.LegalResource"
+        }
+      ],
+      "doc": "References to legislation that mandates the creation or management of the dataset"
     },
     {
       "name": "conformsTo",
