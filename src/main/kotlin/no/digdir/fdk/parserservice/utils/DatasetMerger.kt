@@ -60,6 +60,7 @@ object DatasetMerger {
             .setLegalBasisForAccess(datasets.firstNonNull { it.legalBasisForAccess })
             .setLegalBasisForProcessing(datasets.firstNonNull { it.legalBasisForProcessing })
             .setLegalBasisForRestriction(datasets.firstNonNull { it.legalBasisForRestriction })
+            .setApplicableLegislation(datasets.firstNonNull { it.applicableLegislation })
             .setConformsTo(datasets.firstNonNull { it.conformsTo })
             .setReferences(datasets.firstNonNull { it.references })
             .setHasAccuracyAnnotation(datasets.firstNonNull { it.hasAccuracyAnnotation })

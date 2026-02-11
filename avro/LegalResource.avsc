@@ -1,0 +1,48 @@
+{
+  "type": "record",
+  "name": "LegalResource",
+  "namespace": "no.digdir.fdk.model",
+  "doc": "Represent the legislation, policy or policies that lie behind the Rules that govern the catalog or catalogued resource.",
+  "fields": [
+    {
+      "name": "uri",
+      "type": ["null", "string"],
+      "doc": "URI for the legal resource"
+    },
+    {
+      "name": "title",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Multilingual title of the legal resource"
+    },
+    {
+      "name": "dctTitle",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "[DEPRECATED] Multilingual title of the legal resource"
+    },
+    {
+      "name": "description",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "Multilingual descriptive textual information about the legal resource."
+    },
+    {
+      "name": "language",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.ReferenceDataCode"}],
+      "doc": "The language(s) in which the legal resource is available."
+    },
+    {
+      "name": "seeAlso",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "Reference(s) to the legal resource."
+    },
+    {
+      "name": "relation",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "Legal resource(s) that is related to the legal resource being described."
+    },
+    {
+      "name": "type",
+      "type": ["null", "no.digdir.fdk.model.ReferenceDataCode"],
+      "doc": "The type of a legal resource"
+    }
+  ]
+}

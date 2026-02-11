@@ -5,6 +5,7 @@ import no.digdir.fdk.parserservice.extract.containsTriple
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfMobilityDistributions
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfMobilitySampleData
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfQualifiedAttributions
+import no.digdir.fdk.parserservice.extract.extractListOfLegalResources
 import no.digdir.fdk.parserservice.extract.extractListOfReferenceDataCodes
 import no.digdir.fdk.parserservice.extract.extractListOfTemporal
 import no.digdir.fdk.parserservice.extract.fdk.addFdkData
@@ -12,6 +13,7 @@ import no.digdir.fdk.parserservice.extract.fdk.fdkRecord
 import no.digdir.fdk.parserservice.extract.fdk.resourceOfIRI
 import no.digdir.fdk.parserservice.model.LanguageCodes
 import no.digdir.fdk.parserservice.model.NoAcceptableTypesException
+import no.digdir.fdk.parserservice.vocabulary.DCATAP
 import no.digdir.fdk.parserservice.vocabulary.MobilityDCAT
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
@@ -140,6 +142,7 @@ class MobilityDcatApV3Parser : BaseDatasetParser() {
         builder.setSample(datasetResource.extractListOfMobilitySampleData())
 
         builder.setQualifiedAttributions(datasetResource.extractListOfQualifiedAttributions())
+        builder.setApplicableLegislation(datasetResource.extractListOfLegalResources(DCATAP.applicableLegislation))
 
         // The following properties are not implemented in mobilityDCAT-AP v3.0.0
         builder.setInSeries(null)

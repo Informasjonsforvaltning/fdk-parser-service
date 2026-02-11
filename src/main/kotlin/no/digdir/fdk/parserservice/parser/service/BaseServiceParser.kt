@@ -5,6 +5,7 @@ import no.digdir.fdk.model.service.Service
 import no.digdir.fdk.parserservice.extract.extractCatalogData
 import no.digdir.fdk.parserservice.extract.extractEuDataTheme
 import no.digdir.fdk.parserservice.extract.extractEurovoc
+import no.digdir.fdk.parserservice.extract.extractListOfLegalResources
 import no.digdir.fdk.parserservice.extract.extractListOfOrganizations
 import no.digdir.fdk.parserservice.extract.extractListOfReferenceDataCodes
 import no.digdir.fdk.parserservice.extract.extractListOfStrings
@@ -20,7 +21,6 @@ import no.digdir.fdk.parserservice.extract.isSkolemizedURI
 import no.digdir.fdk.parserservice.extract.listResources
 import no.digdir.fdk.parserservice.extract.service.extractListOfParticipatingAgents
 import no.digdir.fdk.parserservice.extract.service.extractListOfServiceContactPoints
-import no.digdir.fdk.parserservice.extract.service.extractListOfServiceLegalResources
 import no.digdir.fdk.parserservice.extract.service.extractListOfServiceRequirements
 import no.digdir.fdk.parserservice.extract.service.extractListOfServiceRules
 import no.digdir.fdk.parserservice.parser.ServiceParserStrategy
@@ -131,7 +131,7 @@ abstract class BaseServiceParser : ServiceParserStrategy {
         setContactPoint(serviceResource.extractListOfServiceContactPoints())
         setHoldsRequirement(serviceResource.extractListOfServiceRequirements())
         setFollows(serviceResource.extractListOfServiceRules())
-        setHasLegalResource(serviceResource.extractListOfServiceLegalResources(CV.hasLegalResource))
+        setHasLegalResource(serviceResource.extractListOfLegalResources(CV.hasLegalResource))
 
         setOwnedBy(serviceResource.extractListOfOrganizations(CV.ownedBy))
         setHasCompetentAuthority(serviceResource.extractListOfOrganizations(CV.hasCompetentAuthority))

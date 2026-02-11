@@ -126,7 +126,7 @@
     },
     {
       "name": "hasLegalResource",
-      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.service.ServiceLegalResource"}],
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.LegalResource"}],
       "doc": "Legal resources associated with the service"
     },
     {
