@@ -5,6 +5,7 @@ import no.digdir.fdk.parserservice.extract.containsTriple
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfMobilityDistributions
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfMobilitySampleData
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfQualifiedAttributions
+import no.digdir.fdk.parserservice.extract.dataset.extractListOfQualityAnnotations
 import no.digdir.fdk.parserservice.extract.extractListOfLegalResources
 import no.digdir.fdk.parserservice.extract.extractListOfReferenceDataCodes
 import no.digdir.fdk.parserservice.extract.extractListOfTemporal
@@ -143,6 +144,7 @@ class MobilityDcatApV3Parser : BaseDatasetParser() {
 
         builder.setQualifiedAttributions(datasetResource.extractListOfQualifiedAttributions())
         builder.setApplicableLegislation(datasetResource.extractListOfLegalResources(DCATAP.applicableLegislation))
+        builder.setQualityAnnotations(datasetResource.extractListOfQualityAnnotations())
 
         // The following properties are not implemented in mobilityDCAT-AP v3.0.0
         builder.setInSeries(null)

@@ -221,6 +221,7 @@ class DatasetHandlerTest {
               "hasCurrentnessAnnotation": null,
               "hasAvailabilityAnnotation": null,
               "hasRelevanceAnnotation": null,
+              "qualityAnnotations": null,
               "qualifiedAttributions": null,
               "isOpenData": false,
               "isAuthoritative": false,

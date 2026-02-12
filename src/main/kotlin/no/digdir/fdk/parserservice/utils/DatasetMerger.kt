@@ -68,6 +68,7 @@ object DatasetMerger {
             .setHasCompletenessAnnotation(datasets.firstNonNull { it.hasCompletenessAnnotation })
             .setHasCurrentnessAnnotation(datasets.firstNonNull { it.hasCurrentnessAnnotation })
             .setHasRelevanceAnnotation(datasets.firstNonNull { it.hasRelevanceAnnotation })
+            .setQualityAnnotations(datasets.firstNonNull { it.qualityAnnotations })
             .setQualifiedAttributions(datasets.firstNonNull { it.qualifiedAttributions })
             .setIsAuthoritative(datasets.firstNonNull { it.isAuthoritative } ?: false)
             .setIsOpenData(datasets.firstNonNull { it.isOpenData } ?: false)

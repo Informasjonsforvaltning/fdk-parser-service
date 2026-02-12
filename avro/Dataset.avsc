@@ -369,7 +369,7 @@
         "null",
         "no.digdir.fdk.model.dataset.QualityAnnotation"
       ],
-      "doc": "Quality annotation about dataset accuracy"
+      "doc": "[DEPRECATED] Quality annotation about dataset accuracy"
     },
     {
       "name": "hasCompletenessAnnotation",
@@ -377,7 +377,7 @@
         "null",
         "no.digdir.fdk.model.dataset.QualityAnnotation"
       ],
-      "doc": "Quality annotation about dataset completeness"
+      "doc": "[DEPRECATED] Quality annotation about dataset completeness"
     },
     {
       "name": "hasCurrentnessAnnotation",
@@ -385,7 +385,7 @@
         "null",
         "no.digdir.fdk.model.dataset.QualityAnnotation"
       ],
-      "doc": "Quality annotation about dataset currentness"
+      "doc": "[DEPRECATED] Quality annotation about dataset currentness"
     },
     {
       "name": "hasAvailabilityAnnotation",
@@ -393,7 +393,7 @@
         "null",
         "no.digdir.fdk.model.dataset.QualityAnnotation"
       ],
-      "doc": "Quality annotation about dataset availability"
+      "doc": "[DEPRECATED] Quality annotation about dataset availability"
     },
     {
       "name": "hasRelevanceAnnotation",
@@ -401,7 +401,18 @@
         "null",
         "no.digdir.fdk.model.dataset.QualityAnnotation"
       ],
-      "doc": "Quality annotation about dataset relevance"
+      "doc": "[DEPRECATED] Quality annotation about dataset relevance"
+    },
+    {
+      "name": "qualityAnnotations",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.dataset.QualityAnnotation"
+        }
+      ],
+      "doc": "Quality annotations associated with the dataset"
     },
     {
       "name": "qualifiedAttributions",
