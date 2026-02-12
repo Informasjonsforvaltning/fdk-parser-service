@@ -151,6 +151,7 @@ class DcatApNoV1Parser : BaseDatasetParser() {
         builder.setLegalBasisForAccess(null)
         builder.setSpecializedType(null)
         builder.setApplicableLegislation(null)
+        builder.setQualityAnnotations(null)
 
         return builder.build()
     }

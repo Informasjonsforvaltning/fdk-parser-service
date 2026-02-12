@@ -7,6 +7,7 @@ import no.digdir.fdk.parserservice.extract.dataset.extractInSeries
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfDatasetsInSeries
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfDistributionsV3
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfQualifiedAttributions
+import no.digdir.fdk.parserservice.extract.dataset.extractListOfQualityAnnotations
 import no.digdir.fdk.parserservice.extract.extractListOfLegalResources
 import no.digdir.fdk.parserservice.extract.extractListOfTemporal
 import no.digdir.fdk.parserservice.extract.extractStringValue
@@ -128,6 +129,7 @@ class DcatApNoV3Parser : BaseDatasetParser() {
 
         builder.setQualifiedAttributions(datasetResource.extractListOfQualifiedAttributions())
         builder.setApplicableLegislation(datasetResource.extractListOfLegalResources(DCATAP.applicableLegislation))
+        builder.setQualityAnnotations(datasetResource.extractListOfQualityAnnotations())
 
         if (model.containsTriple(datasetResource.uri, RDF.type.uri, URI.create(DCAT3.DatasetSeries.uri))) {
             builder.setSpecializedType(DatasetType.datasetSeries)

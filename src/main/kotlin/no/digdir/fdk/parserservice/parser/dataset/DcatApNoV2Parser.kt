@@ -8,7 +8,7 @@ import no.digdir.fdk.parserservice.extract.dataset.extractListOfDatasetsInSeries
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfDistributionsV2
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfLegalBasisV2
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfQualifiedAttributions
-import no.digdir.fdk.parserservice.extract.dataset.extractQualityAnnotation
+import no.digdir.fdk.parserservice.extract.dataset.extractQualityAnnotationV2
 import no.digdir.fdk.parserservice.extract.extractListOfTemporal
 import no.digdir.fdk.parserservice.extract.extractStringValue
 import no.digdir.fdk.parserservice.extract.fdk.addFdkData
@@ -147,11 +147,11 @@ class DcatApNoV2Parser : BaseDatasetParser() {
         builder.setPrev(datasetResource.extractStringValue(DCAT3.prev))
         builder.setInSeries(datasetResource.extractInSeries())
 
-        builder.setHasRelevanceAnnotation(datasetResource.extractQualityAnnotation(DQVISO.Relevance))
-        builder.setHasCurrentnessAnnotation(datasetResource.extractQualityAnnotation(DQVISO.Currentness))
-        builder.setHasCompletenessAnnotation(datasetResource.extractQualityAnnotation(DQVISO.Completeness))
-        builder.setHasAvailabilityAnnotation(datasetResource.extractQualityAnnotation(DQVISO.Availability))
-        builder.setHasAccuracyAnnotation(datasetResource.extractQualityAnnotation(DQVISO.Accuracy))
+        builder.setHasRelevanceAnnotation(datasetResource.extractQualityAnnotationV2(DQVISO.Relevance))
+        builder.setHasCurrentnessAnnotation(datasetResource.extractQualityAnnotationV2(DQVISO.Currentness))
+        builder.setHasCompletenessAnnotation(datasetResource.extractQualityAnnotationV2(DQVISO.Completeness))
+        builder.setHasAvailabilityAnnotation(datasetResource.extractQualityAnnotationV2(DQVISO.Availability))
+        builder.setHasAccuracyAnnotation(datasetResource.extractQualityAnnotationV2(DQVISO.Accuracy))
 
         builder.setQualifiedAttributions(datasetResource.extractListOfQualifiedAttributions())
 
@@ -172,6 +172,7 @@ class DcatApNoV2Parser : BaseDatasetParser() {
         // The following properties are not implemented in DCAT-AP-NO v2.2
         builder.setMobilityTheme(null)
         builder.setApplicableLegislation(null)
+        builder.setQualityAnnotations(null)
 
         return builder.build()
     }

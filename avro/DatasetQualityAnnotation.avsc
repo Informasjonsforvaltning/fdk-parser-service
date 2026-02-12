@@ -10,7 +10,18 @@
         "null",
         "string"
       ],
-      "doc": "Dimension the annotation is in"
+      "doc": "[DEPRECATED] Dimension the annotation is in"
+    },
+    {
+      "name": "qualityDimensions",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.ReferenceDataCode"
+        }
+      ],
+      "doc": "Dimensions the annotation is a measurement of."
     },
     {
       "name": "hasBody",
