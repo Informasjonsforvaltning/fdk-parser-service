@@ -8,5 +8,6 @@ class DCATAP {
         const val URI = "http://data.europa.eu/r5r/"
 
         val applicableLegislation: Property = ResourceFactory.createProperty("${URI}applicableLegislation")
+        val hvdCategory: Property = ResourceFactory.createProperty("${URI}hvdCategory")
     }
 }

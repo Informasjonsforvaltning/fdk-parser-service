@@ -5,6 +5,7 @@ import no.digdir.fdk.parserservice.parser.DatasetParserRegistry
 import no.digdir.fdk.parserservice.parser.dataset.DcatApNoV1Parser
 import no.digdir.fdk.parserservice.parser.dataset.DcatApNoV2Parser
 import no.digdir.fdk.parserservice.parser.dataset.DcatApNoV3Parser
+import no.digdir.fdk.parserservice.parser.dataset.HvdDcatApNoParser
 import no.digdir.fdk.parserservice.parser.dataset.MobilityDcatApV3Parser
 import org.springframework.context.annotation.Configuration
 
@@ -25,6 +26,7 @@ open class DatasetParserConfiguration(
     private val v1Parser: DcatApNoV1Parser,
     private val v2Parser: DcatApNoV2Parser,
     private val v3Parser: DcatApNoV3Parser,
+    private val hvdParser: HvdDcatApNoParser,
     private val mobilityV3Parser: MobilityDcatApV3Parser,
 ) {
     /**
@@ -35,6 +37,9 @@ open class DatasetParserConfiguration(
     fun registerParsers() {
         // Register Mobility V3 parser with highest priority (most specialized, based on DCAT-V3)
         parserRegistry.registerParser(mobilityV3Parser, priority = 200, name = "MOBILITY-DCAT-AP-V3")
+
+        // Register HVD parser with high priority (supplements DCAT-AP-NO V3 with HVD-specific requirements)
+        parserRegistry.registerParser(hvdParser, priority = 175, name = "HVD-DCAT-AP-NO")
 
         // Register V3 parser with high priority (latest standard DCAT-AP-NO, based on DCAT-V3)
         parserRegistry.registerParser(v3Parser, priority = 150, name = "DCAT-AP-NO-V3")
