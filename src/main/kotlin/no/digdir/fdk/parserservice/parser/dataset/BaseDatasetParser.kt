@@ -2,6 +2,8 @@ package no.digdir.fdk.parserservice.parser.dataset
 
 import no.digdir.fdk.model.ResourceType
 import no.digdir.fdk.model.dataset.Dataset
+import no.digdir.fdk.parserservice.extract.dataset.extractListOfQualifiedAttributions
+import no.digdir.fdk.parserservice.extract.dataset.extractListOfQualityAnnotations
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfReferences
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfSubjects
 import no.digdir.fdk.parserservice.extract.descriptionHtmlCleaner
@@ -9,8 +11,10 @@ import no.digdir.fdk.parserservice.extract.extractCatalogData
 import no.digdir.fdk.parserservice.extract.extractEuDataTheme
 import no.digdir.fdk.parserservice.extract.extractEurovoc
 import no.digdir.fdk.parserservice.extract.extractListOfContactPoints
+import no.digdir.fdk.parserservice.extract.extractListOfLegalResources
 import no.digdir.fdk.parserservice.extract.extractListOfReferenceDataCodes
 import no.digdir.fdk.parserservice.extract.extractListOfStrings
+import no.digdir.fdk.parserservice.extract.extractListOfTemporal
 import no.digdir.fdk.parserservice.extract.extractListOfUriWithLabel
 import no.digdir.fdk.parserservice.extract.extractLocalizedStringList
 import no.digdir.fdk.parserservice.extract.extractLocalizedStrings
@@ -25,6 +29,7 @@ import no.digdir.fdk.parserservice.extract.isSkolemizedURI
 import no.digdir.fdk.parserservice.extract.listResources
 import no.digdir.fdk.parserservice.parser.DatasetParserStrategy
 import no.digdir.fdk.parserservice.vocabulary.ADMS
+import no.digdir.fdk.parserservice.vocabulary.DCATAP
 import no.digdir.fdk.parserservice.vocabulary.EUAT
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.sparql.vocabulary.FOAF
@@ -129,5 +134,21 @@ abstract class BaseDatasetParser : DatasetParserStrategy {
         setSubject(datasetResource.extractListOfSubjects())
 
         setType(ResourceType.datasets)
+    }
+
+    /**
+     * Adds V3-specific dataset values to the builder.
+     *
+     * This method extracts and sets properties that are specific to DCAT-AP-NO v3.0,
+     * including DCAT 3.0 temporal properties, quality annotations and applicable legislation.
+     *
+     * @param datasetResource The RDF resource representing the dataset
+     */
+    protected fun Dataset.Builder.addCommonV3DatasetValues(datasetResource: Resource) {
+        setTemporal(datasetResource.extractListOfTemporal(DCTerms.temporal, DCAT.startDate, DCAT.endDate))
+
+        setQualifiedAttributions(datasetResource.extractListOfQualifiedAttributions())
+        setApplicableLegislation(datasetResource.extractListOfLegalResources(DCATAP.applicableLegislation))
+        setQualityAnnotations(datasetResource.extractListOfQualityAnnotations())
     }
 }

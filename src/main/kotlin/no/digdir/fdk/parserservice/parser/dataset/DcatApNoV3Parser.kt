@@ -6,10 +6,6 @@ import no.digdir.fdk.parserservice.extract.containsTriple
 import no.digdir.fdk.parserservice.extract.dataset.extractInSeries
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfDatasetsInSeries
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfDistributionsV3
-import no.digdir.fdk.parserservice.extract.dataset.extractListOfQualifiedAttributions
-import no.digdir.fdk.parserservice.extract.dataset.extractListOfQualityAnnotations
-import no.digdir.fdk.parserservice.extract.extractListOfLegalResources
-import no.digdir.fdk.parserservice.extract.extractListOfTemporal
 import no.digdir.fdk.parserservice.extract.extractStringValue
 import no.digdir.fdk.parserservice.extract.fdk.addFdkData
 import no.digdir.fdk.parserservice.extract.fdk.fdkRecord
@@ -18,11 +14,9 @@ import no.digdir.fdk.parserservice.model.LanguageCodes
 import no.digdir.fdk.parserservice.model.NoAcceptableTypesException
 import no.digdir.fdk.parserservice.vocabulary.ADMS
 import no.digdir.fdk.parserservice.vocabulary.DCAT3
-import no.digdir.fdk.parserservice.vocabulary.DCATAP
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCAT
-import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDF
 import org.springframework.stereotype.Component
 import java.net.URI
@@ -118,18 +112,13 @@ class DcatApNoV3Parser : BaseDatasetParser() {
         }
 
         builder.addCommonDatasetValues(datasetResource)
-
-        builder.setTemporal(datasetResource.extractListOfTemporal(DCTerms.temporal, DCAT.startDate, DCAT.endDate))
+        builder.addCommonV3DatasetValues(datasetResource)
 
         builder.setDistribution(datasetResource.extractListOfDistributionsV3(DCAT.distribution))
         builder.setSample(datasetResource.extractListOfDistributionsV3(ADMS.sample))
 
         builder.setPrev(datasetResource.extractStringValue(DCAT3.prev))
         builder.setInSeries(datasetResource.extractInSeries())
-
-        builder.setQualifiedAttributions(datasetResource.extractListOfQualifiedAttributions())
-        builder.setApplicableLegislation(datasetResource.extractListOfLegalResources(DCATAP.applicableLegislation))
-        builder.setQualityAnnotations(datasetResource.extractListOfQualityAnnotations())
 
         if (model.containsTriple(datasetResource.uri, RDF.type.uri, URI.create(DCAT3.DatasetSeries.uri))) {
             builder.setSpecializedType(DatasetType.datasetSeries)
