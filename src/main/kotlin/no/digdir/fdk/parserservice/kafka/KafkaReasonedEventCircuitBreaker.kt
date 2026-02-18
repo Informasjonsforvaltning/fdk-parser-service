@@ -69,14 +69,13 @@ open class KafkaReasonedEventCircuitBreaker(
         if (fdkId != null && graph != null && timestamp != null && resourceType != null) {
             handleRecord(fdkId, graph, timestamp, resourceType, harvestRunId, uri)
         } else {
-            LOGGER.error(
-                "Unable to get required message values. fdkId: {}, graph: {}, timestamp: {}, type: {}",
+            LOGGER.warn(
+                "Ignoring message with missing required fields. fdkId: {}, graph: {}, timestamp: {}, type: {}",
                 fdkId,
                 graph,
                 timestamp,
                 resourceType,
             )
-            throw UnrecoverableParseException("Unable to get required message values")
         }
     }
 
@@ -93,13 +92,12 @@ open class KafkaReasonedEventCircuitBreaker(
             if (fdkId != null && graph != null && timestamp != null) {
                 handleRecord(fdkId, graph, timestamp, RdfParseResourceType.CONCEPT, harvestRunId, uri)
             } else {
-                LOGGER.error(
-                    "Unable to get required concept message values. fdkId: {}, graph: {}, timestamp: {}",
+                LOGGER.warn(
+                    "Ignoring concept message with missing required fields. fdkId: {}, graph: {}, timestamp: {}",
                     fdkId,
                     graph,
                     timestamp,
                 )
-                throw UnrecoverableParseException("Unable to get required concept message values")
             }
         }
     }
@@ -117,13 +115,12 @@ open class KafkaReasonedEventCircuitBreaker(
             if (fdkId != null && graph != null && timestamp != null) {
                 handleRecord(fdkId, graph, timestamp, RdfParseResourceType.DATA_SERVICE, harvestRunId, uri)
             } else {
-                LOGGER.error(
-                    "Unable to get required data service message values. fdkId: {}, graph: {}, timestamp: {}",
+                LOGGER.warn(
+                    "Ignoring data service message with missing required fields. fdkId: {}, graph: {}, timestamp: {}",
                     fdkId,
                     graph,
                     timestamp,
                 )
-                throw UnrecoverableParseException("Unable to get required data service message values")
             }
         }
     }
@@ -141,8 +138,7 @@ open class KafkaReasonedEventCircuitBreaker(
             if (fdkId != null && graph != null && timestamp != null) {
                 handleRecord(fdkId, graph, timestamp, RdfParseResourceType.DATASET, harvestRunId, uri)
             } else {
-                LOGGER.error("Unable to get required dataset message values. fdkId: {}, graph: {}, timestamp: {}", fdkId, graph, timestamp)
-                throw UnrecoverableParseException("Unable to get required dataset message values")
+                LOGGER.warn("Ignoring dataset message with missing required fields. fdkId: {}, graph: {}, timestamp: {}", fdkId, graph, timestamp)
             }
         }
     }
@@ -160,13 +156,12 @@ open class KafkaReasonedEventCircuitBreaker(
             if (fdkId != null && graph != null && timestamp != null) {
                 handleRecord(fdkId, graph, timestamp, RdfParseResourceType.INFORMATION_MODEL, harvestRunId, uri)
             } else {
-                LOGGER.error(
-                    "Unable to get required information model message values. fdkId: {}, graph: {}, timestamp: {}",
+                LOGGER.warn(
+                    "Ignoring information model message with missing required fields. fdkId: {}, graph: {}, timestamp: {}",
                     fdkId,
                     graph,
                     timestamp,
                 )
-                throw UnrecoverableParseException("Unable to get required information model message values")
             }
         }
     }
@@ -184,13 +179,12 @@ open class KafkaReasonedEventCircuitBreaker(
             if (fdkId != null && graph != null && timestamp != null) {
                 handleRecord(fdkId, graph, timestamp, RdfParseResourceType.SERVICE, harvestRunId, uri)
             } else {
-                LOGGER.error(
-                    "Unable to get required service message values. fdkId: {}, graph: {}, timestamp: {}",
+                LOGGER.warn(
+                    "Ignoring service message with missing required fields. fdkId: {}, graph: {}, timestamp: {}",
                     fdkId,
                     graph,
                     timestamp,
                 )
-                throw UnrecoverableParseException("Unable to get required service message values")
             }
         }
     }
@@ -208,13 +202,12 @@ open class KafkaReasonedEventCircuitBreaker(
             if (fdkId != null && graph != null && timestamp != null) {
                 handleRecord(fdkId, graph, timestamp, RdfParseResourceType.EVENT, harvestRunId, uri)
             } else {
-                LOGGER.error(
-                    "Unable to get required event message values. fdkId: {}, graph: {}, timestamp: {}",
+                LOGGER.warn(
+                    "Ignoring event message with missing required fields. fdkId: {}, graph: {}, timestamp: {}",
                     fdkId,
                     graph,
                     timestamp,
                 )
-                throw UnrecoverableParseException("Unable to get required event message values")
             }
         }
     }
