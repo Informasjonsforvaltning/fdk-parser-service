@@ -240,9 +240,10 @@ class KafkaReasonedEventConsumerTest {
     }
 
     @Test
-    fun `processGeneric should throw error when required fields are missing`() {
+    fun `processGeneric should ignore message when required fields are missing`() {
         val event = mockk<GenericRecord>()
-        assertThrows<UnrecoverableParseException> { circuitBreaker.processGeneric(event) }
+        circuitBreaker.processGeneric(event)
+        verify(exactly = 0) { kafkaTemplate.send(any(), any()) }
     }
 
     @Test
