@@ -138,7 +138,12 @@ open class KafkaReasonedEventCircuitBreaker(
             if (fdkId != null && graph != null && timestamp != null) {
                 handleRecord(fdkId, graph, timestamp, RdfParseResourceType.DATASET, harvestRunId, uri)
             } else {
-                LOGGER.warn("Ignoring dataset message with missing required fields. fdkId: {}, graph: {}, timestamp: {}", fdkId, graph, timestamp)
+                LOGGER.warn(
+                    "Ignoring dataset message with missing required fields. fdkId: {}, graph: {}, timestamp: {}",
+                    fdkId,
+                    graph,
+                    timestamp,
+                )
             }
         }
     }
