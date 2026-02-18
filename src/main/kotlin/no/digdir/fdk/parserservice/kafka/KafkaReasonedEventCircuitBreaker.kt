@@ -87,9 +87,11 @@ open class KafkaReasonedEventCircuitBreaker(
             val fdkId = runCatching { event.fdkId.toString() }.getOrNull()
             val graph = runCatching { event.graph.toString() }.getOrNull()
             val timestamp = runCatching { event.timestamp }.getOrNull()
+            val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
+            val uri = runCatching { event.uri?.toString() }.getOrNull()
 
             if (fdkId != null && graph != null && timestamp != null) {
-                handleRecord(fdkId, graph, timestamp, RdfParseResourceType.CONCEPT)
+                handleRecord(fdkId, graph, timestamp, RdfParseResourceType.CONCEPT, harvestRunId, uri)
             } else {
                 LOGGER.error(
                     "Unable to get required concept message values. fdkId: {}, graph: {}, timestamp: {}",
@@ -176,9 +178,11 @@ open class KafkaReasonedEventCircuitBreaker(
             val fdkId = runCatching { event.fdkId.toString() }.getOrNull()
             val graph = runCatching { event.graph.toString() }.getOrNull()
             val timestamp = runCatching { event.timestamp }.getOrNull()
+            val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
+            val uri = runCatching { event.uri?.toString() }.getOrNull()
 
             if (fdkId != null && graph != null && timestamp != null) {
-                handleRecord(fdkId, graph, timestamp, RdfParseResourceType.SERVICE)
+                handleRecord(fdkId, graph, timestamp, RdfParseResourceType.SERVICE, harvestRunId, uri)
             } else {
                 LOGGER.error(
                     "Unable to get required service message values. fdkId: {}, graph: {}, timestamp: {}",
@@ -198,9 +202,11 @@ open class KafkaReasonedEventCircuitBreaker(
             val fdkId = runCatching { event.fdkId.toString() }.getOrNull()
             val graph = runCatching { event.graph.toString() }.getOrNull()
             val timestamp = runCatching { event.timestamp }.getOrNull()
+            val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
+            val uri = runCatching { event.uri?.toString() }.getOrNull()
 
             if (fdkId != null && graph != null && timestamp != null) {
-                handleRecord(fdkId, graph, timestamp, RdfParseResourceType.EVENT)
+                handleRecord(fdkId, graph, timestamp, RdfParseResourceType.EVENT, harvestRunId, uri)
             } else {
                 LOGGER.error(
                     "Unable to get required event message values. fdkId: {}, graph: {}, timestamp: {}",
@@ -334,6 +340,7 @@ open class KafkaReasonedEventCircuitBreaker(
         endTime: String,
         errorMessage: String?,
     ) {
+        if (harvestRunId.isNullOrBlank()) return
         val harvestEvent =
             HarvestEvent(
                 HarvestPhase.RDF_PARSING,
@@ -350,6 +357,7 @@ open class KafkaReasonedEventCircuitBreaker(
                 null,
                 null,
                 null,
+                false,
             )
         harvestEventProducer.sendMessage(harvestEvent)
     }
