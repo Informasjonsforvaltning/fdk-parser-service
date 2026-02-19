@@ -48,7 +48,7 @@ open class KafkaReasonedEventCircuitBreaker(
 ) {
     @CircuitBreaker(name = "rdf-parse-generic")
     open fun processGeneric(event: GenericRecord) {
-        val type = runCatching { event.get("type") as String }.getOrNull()
+        val type = runCatching { event.get("type")?.toString() }.getOrNull()
         val resourceType =
             when (type) {
                 ConceptEventType.CONCEPT_REASONED.name -> RdfParseResourceType.CONCEPT
@@ -60,9 +60,15 @@ open class KafkaReasonedEventCircuitBreaker(
                 else -> null
             }
 
-        val fdkId = runCatching { event.get("fdkId") as String }.getOrNull()
-        val graph = runCatching { event.get("graph") as String }.getOrNull()
-        val timestamp = runCatching { event.get("timestamp") as Long }.getOrNull()
+        val fdkId = runCatching { event.get("fdkId")?.toString() }.getOrNull()
+        val graph = runCatching { event.get("graph")?.toString() }.getOrNull()
+        val timestamp =
+            runCatching {
+                when (val t = event.get("timestamp")) {
+                    is Number -> t.toLong()
+                    else -> null
+                }
+            }.getOrNull()
         val harvestRunId = runCatching { event.get("harvestRunId")?.toString() }.getOrNull()
         val uri = runCatching { event.get("uri")?.toString() }.getOrNull()
 
@@ -71,14 +77,28 @@ open class KafkaReasonedEventCircuitBreaker(
         } else {
             val recordFields =
                 runCatching {
-                    event.schema?.fields?.associate { it.name() to event.get(it.name()) } ?: emptyMap()
+                    event.schema?.fields?.associate { field ->
+                        val value = event.get(field.name())
+                        val display =
+                            when {
+                                field.name().equals("graph", ignoreCase = true) && value != null ->
+                                    truncateForLog(value.toString(), MAX_GRAPH_LOG_LENGTH)
+                                else -> value
+                            }
+                        field.name() to display
+                    } ?: emptyMap()
                 }.getOrElse { emptyMap() }
+            val reason =
+                if (resourceType == null) "event type not REASONED (got: $type)"
+                else "missing required fields"
+            val graphForLog = graph?.let { truncateForLog(it, MAX_GRAPH_LOG_LENGTH) }
             LOGGER.warn(
-                "Ignoring message with missing required fields. fdkId: {}, graph: {}, timestamp: {}, type: {}. GenericRecord: {}",
+                "Ignoring message: {}. fdkId: {}, graph: {}, timestamp: {}, type: {}. GenericRecord: {}",
+                reason,
                 fdkId,
-                graph,
+                graphForLog,
                 timestamp,
-                resourceType,
+                type,
                 recordFields,
             )
         }
@@ -366,6 +386,10 @@ open class KafkaReasonedEventCircuitBreaker(
     }
 
     companion object {
+        private const val MAX_GRAPH_LOG_LENGTH = 200
         private val LOGGER: Logger = LoggerFactory.getLogger(KafkaReasonedEventCircuitBreaker::class.java)
+
+        private fun truncateForLog(s: String, maxLength: Int): String =
+            if (s.length <= maxLength) s else s.take(maxLength) + "... (${s.length} chars total)"
     }
 }
