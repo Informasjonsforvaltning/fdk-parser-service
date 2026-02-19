@@ -70,7 +70,9 @@ open class KafkaReasonedEventCircuitBreaker(
             handleRecord(fdkId, graph, timestamp, resourceType, harvestRunId, uri)
         } else {
             val recordFields =
-                event.schema.fields.associate { it.name() to event.get(it.name()) }
+                runCatching {
+                    event.schema?.fields?.associate { it.name() to event.get(it.name()) } ?: emptyMap()
+                }.getOrElse { emptyMap() }
             LOGGER.warn(
                 "Ignoring message with missing required fields. fdkId: {}, graph: {}, timestamp: {}, type: {}. GenericRecord: {}",
                 fdkId,
