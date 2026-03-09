@@ -3,6 +3,7 @@ package no.digdir.fdk.parserservice.extract.dataset
 import no.digdir.fdk.model.dataset.Distribution
 import no.digdir.fdk.parserservice.extract.extractFormat
 import no.digdir.fdk.parserservice.extract.extractListOfFormats
+import no.digdir.fdk.parserservice.extract.extractListOfLegalResources
 import no.digdir.fdk.parserservice.extract.extractListOfStrings
 import no.digdir.fdk.parserservice.extract.extractListOfUriWithLabel
 import no.digdir.fdk.parserservice.extract.extractListOfUriWithLabelAndType
@@ -12,6 +13,7 @@ import no.digdir.fdk.parserservice.extract.extractRightsStatement
 import no.digdir.fdk.parserservice.extract.extractURIStringValue
 import no.digdir.fdk.parserservice.extract.listResources
 import no.digdir.fdk.parserservice.vocabulary.ADMS
+import no.digdir.fdk.parserservice.vocabulary.DCATAP
 import no.digdir.fdk.parserservice.vocabulary.MobilityDCAT
 import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
@@ -66,6 +68,7 @@ private fun Resource.buildDistributionV1(): Distribution? {
         .setMobilityDataStandard(null)
         .setStatus(null)
         .setRights(null)
+        .setApplicableLegislation(null)
 
     return builder.build().takeIf { it.hasContent() }
 }
@@ -91,50 +94,51 @@ private fun Resource.buildDistributionV2(): Distribution? {
         .setMobilityDataStandard(null)
         .setStatus(null)
         .setRights(null)
+        .setApplicableLegislation(null)
 
     return builder.build().takeIf { it.hasContent() }
+}
+
+private fun Resource.addCommonDistributionValuesToBuilderV3(builder: Distribution.Builder) {
+    addCommonDistributionValuesToBuilder(builder)
+
+    val formats = extractListOfFormats(DCTerms.format) ?: emptyList()
+    val mediaTypes = extractListOfFormats(DCAT.mediaType) ?: emptyList()
+    val allFormats = formats + mediaTypes
+
+    builder
+        .setFdkFormat(allFormats.takeIf { it.isNotEmpty() })
+        .setCompressFormat(extractFormat(DCAT.compressFormat))
+        .setPackageFormat(extractFormat(DCAT.packageFormat))
+        .setAccessService(extractListOfAccessServices())
+        .setStatus(extractReferenceDataCode(ADMS.status, DC_11.identifier, SKOS.prefLabel))
+        .setRights(extractRightsStatement())
+        .setApplicableLegislation(extractListOfLegalResources(DCATAP.applicableLegislation))
 }
 
 private fun Resource.buildDistributionV3(): Distribution? {
     val builder = Distribution.newBuilder()
 
-    addCommonDistributionValuesToBuilder(builder)
+    addCommonDistributionValuesToBuilderV3(builder)
 
-    val formats = extractListOfFormats(DCTerms.format) ?: emptyList()
-    val mediaTypes = extractListOfFormats(DCAT.mediaType) ?: emptyList()
-    val allFormats = formats + mediaTypes
-
-    builder
-        .setAccessURL(extractListOfStrings(DCAT.accessURL))
-        .setFdkFormat(allFormats.takeIf { it.isNotEmpty() })
-        .setCompressFormat(extractFormat(DCAT.compressFormat))
-        .setPackageFormat(extractFormat(DCAT.packageFormat))
-        .setAccessService(extractListOfAccessServices())
-        .setStatus(extractReferenceDataCode(ADMS.status, DC_11.identifier, SKOS.prefLabel))
-        .setRights(extractRightsStatement())
+    builder.setAccessURL(extractListOfStrings(DCAT.accessURL))
 
     // The following properties are not implemented in DCAT-AP-NO v3
-    builder
-        .setMobilityDataStandard(null)
+    builder.setMobilityDataStandard(null)
 
     return builder.build().takeIf { it.hasContent() }
 }
 
 private fun Resource.addCommonMobilityDistributionValuesToBuilder(builder: Distribution.Builder) {
-    addCommonDistributionValuesToBuilder(builder)
+    addCommonDistributionValuesToBuilderV3(builder)
 
-    val formats = extractListOfFormats(DCTerms.format) ?: emptyList()
-    val mediaTypes = extractListOfFormats(DCAT.mediaType) ?: emptyList()
-    val allFormats = formats + mediaTypes
-
-    builder
-        .setFdkFormat(allFormats.takeIf { it.isNotEmpty() })
-        .setCompressFormat(extractFormat(DCAT.compressFormat))
-        .setPackageFormat(extractFormat(DCAT.packageFormat))
-        .setAccessService(extractListOfAccessServices())
-        .setMobilityDataStandard(extractReferenceDataCode(MobilityDCAT.mobilityDataStandard, "/", SKOS.prefLabel))
-        .setStatus(extractReferenceDataCode(ADMS.status, DC_11.identifier, SKOS.prefLabel))
-        .setRights(extractRightsStatement())
+    builder.setMobilityDataStandard(
+        extractReferenceDataCode(
+            MobilityDCAT.mobilityDataStandard,
+            "/",
+            SKOS.prefLabel,
+        ),
+    )
 }
 
 private fun Resource.buildDistributionMobility(): Distribution? {

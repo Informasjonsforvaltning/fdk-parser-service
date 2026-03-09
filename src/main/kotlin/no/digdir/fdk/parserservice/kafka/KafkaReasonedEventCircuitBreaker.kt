@@ -89,8 +89,11 @@ open class KafkaReasonedEventCircuitBreaker(
                     } ?: emptyMap()
                 }.getOrElse { emptyMap() }
             val reason =
-                if (resourceType == null) "event type not REASONED (got: $type)"
-                else "missing required fields"
+                if (resourceType == null) {
+                    "event type not REASONED (got: $type)"
+                } else {
+                    "missing required fields"
+                }
             val graphForLog = graph?.let { truncateForLog(it, MAX_GRAPH_LOG_LENGTH) }
             LOGGER.warn(
                 "Ignoring message: {}. fdkId: {}, graph: {}, timestamp: {}, type: {}. GenericRecord: {}",
@@ -389,7 +392,9 @@ open class KafkaReasonedEventCircuitBreaker(
         private const val MAX_GRAPH_LOG_LENGTH = 200
         private val LOGGER: Logger = LoggerFactory.getLogger(KafkaReasonedEventCircuitBreaker::class.java)
 
-        private fun truncateForLog(s: String, maxLength: Int): String =
-            if (s.length <= maxLength) s else s.take(maxLength) + "... (${s.length} chars total)"
+        private fun truncateForLog(
+            s: String,
+            maxLength: Int,
+        ): String = if (s.length <= maxLength) s else s.take(maxLength) + "... (${s.length} chars total)"
     }
 }

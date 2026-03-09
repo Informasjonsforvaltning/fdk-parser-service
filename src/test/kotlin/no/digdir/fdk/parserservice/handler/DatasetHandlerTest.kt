@@ -170,7 +170,8 @@ class DatasetHandlerTest {
                   "accessService": null,
                   "status": null,
                   "mobilityDataStandard": null,
-                  "rights": null
+                  "rights": null,
+                  "applicableLegislation": null
                 }
               ],
               "sample": null,
@@ -323,7 +324,8 @@ class DatasetHandlerTest {
                   "accessService": null,
                   "status": null,
                   "mobilityDataStandard": null,
-                  "rights": null
+                  "rights": null,
+                  "applicableLegislation": null
                 }
             ]
             """.trimIndent()
