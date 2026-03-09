@@ -131,6 +131,7 @@ class DcatApNoV3Parser : BaseDatasetParser() {
         }
 
         // The following properties are not implemented in DCAT-AP-NO v3
+        builder.setHvdCategory(null)
         builder.setMobilityTheme(null)
         builder.setLegalBasisForProcessing(null)
         builder.setLegalBasisForRestriction(null)

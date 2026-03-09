@@ -170,6 +170,7 @@ class DcatApNoV2Parser : BaseDatasetParser() {
         }
 
         // The following properties are not implemented in DCAT-AP-NO v2.2
+        builder.setHvdCategory(null)
         builder.setMobilityTheme(null)
         builder.setApplicableLegislation(null)
         builder.setQualityAnnotations(null)

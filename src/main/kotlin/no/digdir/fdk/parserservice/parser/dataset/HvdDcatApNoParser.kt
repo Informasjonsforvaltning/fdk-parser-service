@@ -3,8 +3,10 @@ package no.digdir.fdk.parserservice.parser.dataset
 import no.digdir.fdk.model.dataset.Dataset
 import no.digdir.fdk.model.dataset.DatasetType
 import no.digdir.fdk.parserservice.extract.containsTriple
+import no.digdir.fdk.parserservice.extract.dataset.extractInSeries
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfDatasetsInSeries
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfDistributionsV3
+import no.digdir.fdk.parserservice.extract.extractListOfReferenceDataCodes
 import no.digdir.fdk.parserservice.extract.extractStringValue
 import no.digdir.fdk.parserservice.extract.fdk.addFdkData
 import no.digdir.fdk.parserservice.extract.fdk.fdkRecord
@@ -13,10 +15,13 @@ import no.digdir.fdk.parserservice.model.LanguageCodes
 import no.digdir.fdk.parserservice.model.NoAcceptableTypesException
 import no.digdir.fdk.parserservice.vocabulary.ADMS
 import no.digdir.fdk.parserservice.vocabulary.DCAT3
+import no.digdir.fdk.parserservice.vocabulary.DCATAP
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCAT
+import org.apache.jena.vocabulary.DC_11
 import org.apache.jena.vocabulary.RDF
+import org.apache.jena.vocabulary.SKOS
 import org.springframework.stereotype.Component
 import java.net.URI
 
@@ -109,8 +114,13 @@ class HvdDcatApNoParser : BaseDatasetParser() {
         builder.addCommonDatasetValues(datasetResource)
         builder.addCommonV3DatasetValues(datasetResource)
 
+        builder.setHvdCategory(datasetResource.extractListOfReferenceDataCodes(DCATAP.hvdCategory, DC_11.identifier, SKOS.prefLabel))
+
         builder.setDistribution(datasetResource.extractListOfDistributionsV3(DCAT.distribution))
         builder.setSample(datasetResource.extractListOfDistributionsV3(ADMS.sample))
+
+        builder.setPrev(datasetResource.extractStringValue(DCAT3.prev))
+        builder.setInSeries(datasetResource.extractInSeries())
 
         if (model.containsTriple(datasetResource.uri, RDF.type.uri, URI.create(DCAT3.DatasetSeries.uri))) {
             builder.setSpecializedType(DatasetType.datasetSeries)
