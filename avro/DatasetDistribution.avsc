@@ -144,6 +144,17 @@
         "no.digdir.fdk.model.RightsStatement"
       ],
       "doc": "A statement that specifies rights associated with the distribution."
+    },
+    {
+      "name": "applicableLegislation",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.LegalResource"
+        }
+      ],
+      "doc": "References to legislation that mandates the creation or management of the distribution"
     }
   ]
 }
