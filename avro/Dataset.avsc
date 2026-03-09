@@ -162,6 +162,17 @@
       "doc": "List of EUROVOC themes for the dataset"
     },
     {
+      "name": "hvdCategory",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.ReferenceDataCode"
+        }
+      ],
+      "doc": "The HVD category to which this dataset belongs"
+    },
+    {
       "name": "mobilityTheme",
       "type": [
         "null",

@@ -3,6 +3,7 @@ package no.digdir.fdk.parserservice.extract.dataset
 import no.digdir.fdk.model.ContactPoint
 import no.digdir.fdk.model.EuDataTheme
 import no.digdir.fdk.model.Eurovoc
+import no.digdir.fdk.model.LegalResource
 import no.digdir.fdk.model.LocalizedStrings
 import no.digdir.fdk.model.LosNode
 import no.digdir.fdk.model.Organization
@@ -18,6 +19,7 @@ import no.digdir.fdk.model.dataset.Subject
 import no.digdir.fdk.parserservice.parser.dataset.DcatApNoV1Parser
 import no.digdir.fdk.parserservice.parser.dataset.DcatApNoV2Parser
 import no.digdir.fdk.parserservice.parser.dataset.DcatApNoV3Parser
+import no.digdir.fdk.parserservice.parser.dataset.HvdDcatApNoParser
 import org.apache.jena.rdf.model.ModelFactory
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
@@ -710,6 +712,83 @@ class DatasetExtractionTest {
                     title = LocalizedStrings().apply { en = "Version History" }
                 },
                 result.inSeries,
+            )
+        }
+    }
+
+    @Nested
+    inner class HVD {
+        val parser = HvdDcatApNoParser()
+        val datasetIRI = "https://testdirektoratet.no/dataset/hvd-test"
+        val fdkId = "hvd-test-fdk-id"
+
+        @Test
+        fun `parser extracts DCAT-AP-NO v3 dataset`() {
+            val turtle =
+                """
+                @prefix dcat: <http://www.w3.org/ns/dcat#> .
+                @prefix dct: <http://purl.org/dc/terms/> .
+                @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+                @prefix dc:   <http://purl.org/dc/elements/1.1/>
+                @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+                @prefix dcatap: <http://data.europa.eu/r5r/> .
+
+                <http://test.fellesdatakatalog.digdir.no/datasets/$fdkId>
+                    a dcat:CatalogRecord ;
+                    dct:identifier "$fdkId" ;
+                    foaf:primaryTopic <$datasetIRI> .
+
+                <$datasetIRI>
+                    a dcat:Dataset ;
+                    dct:title                       "High value dataset"@en ;
+                    dct:description                 "A test dataset for HVD-DCAT-AP-NO"@en ;
+                    dcatap:hvdCategory              <http://data.europa.eu/bna/c_a9135398> ;
+                    dcatap:applicableLegislation    <http://data.europa.eu/eli/reg_impl/2023/138/oj> ;
+                    dcat:distribution               <$datasetIRI/distribution> .
+
+                <$datasetIRI/distribution>
+                    a                               dcat:Distribution;
+                    dct:description                 "HVD distribution"@en ;
+                    dcatap:applicableLegislation    <http://data.europa.eu/eli/reg_impl/2023/138/oj> .
+
+                <http://data.europa.eu/bna/c_a9135398>
+                    dc:identifier  "c_a9135398";
+                    skos:inScheme   <http://data.europa.eu/bna/asd487ae75> ;
+                    skos:prefLabel  "Companies and company ownership"@en .
+                """.trimIndent()
+
+            val model = ModelFactory.createDefaultModel()
+            model.read(StringReader(turtle), null, "TURTLE")
+
+            val result = parser.parse(model, datasetIRI, fdkId)
+
+            assertEquals("High value dataset", result.title?.en)
+            assertEquals("A test dataset for HVD-DCAT-AP-NO", result.description?.en)
+            assertEquals(
+                listOf(LegalResource().apply { uri = "http://data.europa.eu/eli/reg_impl/2023/138/oj" }),
+                result.applicableLegislation,
+            )
+
+            assertEquals(
+                listOf(
+                    ReferenceDataCode().apply {
+                        uri = "http://data.europa.eu/bna/c_a9135398"
+                        code = "c_a9135398"
+                        prefLabel = LocalizedStrings().apply { en = "Companies and company ownership" }
+                    },
+                ),
+                result.hvdCategory,
+            )
+
+            assertEquals(
+                listOf(
+                    Distribution().apply {
+                        uri = "https://testdirektoratet.no/dataset/hvd-test/distribution"
+                        description = LocalizedStrings().apply { en = "HVD distribution" }
+                        applicableLegislation = listOf(LegalResource().apply { uri = "http://data.europa.eu/eli/reg_impl/2023/138/oj" })
+                    },
+                ),
+                result.distribution,
             )
         }
     }

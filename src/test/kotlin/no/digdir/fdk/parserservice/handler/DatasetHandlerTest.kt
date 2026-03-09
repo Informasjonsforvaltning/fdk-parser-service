@@ -187,6 +187,7 @@ class DatasetHandlerTest {
                       "organizationUnit": null
                 }
               ],
+              "hvdCategory": null,
               "themeUris": null,
               "theme": null,
               "losTheme": null,

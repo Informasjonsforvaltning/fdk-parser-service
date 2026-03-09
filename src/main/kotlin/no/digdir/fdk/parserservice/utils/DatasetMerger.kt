@@ -39,6 +39,7 @@ object DatasetMerger {
             .setDistribution(datasets.firstNonNull { it.distribution })
             .setSample(datasets.firstNonNull { it.sample })
             .setContactPoint(datasets.firstNonNull { it.contactPoint })
+            .setHvdCategory(datasets.firstNonNull { it.hvdCategory })
             .setThemeUris(datasets.firstNonNull { it.themeUris })
             .setTheme(datasets.firstNonNull { it.theme })
             .setLosTheme(datasets.firstNonNull { it.losTheme })
