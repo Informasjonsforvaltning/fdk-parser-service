@@ -51,7 +51,8 @@ class DataServiceExtractionTest {
                 dct:type                  "API" ;
                 dcat:endpointURL          <https://api.example.com/data> ;
                 dcat:endpointDescription  <https://api.example.com/docs> ;
-                dcat:servesDataset        <https://testdirektoratet.no/model/dataset/0> .
+                dcat:servesDataset        <https://testdirektoratet.no/model/dataset/0> ;
+                dcat:version              "1.0" .
 
             <https://testdirektoratet.no/publisher>
                 a                         foaf:Agent ;
@@ -88,6 +89,7 @@ class DataServiceExtractionTest {
                 endpointURL = listOf("https://api.example.com/data")
                 endpointDescription = listOf("https://api.example.com/docs")
                 servesDataset = listOf("https://testdirektoratet.no/model/dataset/0")
+                version = "1.0"
                 title =
                     LocalizedStrings().apply {
                         no = "Test datatjeneste"

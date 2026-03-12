@@ -109,6 +109,7 @@ class DataServiceHandlerTest {
                 "servesDataset": null,
                 "conformsTo": null,
                 "page": null,
+                "version": null,
                 "type": "dataservices"
             }
             """.trimIndent()
