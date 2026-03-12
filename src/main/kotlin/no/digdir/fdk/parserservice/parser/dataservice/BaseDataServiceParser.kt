@@ -23,6 +23,7 @@ import no.digdir.fdk.parserservice.extract.isLosURI
 import no.digdir.fdk.parserservice.extract.isSkolemizedURI
 import no.digdir.fdk.parserservice.extract.listResources
 import no.digdir.fdk.parserservice.parser.DataServiceParserStrategy
+import no.digdir.fdk.parserservice.vocabulary.DCAT3
 import no.digdir.fdk.parserservice.vocabulary.EUAT
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.sparql.vocabulary.FOAF
@@ -111,6 +112,7 @@ abstract class BaseDataServiceParser : DataServiceParserStrategy {
         setKeyword(dataServiceResource.extractLocalizedStringList(DCAT.keyword))
 
         setDctType(dataServiceResource.extractStringValue(DCTerms.type))
+        setVersion(dataServiceResource.extractStringValue(DCAT3.version))
         setConformsTo(dataServiceResource.extractListOfUriWithLabel(DCTerms.conformsTo, DCTerms.source, DCTerms.title))
         setContactPoint(dataServiceResource.extractListOfContactPoints())
 

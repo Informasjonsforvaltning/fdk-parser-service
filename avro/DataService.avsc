@@ -260,6 +260,14 @@
       "doc": "Pages or documents that describes the data service"
     },
     {
+      "name": "version",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "This property is used to specify the version of the data service."
+    },
+    {
       "name": "type",
       "type": [
         "null",

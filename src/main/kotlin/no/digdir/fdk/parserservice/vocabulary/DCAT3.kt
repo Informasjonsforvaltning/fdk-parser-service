@@ -12,6 +12,7 @@ class DCAT3 {
         val prev: Property = ResourceFactory.createProperty("${URI}prev")
         val last: Property = ResourceFactory.createProperty("${URI}last")
         val inSeries: Property = ResourceFactory.createProperty("${URI}inSeries")
+        val version: Property = ResourceFactory.createProperty("${URI}version")
 
         val DatasetSeries: Resource = ResourceFactory.createResource("${URI}DatasetSeries")
     }
