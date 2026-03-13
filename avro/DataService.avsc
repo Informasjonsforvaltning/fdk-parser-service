@@ -276,7 +276,7 @@
           "items": "no.digdir.fdk.model.dataservice.DataServiceCost"
         }
       ],
-      "doc": "This class is used to represent any costs"
+      "doc": "Specifies information about the cost for reusing the data service."
     },
     {
       "name": "type",
