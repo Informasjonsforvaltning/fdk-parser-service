@@ -276,7 +276,7 @@
           "items": "no.digdir.fdk.model.dataservice.DataServiceCost"
         }
       ],
-      "doc": "Costs associated with the data service"
+      "doc": "This class is used to represent any costs"
     },
     {
       "name": "type",
