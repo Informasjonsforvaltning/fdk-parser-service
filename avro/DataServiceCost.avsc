@@ -27,7 +27,7 @@
     },
     {
       "name": "currency",
-      "type": ["null", "string"],
+      "type": ["null", "no.digdir.fdk.model.ReferenceDataCode"],
       "doc": "This property is used to specify the currency in which the cost."
     }
   ]

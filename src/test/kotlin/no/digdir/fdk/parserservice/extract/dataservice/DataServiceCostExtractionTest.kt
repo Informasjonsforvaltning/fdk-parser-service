@@ -1,6 +1,7 @@
 package no.digdir.fdk.parserservice.extract.dataservice
 
 import no.digdir.fdk.model.LocalizedStrings
+import no.digdir.fdk.model.ReferenceDataCode
 import no.digdir.fdk.model.dataservice.DataServiceCost
 import org.apache.jena.rdf.model.ModelFactory
 import org.junit.jupiter.api.Tag
@@ -18,6 +19,8 @@ class DataServiceCostExtractionTest {
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
             @prefix cv:    <http://data.europa.eu/m8g/> .
             @prefix dct:   <http://purl.org/dc/terms/> .
+            @prefix dc:    <http://purl.org/dc/elements/1.1/> .
+            @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
             @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
             @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 
@@ -30,7 +33,12 @@ class DataServiceCostExtractionTest {
                 cv:hasValue        "100.50"^^xsd:decimal ;
                 dct:description "Kostnadsbeskrivelse"@nb ;
                 foaf:page       <https://example.com/cost-info> ;
-                cv:currency     "NOK" .
+                cv:currency     <http://publications.europa.eu/resource/authority/currency/NOK> .
+
+            <http://publications.europa.eu/resource/authority/currency/NOK>
+                a               skos:Concept ;
+                dc:identifier   "NOK" ;
+                skos:prefLabel  "Norwegian krone"@en .
             """.trimIndent()
 
         val m = ModelFactory.createDefaultModel()
@@ -44,8 +52,13 @@ class DataServiceCostExtractionTest {
                     .setHasValue("100.50")
                     .setDescription(LocalizedStrings().apply { nb = "Kostnadsbeskrivelse" })
                     .setDocumentation(listOf("https://example.com/cost-info"))
-                    .setCurrency("NOK")
-                    .build(),
+                    .setCurrency(
+                        ReferenceDataCode().apply {
+                            uri = "http://publications.europa.eu/resource/authority/currency/NOK"
+                            code = "NOK"
+                            prefLabel = LocalizedStrings().apply { en = "Norwegian krone" }
+                        },
+                    ).build(),
             )
 
         assertEquals(expected, subject.extractListOfDataServiceCosts())
@@ -58,6 +71,8 @@ class DataServiceCostExtractionTest {
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
             @prefix cv:    <http://data.europa.eu/m8g/> .
             @prefix dct:   <http://purl.org/dc/terms/> .
+            @prefix dc:    <http://purl.org/dc/elements/1.1/> .
+            @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
             @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 
             <https://test.no/data-service/1>
@@ -68,12 +83,22 @@ class DataServiceCostExtractionTest {
             <https://test.no/cost/1>
                 a               cv:Cost ;
                 cv:hasValue        "100"^^xsd:decimal ;
-                cv:currency     "NOK" .
+                cv:currency     <http://publications.europa.eu/resource/authority/currency/NOK> .
 
             <https://test.no/cost/2>
                 a               cv:Cost ;
                 cv:hasValue        "200"^^xsd:decimal ;
-                cv:currency     "EUR" .
+                cv:currency     <http://publications.europa.eu/resource/authority/currency/EUR> .
+
+            <http://publications.europa.eu/resource/authority/currency/NOK>
+                a               skos:Concept ;
+                dc:identifier   "NOK" ;
+                skos:prefLabel  "Norwegian krone"@en .
+
+            <http://publications.europa.eu/resource/authority/currency/EUR>
+                a               skos:Concept ;
+                dc:identifier   "EUR" ;
+                skos:prefLabel  "Euro"@en .
             """.trimIndent()
 
         val m = ModelFactory.createDefaultModel()

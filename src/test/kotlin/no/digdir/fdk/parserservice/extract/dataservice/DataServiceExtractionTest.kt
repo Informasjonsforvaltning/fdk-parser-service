@@ -291,6 +291,8 @@ class DataServiceExtractionTest {
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
             @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
             @prefix cv:    <http://data.europa.eu/m8g/> .
+            @prefix dc:    <http://purl.org/dc/elements/1.1/> .
+            @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
             @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
 
             <http://test.fellesdatakatalog.digdir.no/data-services/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
@@ -308,7 +310,12 @@ class DataServiceExtractionTest {
                 cv:hasValue     "250.00"^^xsd:decimal ;
                 dct:description "Yearly subscription"@en ;
                 foaf:page       <https://example.com/pricing> ;
-                cv:currency     "EUR" .
+                cv:currency     <http://publications.europa.eu/resource/authority/currency/EUR> .
+
+            <http://publications.europa.eu/resource/authority/currency/EUR>
+                a               skos:Concept ;
+                dc:identifier   "EUR" ;
+                skos:prefLabel  "Euro"@en .
             """.trimIndent()
 
         val model = ModelFactory.createDefaultModel()
@@ -329,8 +336,13 @@ class DataServiceExtractionTest {
                     .setHasValue("250.00")
                     .setDescription(LocalizedStrings().apply { en = "Yearly subscription" })
                     .setDocumentation(listOf("https://example.com/pricing"))
-                    .setCurrency("EUR")
-                    .build(),
+                    .setCurrency(
+                        ReferenceDataCode().apply {
+                            uri = "http://publications.europa.eu/resource/authority/currency/EUR"
+                            code = "EUR"
+                            prefLabel = LocalizedStrings().apply { en = "Euro" }
+                        },
+                    ).build(),
             )
 
         assertEquals(expected, dataService.costs)
