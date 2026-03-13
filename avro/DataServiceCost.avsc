@@ -1,0 +1,34 @@
+{
+  "type": "record",
+  "name": "DataServiceCost",
+  "namespace": "no.digdir.fdk.model.dataservice",
+  "doc": "This class is used to represent any costs.",
+  "fields": [
+    {
+      "name": "hasValue",
+      "type": ["null", "string"],
+      "doc": "This property is used to specify a numeric value indicating the amount of the cost."
+    },
+    {
+      "name": "description",
+      "type": ["null", "no.digdir.fdk.model.LocalizedStrings"],
+      "doc": "This property is used to specify a free text description of the cost. This property should be repeated when the description is in parallel languages."
+    },
+    {
+      "name": "documentation",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "This property is used to refer to a page or document which describes the cost model."
+    },
+    {
+      "name": "currency",
+      "type": ["null", "no.digdir.fdk.model.ReferenceDataCode"],
+      "doc": "This property is used to specify the currency in which the cost."
+    }
+  ]
+}

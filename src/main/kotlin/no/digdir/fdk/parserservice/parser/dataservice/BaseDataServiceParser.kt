@@ -2,6 +2,7 @@ package no.digdir.fdk.parserservice.parser.dataservice
 
 import no.digdir.fdk.model.ResourceType
 import no.digdir.fdk.model.dataservice.DataService
+import no.digdir.fdk.parserservice.extract.dataservice.extractListOfDataServiceCosts
 import no.digdir.fdk.parserservice.extract.descriptionHtmlCleaner
 import no.digdir.fdk.parserservice.extract.extractCatalogData
 import no.digdir.fdk.parserservice.extract.extractEuDataTheme
@@ -113,6 +114,7 @@ abstract class BaseDataServiceParser : DataServiceParserStrategy {
 
         setDctType(dataServiceResource.extractStringValue(DCTerms.type))
         setVersion(dataServiceResource.extractStringValue(DCAT3.version))
+        setCosts(dataServiceResource.extractListOfDataServiceCosts())
         setConformsTo(dataServiceResource.extractListOfUriWithLabel(DCTerms.conformsTo, DCTerms.source, DCTerms.title))
         setContactPoint(dataServiceResource.extractListOfContactPoints())
 

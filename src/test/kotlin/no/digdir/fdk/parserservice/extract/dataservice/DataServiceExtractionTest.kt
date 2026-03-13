@@ -11,6 +11,7 @@ import no.digdir.fdk.model.ReferenceDataCode
 import no.digdir.fdk.model.ResourceType
 import no.digdir.fdk.model.UriWithLabel
 import no.digdir.fdk.model.dataservice.DataService
+import no.digdir.fdk.model.dataservice.DataServiceCost
 import no.digdir.fdk.parserservice.parser.dataservice.DcatApNoV2Parser
 import org.apache.jena.rdf.model.ModelFactory
 import org.junit.jupiter.api.Tag
@@ -280,5 +281,70 @@ class DataServiceExtractionTest {
             )
 
         assertEquals(expected, dataService.fdkFormat)
+    }
+
+    @Test
+    fun `should extract costs`() {
+        val turtle =
+            """
+            @prefix dct:   <http://purl.org/dc/terms/> .
+            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+            @prefix cv:    <http://data.europa.eu/m8g/> .
+            @prefix dc:    <http://purl.org/dc/elements/1.1/> .
+            @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+            @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+
+            <http://test.fellesdatakatalog.digdir.no/data-services/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+                a                  dcat:CatalogRecord ;
+                dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
+                foaf:primaryTopic  <http://test.fellesdatakatalog.digdir.no/data-service/test> .
+
+            <http://test.fellesdatakatalog.digdir.no/data-service/test>
+                a                         dcat:DataService ;
+                dct:title                 "Test Data Service"@no ;
+                cv:hasCost                <http://test.fellesdatakatalog.digdir.no/cost/1> .
+
+            <http://test.fellesdatakatalog.digdir.no/cost/1>
+                a               cv:Cost ;
+                cv:hasValue     "250.00"^^xsd:decimal ;
+                dct:description "Yearly subscription"@en ;
+                foaf:page       <https://example.com/pricing> ;
+                cv:currency     <http://publications.europa.eu/resource/authority/currency/EUR> .
+
+            <http://publications.europa.eu/resource/authority/currency/EUR>
+                a               skos:Concept ;
+                dc:identifier   "EUR" ;
+                skos:prefLabel  "Euro"@en .
+            """.trimIndent()
+
+        val model = ModelFactory.createDefaultModel()
+        model.read(StringReader(turtle), null, "TURTLE")
+
+        val parser = DcatApNoV2Parser()
+        val dataService =
+            parser.parse(
+                model,
+                "http://test.fellesdatakatalog.digdir.no/data-service/test",
+                "a1c680ca-62d7-34d5-aa4c-d39b5db033ae",
+            )
+
+        val expected =
+            listOf(
+                DataServiceCost
+                    .newBuilder()
+                    .setHasValue("250.00")
+                    .setDescription(LocalizedStrings().apply { en = "Yearly subscription" })
+                    .setDocumentation(listOf("https://example.com/pricing"))
+                    .setCurrency(
+                        ReferenceDataCode().apply {
+                            uri = "http://publications.europa.eu/resource/authority/currency/EUR"
+                            code = "EUR"
+                            prefLabel = LocalizedStrings().apply { en = "Euro" }
+                        },
+                    ).build(),
+            )
+
+        assertEquals(expected, dataService.costs)
     }
 }
