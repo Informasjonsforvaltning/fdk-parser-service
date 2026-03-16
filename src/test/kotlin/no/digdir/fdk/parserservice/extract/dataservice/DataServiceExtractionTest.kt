@@ -10,6 +10,7 @@ import no.digdir.fdk.model.Organization
 import no.digdir.fdk.model.ReferenceDataCode
 import no.digdir.fdk.model.ResourceType
 import no.digdir.fdk.model.UriWithLabel
+import no.digdir.fdk.model.UriWithLabelAndType
 import no.digdir.fdk.model.dataservice.DataService
 import no.digdir.fdk.model.dataservice.DataServiceCost
 import no.digdir.fdk.parserservice.parser.dataservice.DcatApNoV2Parser
@@ -346,5 +347,51 @@ class DataServiceExtractionTest {
             )
 
         assertEquals(expected, dataService.costs)
+    }
+
+    @Test
+    fun `should extract license`() {
+        val turtle =
+            """
+            @prefix dct:   <http://purl.org/dc/terms/> .
+            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+            @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+
+            <http://test.fellesdatakatalog.digdir.no/data-services/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+                a                  dcat:CatalogRecord ;
+                dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
+                foaf:primaryTopic  <http://test.fellesdatakatalog.digdir.no/data-service/test> .
+
+            <http://test.fellesdatakatalog.digdir.no/data-service/test>
+                a                         dcat:DataService ;
+                dct:title                 "Test Data Service"@no ;
+                dct:license               <http://publications.europa.eu/resource/authority/licence/CC_BY_4_0> .
+
+            <http://publications.europa.eu/resource/authority/licence/CC_BY_4_0>
+                a                         dct:LicenseDocument ;
+                dct:source                <http://creativecommons.org/licenses/by/4.0/> ;
+                skos:prefLabel            "Creative Commons Attribution 4.0 International"@en .
+            """.trimIndent()
+
+        val model = ModelFactory.createDefaultModel()
+        model.read(StringReader(turtle), null, "TURTLE")
+
+        val parser = DcatApNoV2Parser()
+        val dataService =
+            parser.parse(
+                model,
+                "http://test.fellesdatakatalog.digdir.no/data-service/test",
+                "a1c680ca-62d7-34d5-aa4c-d39b5db033ae",
+            )
+
+        val expected =
+            UriWithLabelAndType().apply {
+                uri = "http://creativecommons.org/licenses/by/4.0/"
+                extraType = "http://purl.org/dc/terms/LicenseDocument"
+                prefLabel = LocalizedStrings().apply { en = "Creative Commons Attribution 4.0 International" }
+            }
+
+        assertEquals(expected, dataService.license)
     }
 }

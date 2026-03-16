@@ -279,6 +279,11 @@
       "doc": "Specifies information about the cost for reusing the data service."
     },
     {
+      "name": "license",
+      "type": ["null", "no.digdir.fdk.model.UriWithLabelAndType"],
+      "doc": "This property is used to refer to a licence under which the data service is made available."
+    },
+    {
       "name": "type",
       "type": [
         "null",
