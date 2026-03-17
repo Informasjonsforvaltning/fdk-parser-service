@@ -115,6 +115,7 @@ abstract class BaseDataServiceParser : DataServiceParserStrategy {
         setDctType(dataServiceResource.extractStringValue(DCTerms.type))
         setVersion(dataServiceResource.extractStringValue(DCAT3.version))
         setCosts(dataServiceResource.extractListOfDataServiceCosts())
+        setLicense(dataServiceResource.extractReferenceDataCode(DCTerms.license, DC_11.identifier, SKOS.prefLabel))
         setConformsTo(dataServiceResource.extractListOfUriWithLabel(DCTerms.conformsTo, DCTerms.source, DCTerms.title))
         setContactPoint(dataServiceResource.extractListOfContactPoints())
 

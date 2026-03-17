@@ -111,6 +111,7 @@ class DataServiceHandlerTest {
                 "page": null,
                 "version": null,
                 "costs": null,
+                "license": null,
                 "type": "dataservices"
             }
             """.trimIndent()

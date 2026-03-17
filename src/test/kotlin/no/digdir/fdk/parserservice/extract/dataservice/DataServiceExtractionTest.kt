@@ -347,4 +347,52 @@ class DataServiceExtractionTest {
 
         assertEquals(expected, dataService.costs)
     }
+
+    @Test
+    fun `should extract license`() {
+        val turtle =
+            """
+            @prefix dct:   <http://purl.org/dc/terms/> .
+            @prefix dc:    <http://purl.org/dc/elements/1.1/> .
+            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+            @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+
+            <http://test.fellesdatakatalog.digdir.no/data-services/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+                a                  dcat:CatalogRecord ;
+                dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
+                foaf:primaryTopic  <http://test.fellesdatakatalog.digdir.no/data-service/test> .
+
+            <http://test.fellesdatakatalog.digdir.no/data-service/test>
+                a                         dcat:DataService ;
+                dct:title                 "Test Data Service"@no ;
+                dct:license               <http://publications.europa.eu/resource/authority/licence/CC_BY_4_0> .
+
+            <http://publications.europa.eu/resource/authority/licence/CC_BY_4_0>
+                a                         dct:LicenseDocument ;
+                dc:identifier             "CC_BY_4_0" ;
+                dct:source                <http://creativecommons.org/licenses/by/4.0/> ;
+                skos:prefLabel            "Creative Commons Attribution 4.0 International"@en .
+            """.trimIndent()
+
+        val model = ModelFactory.createDefaultModel()
+        model.read(StringReader(turtle), null, "TURTLE")
+
+        val parser = DcatApNoV2Parser()
+        val dataService =
+            parser.parse(
+                model,
+                "http://test.fellesdatakatalog.digdir.no/data-service/test",
+                "a1c680ca-62d7-34d5-aa4c-d39b5db033ae",
+            )
+
+        val expected =
+            ReferenceDataCode().apply {
+                uri = "http://publications.europa.eu/resource/authority/licence/CC_BY_4_0"
+                code = "CC_BY_4_0"
+                prefLabel = LocalizedStrings().apply { en = "Creative Commons Attribution 4.0 International" }
+            }
+
+        assertEquals(expected, dataService.license)
+    }
 }
