@@ -10,7 +10,6 @@ import no.digdir.fdk.model.Organization
 import no.digdir.fdk.model.ReferenceDataCode
 import no.digdir.fdk.model.ResourceType
 import no.digdir.fdk.model.UriWithLabel
-import no.digdir.fdk.model.UriWithLabelAndType
 import no.digdir.fdk.model.dataservice.DataService
 import no.digdir.fdk.model.dataservice.DataServiceCost
 import no.digdir.fdk.parserservice.parser.dataservice.DcatApNoV2Parser
@@ -354,6 +353,7 @@ class DataServiceExtractionTest {
         val turtle =
             """
             @prefix dct:   <http://purl.org/dc/terms/> .
+            @prefix dc:    <http://purl.org/dc/elements/1.1/> .
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
             @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
             @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
@@ -370,6 +370,7 @@ class DataServiceExtractionTest {
 
             <http://publications.europa.eu/resource/authority/licence/CC_BY_4_0>
                 a                         dct:LicenseDocument ;
+                dc:identifier             "CC_BY_4_0" ;
                 dct:source                <http://creativecommons.org/licenses/by/4.0/> ;
                 skos:prefLabel            "Creative Commons Attribution 4.0 International"@en .
             """.trimIndent()
@@ -386,9 +387,9 @@ class DataServiceExtractionTest {
             )
 
         val expected =
-            UriWithLabelAndType().apply {
-                uri = "http://creativecommons.org/licenses/by/4.0/"
-                extraType = "http://purl.org/dc/terms/LicenseDocument"
+            ReferenceDataCode().apply {
+                uri = "http://publications.europa.eu/resource/authority/licence/CC_BY_4_0"
+                code = "CC_BY_4_0"
                 prefLabel = LocalizedStrings().apply { en = "Creative Commons Attribution 4.0 International" }
             }
 

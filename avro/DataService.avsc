@@ -280,7 +280,7 @@
     },
     {
       "name": "license",
-      "type": ["null", "no.digdir.fdk.model.UriWithLabelAndType"],
+      "type": ["null", "no.digdir.fdk.model.ReferenceDataCode"],
       "doc": "This property is used to refer to a licence under which the data service is made available."
     },
     {

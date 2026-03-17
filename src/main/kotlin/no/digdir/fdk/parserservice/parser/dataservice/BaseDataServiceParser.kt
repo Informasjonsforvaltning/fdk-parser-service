@@ -12,7 +12,6 @@ import no.digdir.fdk.parserservice.extract.extractListOfFormats
 import no.digdir.fdk.parserservice.extract.extractListOfReferenceDataCodes
 import no.digdir.fdk.parserservice.extract.extractListOfStrings
 import no.digdir.fdk.parserservice.extract.extractListOfUriWithLabel
-import no.digdir.fdk.parserservice.extract.extractListOfUriWithLabelAndType
 import no.digdir.fdk.parserservice.extract.extractLocalizedStringList
 import no.digdir.fdk.parserservice.extract.extractLocalizedStrings
 import no.digdir.fdk.parserservice.extract.extractLosNode
@@ -116,7 +115,7 @@ abstract class BaseDataServiceParser : DataServiceParserStrategy {
         setDctType(dataServiceResource.extractStringValue(DCTerms.type))
         setVersion(dataServiceResource.extractStringValue(DCAT3.version))
         setCosts(dataServiceResource.extractListOfDataServiceCosts())
-        setLicense(dataServiceResource.extractListOfUriWithLabelAndType(DCTerms.license, DCTerms.source, SKOS.prefLabel)?.firstOrNull())
+        setLicense(dataServiceResource.extractReferenceDataCode(DCTerms.license, DC_11.identifier, SKOS.prefLabel))
         setConformsTo(dataServiceResource.extractListOfUriWithLabel(DCTerms.conformsTo, DCTerms.source, DCTerms.title))
         setContactPoint(dataServiceResource.extractListOfContactPoints())
 
