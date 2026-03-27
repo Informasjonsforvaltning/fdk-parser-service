@@ -1,16 +1,19 @@
 package no.digdir.fdk.parserservice.configuration
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker.StateTransition
+import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import io.github.resilience4j.circuitbreaker.event.CircuitBreakerOnStateTransitionEvent
 import no.digdir.fdk.parserservice.kafka.KafkaManager
+import no.digdir.fdk.parserservice.model.RecoverableParseException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import java.time.Duration
 
 @Configuration
-open class CircuitBreakerConsumerConfiguration(
-    private val circuitBreakerRegistry: CircuitBreakerRegistry,
+class CircuitBreakerConsumerConfiguration(
     private val kafkaManager: KafkaManager,
 ) {
     private val circuitBreakerToListenerMapping =
@@ -23,18 +26,35 @@ open class CircuitBreakerConsumerConfiguration(
             "rdf-parse-generic" to null,
         )
 
-    init {
+    @Bean
+    fun circuitBreakerRegistry(): CircuitBreakerRegistry {
+        val defaultConfig =
+            CircuitBreakerConfig
+                .custom()
+                .slidingWindowType(CircuitBreakerConfig.SlidingWindowType.COUNT_BASED)
+                .slidingWindowSize(10)
+                .minimumNumberOfCalls(5)
+                .failureRateThreshold(50f)
+                .permittedNumberOfCallsInHalfOpenState(3)
+                .waitDurationInOpenState(Duration.ofSeconds(60))
+                .automaticTransitionFromOpenToHalfOpenEnabled(true)
+                .ignoreExceptions(RecoverableParseException::class.java)
+                .build()
+
+        val registry = CircuitBreakerRegistry.of(defaultConfig)
         LOGGER.debug("Configuring circuit breaker event listeners")
         circuitBreakerToListenerMapping.forEach { (circuitBreakerName, listenerId) ->
-            configureCircuitBreaker(circuitBreakerName, listenerId)
+            configureCircuitBreaker(registry, circuitBreakerName, listenerId)
         }
+        return registry
     }
 
     private fun configureCircuitBreaker(
+        registry: CircuitBreakerRegistry,
         circuitBreakerName: String,
         listenerId: String?,
     ) {
-        circuitBreakerRegistry
+        registry
             .circuitBreaker(circuitBreakerName)
             .eventPublisher
             .onStateTransition { event: CircuitBreakerOnStateTransitionEvent ->

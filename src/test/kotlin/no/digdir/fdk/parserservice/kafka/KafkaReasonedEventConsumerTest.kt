@@ -1,5 +1,6 @@
 package no.digdir.fdk.parserservice.kafka
 
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -62,6 +63,7 @@ class KafkaReasonedEventConsumerTest {
             eventHandler,
             informationModelHandler,
             serviceHandler,
+            CircuitBreakerRegistry.ofDefaults(),
         )
     private val kafkaReasonedEventConsumer = KafkaReasonedEventConsumer(circuitBreaker)
     private val mapper = jacksonObjectMapper()

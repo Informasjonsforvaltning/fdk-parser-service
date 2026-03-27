@@ -1,6 +1,6 @@
 package no.digdir.fdk.parserservice.kafka
 
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import io.micrometer.core.instrument.Metrics
 import no.digdir.fdk.parserservice.handler.ConceptHandler
 import no.digdir.fdk.parserservice.handler.DataServiceHandler
@@ -36,7 +36,7 @@ import kotlin.time.measureTimedValue
 import kotlin.time.toJavaDuration
 
 @Component
-open class KafkaReasonedEventCircuitBreaker(
+class KafkaReasonedEventCircuitBreaker(
     private val producer: KafkaRdfParseEventProducer,
     private val conceptHandler: ConceptHandler,
     private val harvestEventProducer: KafkaHarvestEventProducer,
@@ -45,204 +45,227 @@ open class KafkaReasonedEventCircuitBreaker(
     private val eventHandler: EventHandler,
     private val informationModelHandler: InformationModelHandler,
     private val serviceHandler: ServiceHandler,
+    private val circuitBreakerRegistry: CircuitBreakerRegistry,
 ) {
-    @CircuitBreaker(name = "rdf-parse-generic")
-    open fun processGeneric(event: GenericRecord) {
-        val type = runCatching { event.get("type")?.toString() }.getOrNull()
-        val resourceType =
-            when (type) {
-                ConceptEventType.CONCEPT_REASONED.name -> RdfParseResourceType.CONCEPT
-                DataServiceEventType.DATA_SERVICE_REASONED.name -> RdfParseResourceType.DATA_SERVICE
-                DatasetEventType.DATASET_REASONED.name -> RdfParseResourceType.DATASET
-                EventEventType.EVENT_REASONED.name -> RdfParseResourceType.EVENT
-                InformationModelEventType.INFORMATION_MODEL_REASONED.name -> RdfParseResourceType.INFORMATION_MODEL
-                ServiceEventType.SERVICE_REASONED.name -> RdfParseResourceType.SERVICE
-                else -> null
-            }
-
-        val fdkId = runCatching { event.get("fdkId")?.toString() }.getOrNull()
-        val graph = runCatching { event.get("graph")?.toString() }.getOrNull()
-        val timestamp =
-            runCatching {
-                when (val t = event.get("timestamp")) {
-                    is Number -> t.toLong()
+    fun processGeneric(event: GenericRecord) {
+        executeWithCircuitBreaker("rdf-parse-generic") {
+            val type = runCatching { event.get("type")?.toString() }.getOrNull()
+            val resourceType =
+                when (type) {
+                    ConceptEventType.CONCEPT_REASONED.name -> RdfParseResourceType.CONCEPT
+                    DataServiceEventType.DATA_SERVICE_REASONED.name -> RdfParseResourceType.DATA_SERVICE
+                    DatasetEventType.DATASET_REASONED.name -> RdfParseResourceType.DATASET
+                    EventEventType.EVENT_REASONED.name -> RdfParseResourceType.EVENT
+                    InformationModelEventType.INFORMATION_MODEL_REASONED.name -> RdfParseResourceType.INFORMATION_MODEL
+                    ServiceEventType.SERVICE_REASONED.name -> RdfParseResourceType.SERVICE
                     else -> null
                 }
-            }.getOrNull()
-        val harvestRunId = runCatching { event.get("harvestRunId")?.toString() }.getOrNull()
-        val uri = runCatching { event.get("uri")?.toString() }.getOrNull()
 
-        if (fdkId != null && graph != null && timestamp != null && resourceType != null) {
-            handleRecord(fdkId, graph, timestamp, resourceType, harvestRunId, uri)
-        } else {
-            val recordFields =
+            val fdkId = runCatching { event.get("fdkId")?.toString() }.getOrNull()
+            val graph = runCatching { event.get("graph")?.toString() }.getOrNull()
+            val timestamp =
                 runCatching {
-                    event.schema?.fields?.associate { field ->
-                        val value = event.get(field.name())
-                        val display =
-                            when {
-                                field.name().equals("graph", ignoreCase = true) && value != null ->
-                                    truncateForLog(value.toString(), MAX_GRAPH_LOG_LENGTH)
-                                else -> value
-                            }
-                        field.name() to display
-                    } ?: emptyMap()
-                }.getOrElse { emptyMap() }
-            val reason =
-                if (resourceType == null) {
-                    "event type not REASONED (got: $type)"
+                    when (val t = event.get("timestamp")) {
+                        is Number -> t.toLong()
+                        else -> null
+                    }
+                }.getOrNull()
+            val harvestRunId = runCatching { event.get("harvestRunId")?.toString() }.getOrNull()
+            val uri = runCatching { event.get("uri")?.toString() }.getOrNull()
+
+            if (fdkId != null && graph != null && timestamp != null && resourceType != null) {
+                handleRecord(fdkId, graph, timestamp, resourceType, harvestRunId, uri)
+            } else {
+                val recordFields =
+                    runCatching {
+                        event.schema?.fields?.associate { field ->
+                            val value = event.get(field.name())
+                            val display =
+                                when {
+                                    field.name().equals("graph", ignoreCase = true) && value != null ->
+                                        truncateForLog(value.toString(), MAX_GRAPH_LOG_LENGTH)
+                                    else -> value
+                                }
+                            field.name() to display
+                        } ?: emptyMap()
+                    }.getOrElse { emptyMap() }
+                val reason =
+                    if (resourceType == null) {
+                        "event type not REASONED (got: $type)"
+                    } else {
+                        "missing required fields"
+                    }
+                val graphForLog = graph?.let { truncateForLog(it, MAX_GRAPH_LOG_LENGTH) }
+                LOGGER.warn(
+                    "Ignoring message: {}. fdkId: {}, graph: {}, timestamp: {}, type: {}. GenericRecord: {}",
+                    reason,
+                    fdkId,
+                    graphForLog,
+                    timestamp,
+                    type,
+                    recordFields,
+                )
+            }
+        }
+    }
+
+    fun processConcept(event: ConceptEvent) {
+        executeWithCircuitBreaker("rdf-parse-concept") {
+            val type = runCatching { event.type }.getOrNull()
+            if (type == ConceptEventType.CONCEPT_REASONED) {
+                val fdkId = runCatching { event.fdkId.toString() }.getOrNull()
+                val graph = runCatching { event.graph.toString() }.getOrNull()
+                val timestamp = runCatching { event.timestamp }.getOrNull()
+                val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
+                val uri = runCatching { event.uri?.toString() }.getOrNull()
+
+                if (fdkId != null && graph != null && timestamp != null) {
+                    handleRecord(fdkId, graph, timestamp, RdfParseResourceType.CONCEPT, harvestRunId, uri)
                 } else {
-                    "missing required fields"
+                    val graphForLog = graph?.let { truncateForLog(it, MAX_GRAPH_LOG_LENGTH) }
+                    LOGGER.warn(
+                        "Ignoring concept message with missing required fields. fdkId: {}, graph: {}, timestamp: {}",
+                        fdkId,
+                        graphForLog,
+                        timestamp,
+                    )
                 }
-            val graphForLog = graph?.let { truncateForLog(it, MAX_GRAPH_LOG_LENGTH) }
-            LOGGER.warn(
-                "Ignoring message: {}. fdkId: {}, graph: {}, timestamp: {}, type: {}. GenericRecord: {}",
-                reason,
-                fdkId,
-                graphForLog,
-                timestamp,
-                type,
-                recordFields,
-            )
-        }
-    }
-
-    @CircuitBreaker(name = "rdf-parse-concept")
-    open fun processConcept(event: ConceptEvent) {
-        val type = runCatching { event.type }.getOrNull()
-        if (type == ConceptEventType.CONCEPT_REASONED) {
-            val fdkId = runCatching { event.fdkId.toString() }.getOrNull()
-            val graph = runCatching { event.graph.toString() }.getOrNull()
-            val timestamp = runCatching { event.timestamp }.getOrNull()
-            val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
-            val uri = runCatching { event.uri?.toString() }.getOrNull()
-
-            if (fdkId != null && graph != null && timestamp != null) {
-                handleRecord(fdkId, graph, timestamp, RdfParseResourceType.CONCEPT, harvestRunId, uri)
-            } else {
-                LOGGER.warn(
-                    "Ignoring concept message with missing required fields. fdkId: {}, graph: {}, timestamp: {}",
-                    fdkId,
-                    graph,
-                    timestamp,
-                )
             }
         }
     }
 
-    @CircuitBreaker(name = "rdf-parse-data-service")
-    open fun processDataService(event: DataServiceEvent) {
-        val type = runCatching { event.type }.getOrNull()
-        if (type == DataServiceEventType.DATA_SERVICE_REASONED) {
-            val fdkId = runCatching { event.fdkId.toString() }.getOrNull()
-            val graph = runCatching { event.graph.toString() }.getOrNull()
-            val timestamp = runCatching { event.timestamp }.getOrNull()
-            val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
-            val uri = runCatching { event.uri?.toString() }.getOrNull()
+    fun processDataService(event: DataServiceEvent) {
+        executeWithCircuitBreaker("rdf-parse-data-service") {
+            val type = runCatching { event.type }.getOrNull()
+            if (type == DataServiceEventType.DATA_SERVICE_REASONED) {
+                val fdkId = runCatching { event.fdkId.toString() }.getOrNull()
+                val graph = runCatching { event.graph.toString() }.getOrNull()
+                val timestamp = runCatching { event.timestamp }.getOrNull()
+                val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
+                val uri = runCatching { event.uri?.toString() }.getOrNull()
 
-            if (fdkId != null && graph != null && timestamp != null) {
-                handleRecord(fdkId, graph, timestamp, RdfParseResourceType.DATA_SERVICE, harvestRunId, uri)
-            } else {
-                LOGGER.warn(
-                    "Ignoring data service message with missing required fields. fdkId: {}, graph: {}, timestamp: {}",
-                    fdkId,
-                    graph,
-                    timestamp,
-                )
+                if (fdkId != null && graph != null && timestamp != null) {
+                    handleRecord(fdkId, graph, timestamp, RdfParseResourceType.DATA_SERVICE, harvestRunId, uri)
+                } else {
+                    val graphForLog = graph?.let { truncateForLog(it, MAX_GRAPH_LOG_LENGTH) }
+                    LOGGER.warn(
+                        "Ignoring data service message with missing required fields. fdkId: {}, graph: {}, timestamp: {}",
+                        fdkId,
+                        graphForLog,
+                        timestamp,
+                    )
+                }
             }
         }
     }
 
-    @CircuitBreaker(name = "rdf-parse-dataset")
-    open fun processDataset(event: DatasetEvent) {
-        val type = runCatching { event.type }.getOrNull()
-        if (type == DatasetEventType.DATASET_REASONED) {
-            val fdkId = runCatching { event.fdkId.toString() }.getOrNull()
-            val graph = runCatching { event.graph.toString() }.getOrNull()
-            val timestamp = runCatching { event.timestamp }.getOrNull()
-            val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
-            val uri = runCatching { event.uri?.toString() }.getOrNull()
+    fun processDataset(event: DatasetEvent) {
+        executeWithCircuitBreaker("rdf-parse-dataset") {
+            val type = runCatching { event.type }.getOrNull()
+            if (type == DatasetEventType.DATASET_REASONED) {
+                val fdkId = runCatching { event.fdkId.toString() }.getOrNull()
+                val graph = runCatching { event.graph.toString() }.getOrNull()
+                val timestamp = runCatching { event.timestamp }.getOrNull()
+                val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
+                val uri = runCatching { event.uri?.toString() }.getOrNull()
 
-            if (fdkId != null && graph != null && timestamp != null) {
-                handleRecord(fdkId, graph, timestamp, RdfParseResourceType.DATASET, harvestRunId, uri)
-            } else {
-                LOGGER.warn(
-                    "Ignoring dataset message with missing required fields. fdkId: {}, graph: {}, timestamp: {}",
-                    fdkId,
-                    graph,
-                    timestamp,
-                )
+                if (fdkId != null && graph != null && timestamp != null) {
+                    handleRecord(fdkId, graph, timestamp, RdfParseResourceType.DATASET, harvestRunId, uri)
+                } else {
+                    val graphForLog = graph?.let { truncateForLog(it, MAX_GRAPH_LOG_LENGTH) }
+                    LOGGER.warn(
+                        "Ignoring dataset message with missing required fields. fdkId: {}, graph: {}, timestamp: {}",
+                        fdkId,
+                        graphForLog,
+                        timestamp,
+                    )
+                }
             }
         }
     }
 
-    @CircuitBreaker(name = "rdf-parse-information-model")
-    open fun processInformationModel(event: InformationModelEvent) {
-        val type = runCatching { event.type }.getOrNull()
-        if (type == InformationModelEventType.INFORMATION_MODEL_REASONED) {
-            val fdkId = runCatching { event.fdkId.toString() }.getOrNull()
-            val graph = runCatching { event.graph.toString() }.getOrNull()
-            val timestamp = runCatching { event.timestamp }.getOrNull()
-            val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
-            val uri = runCatching { event.uri?.toString() }.getOrNull()
+    fun processInformationModel(event: InformationModelEvent) {
+        executeWithCircuitBreaker("rdf-parse-information-model") {
+            val type = runCatching { event.type }.getOrNull()
+            if (type == InformationModelEventType.INFORMATION_MODEL_REASONED) {
+                val fdkId = runCatching { event.fdkId.toString() }.getOrNull()
+                val graph = runCatching { event.graph.toString() }.getOrNull()
+                val timestamp = runCatching { event.timestamp }.getOrNull()
+                val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
+                val uri = runCatching { event.uri?.toString() }.getOrNull()
 
-            if (fdkId != null && graph != null && timestamp != null) {
-                handleRecord(fdkId, graph, timestamp, RdfParseResourceType.INFORMATION_MODEL, harvestRunId, uri)
-            } else {
-                LOGGER.warn(
-                    "Ignoring information model message with missing required fields. fdkId: {}, graph: {}, timestamp: {}",
-                    fdkId,
-                    graph,
-                    timestamp,
-                )
+                if (fdkId != null && graph != null && timestamp != null) {
+                    handleRecord(fdkId, graph, timestamp, RdfParseResourceType.INFORMATION_MODEL, harvestRunId, uri)
+                } else {
+                    val graphForLog = graph?.let { truncateForLog(it, MAX_GRAPH_LOG_LENGTH) }
+                    LOGGER.warn(
+                        "Ignoring information model message with missing required fields. fdkId: {}, graph: {}, timestamp: {}",
+                        fdkId,
+                        graphForLog,
+                        timestamp,
+                    )
+                }
             }
         }
     }
 
-    @CircuitBreaker(name = "rdf-parse-service")
-    open fun processService(event: ServiceEvent) {
-        val type = runCatching { event.type }.getOrNull()
-        if (type == ServiceEventType.SERVICE_REASONED) {
-            val fdkId = runCatching { event.fdkId.toString() }.getOrNull()
-            val graph = runCatching { event.graph.toString() }.getOrNull()
-            val timestamp = runCatching { event.timestamp }.getOrNull()
-            val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
-            val uri = runCatching { event.uri?.toString() }.getOrNull()
+    fun processService(event: ServiceEvent) {
+        executeWithCircuitBreaker("rdf-parse-service") {
+            val type = runCatching { event.type }.getOrNull()
+            if (type == ServiceEventType.SERVICE_REASONED) {
+                val fdkId = runCatching { event.fdkId.toString() }.getOrNull()
+                val graph = runCatching { event.graph.toString() }.getOrNull()
+                val timestamp = runCatching { event.timestamp }.getOrNull()
+                val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
+                val uri = runCatching { event.uri?.toString() }.getOrNull()
 
-            if (fdkId != null && graph != null && timestamp != null) {
-                handleRecord(fdkId, graph, timestamp, RdfParseResourceType.SERVICE, harvestRunId, uri)
-            } else {
-                LOGGER.warn(
-                    "Ignoring service message with missing required fields. fdkId: {}, graph: {}, timestamp: {}",
-                    fdkId,
-                    graph,
-                    timestamp,
-                )
+                if (fdkId != null && graph != null && timestamp != null) {
+                    handleRecord(fdkId, graph, timestamp, RdfParseResourceType.SERVICE, harvestRunId, uri)
+                } else {
+                    val graphForLog = graph?.let { truncateForLog(it, MAX_GRAPH_LOG_LENGTH) }
+                    LOGGER.warn(
+                        "Ignoring service message with missing required fields. fdkId: {}, graph: {}, timestamp: {}",
+                        fdkId,
+                        graphForLog,
+                        timestamp,
+                    )
+                }
             }
         }
     }
 
-    @CircuitBreaker(name = "rdf-parse-event")
-    open fun processEvent(event: EventEvent) {
-        val type = runCatching { event.type }.getOrNull()
-        if (type == EventEventType.EVENT_REASONED) {
-            val fdkId = runCatching { event.fdkId.toString() }.getOrNull()
-            val graph = runCatching { event.graph.toString() }.getOrNull()
-            val timestamp = runCatching { event.timestamp }.getOrNull()
-            val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
-            val uri = runCatching { event.uri?.toString() }.getOrNull()
+    fun processEvent(event: EventEvent) {
+        executeWithCircuitBreaker("rdf-parse-event") {
+            val type = runCatching { event.type }.getOrNull()
+            if (type == EventEventType.EVENT_REASONED) {
+                val fdkId = runCatching { event.fdkId.toString() }.getOrNull()
+                val graph = runCatching { event.graph.toString() }.getOrNull()
+                val timestamp = runCatching { event.timestamp }.getOrNull()
+                val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
+                val uri = runCatching { event.uri?.toString() }.getOrNull()
 
-            if (fdkId != null && graph != null && timestamp != null) {
-                handleRecord(fdkId, graph, timestamp, RdfParseResourceType.EVENT, harvestRunId, uri)
-            } else {
-                LOGGER.warn(
-                    "Ignoring event message with missing required fields. fdkId: {}, graph: {}, timestamp: {}",
-                    fdkId,
-                    graph,
-                    timestamp,
-                )
+                if (fdkId != null && graph != null && timestamp != null) {
+                    handleRecord(fdkId, graph, timestamp, RdfParseResourceType.EVENT, harvestRunId, uri)
+                } else {
+                    val graphForLog = graph?.let { truncateForLog(it, MAX_GRAPH_LOG_LENGTH) }
+                    LOGGER.warn(
+                        "Ignoring event message with missing required fields. fdkId: {}, graph: {}, timestamp: {}",
+                        fdkId,
+                        graphForLog,
+                        timestamp,
+                    )
+                }
             }
         }
+    }
+
+    private fun executeWithCircuitBreaker(
+        circuitBreakerName: String,
+        block: () -> Unit,
+    ) {
+        circuitBreakerRegistry
+            .circuitBreaker(circuitBreakerName)
+            .executeRunnable(block)
     }
 
     private fun handleRecord(
