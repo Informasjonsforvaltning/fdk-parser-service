@@ -62,8 +62,6 @@ resilience4j:
         baseConfig: default
       rdf-parse-service:
         baseConfig: default
-      rdf-parse-generic:
-        baseConfig: default
 ---
 spring:
   config.activate.on-profile: develop

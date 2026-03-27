@@ -23,7 +23,6 @@ class CircuitBreakerConsumerConfiguration(
             "rdf-parse-event" to "event-event-consumer",
             "rdf-parse-information-model" to "information-model-event-consumer",
             "rdf-parse-service" to "service-event-consumer",
-            "rdf-parse-generic" to null,
         )
 
     @Bean
