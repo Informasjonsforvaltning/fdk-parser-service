@@ -243,7 +243,7 @@ class KafkaReasonedEventConsumerTest {
     @Test
     fun `processGeneric should ignore message when required fields are missing`() {
         val event = mockk<GenericRecord>()
-        circuitBreaker.processGeneric(event)
+        circuitBreaker.processConceptGeneric(event)
         verify(exactly = 0) { kafkaTemplate.send(any(), any()) }
     }
 
@@ -257,7 +257,7 @@ class KafkaReasonedEventConsumerTest {
         every { conceptHandler.parseConcept(any(), any()) } returns mapper.readTree("{\"ok\":true}")
         every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
 
-        circuitBreaker.processGeneric(event)
+        circuitBreaker.processConceptGeneric(event)
 
         verify {
             kafkaTemplate.send(any(), match { it.fdkId == "fdk-id" && it.resourceType == RdfParseResourceType.CONCEPT })
@@ -277,7 +277,7 @@ class KafkaReasonedEventConsumerTest {
         every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
 
-        circuitBreaker.processGeneric(event)
+        circuitBreaker.processDatasetGeneric(event)
 
         verify {
             kafkaTemplate.send(any(), match { it.fdkId == "fdk-id" && it.resourceType == RdfParseResourceType.DATASET })

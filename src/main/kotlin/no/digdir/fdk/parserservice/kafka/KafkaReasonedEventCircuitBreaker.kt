@@ -47,67 +47,40 @@ class KafkaReasonedEventCircuitBreaker(
     private val serviceHandler: ServiceHandler,
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
 ) {
-    fun processGeneric(event: GenericRecord) {
-        executeWithCircuitBreaker("rdf-parse-generic") {
-            val type = runCatching { event.get("type")?.toString() }.getOrNull()
-            val resourceType =
-                when (type) {
-                    ConceptEventType.CONCEPT_REASONED.name -> RdfParseResourceType.CONCEPT
-                    DataServiceEventType.DATA_SERVICE_REASONED.name -> RdfParseResourceType.DATA_SERVICE
-                    DatasetEventType.DATASET_REASONED.name -> RdfParseResourceType.DATASET
-                    EventEventType.EVENT_REASONED.name -> RdfParseResourceType.EVENT
-                    InformationModelEventType.INFORMATION_MODEL_REASONED.name -> RdfParseResourceType.INFORMATION_MODEL
-                    ServiceEventType.SERVICE_REASONED.name -> RdfParseResourceType.SERVICE
-                    else -> null
-                }
-
-            val fdkId = runCatching { event.get("fdkId")?.toString() }.getOrNull()
-            val graph = runCatching { event.get("graph")?.toString() }.getOrNull()
-            val timestamp =
-                runCatching {
-                    when (val t = event.get("timestamp")) {
-                        is Number -> t.toLong()
-                        else -> null
-                    }
-                }.getOrNull()
-            val harvestRunId = runCatching { event.get("harvestRunId")?.toString() }.getOrNull()
-            val uri = runCatching { event.get("uri")?.toString() }.getOrNull()
-
-            if (fdkId != null && graph != null && timestamp != null && resourceType != null) {
-                handleRecord(fdkId, graph, timestamp, resourceType, harvestRunId, uri)
-            } else {
-                val recordFields =
-                    runCatching {
-                        event.schema?.fields?.associate { field ->
-                            val value = event.get(field.name())
-                            val display =
-                                when {
-                                    field.name().equals("graph", ignoreCase = true) && value != null ->
-                                        truncateForLog(value.toString(), MAX_GRAPH_LOG_LENGTH)
-                                    else -> value
-                                }
-                            field.name() to display
-                        } ?: emptyMap()
-                    }.getOrElse { emptyMap() }
-                val reason =
-                    if (resourceType == null) {
-                        "event type not REASONED (got: $type)"
-                    } else {
-                        "missing required fields"
-                    }
-                val graphForLog = graph?.let { truncateForLog(it, MAX_GRAPH_LOG_LENGTH) }
-                LOGGER.warn(
-                    "Ignoring message: {}. fdkId: {}, graph: {}, timestamp: {}, type: {}. GenericRecord: {}",
-                    reason,
-                    fdkId,
-                    graphForLog,
-                    timestamp,
-                    type,
-                    recordFields,
-                )
-            }
+    fun processConceptGeneric(event: GenericRecord) =
+        executeWithCircuitBreaker("rdf-parse-concept") {
+            processGeneric(event, ConceptEventType.CONCEPT_REASONED.name, RdfParseResourceType.CONCEPT, "concept")
         }
-    }
+
+    fun processDataServiceGeneric(event: GenericRecord) =
+        executeWithCircuitBreaker("rdf-parse-data-service") {
+            processGeneric(event, DataServiceEventType.DATA_SERVICE_REASONED.name, RdfParseResourceType.DATA_SERVICE, "data service")
+        }
+
+    fun processDatasetGeneric(event: GenericRecord) =
+        executeWithCircuitBreaker("rdf-parse-dataset") {
+            processGeneric(event, DatasetEventType.DATASET_REASONED.name, RdfParseResourceType.DATASET, "dataset")
+        }
+
+    fun processInformationModelGeneric(event: GenericRecord) =
+        executeWithCircuitBreaker("rdf-parse-information-model") {
+            processGeneric(
+                event,
+                InformationModelEventType.INFORMATION_MODEL_REASONED.name,
+                RdfParseResourceType.INFORMATION_MODEL,
+                "information model",
+            )
+        }
+
+    fun processServiceGeneric(event: GenericRecord) =
+        executeWithCircuitBreaker("rdf-parse-service") {
+            processGeneric(event, ServiceEventType.SERVICE_REASONED.name, RdfParseResourceType.SERVICE, "service")
+        }
+
+    fun processEventGeneric(event: GenericRecord) =
+        executeWithCircuitBreaker("rdf-parse-event") {
+            processGeneric(event, EventEventType.EVENT_REASONED.name, RdfParseResourceType.EVENT, "event")
+        }
 
     fun processConcept(event: ConceptEvent) {
         executeWithCircuitBreaker("rdf-parse-concept") {
@@ -266,6 +239,48 @@ class KafkaReasonedEventCircuitBreaker(
         circuitBreakerRegistry
             .circuitBreaker(circuitBreakerName)
             .executeRunnable(block)
+    }
+
+    private fun processGeneric(
+        event: GenericRecord,
+        expectedType: String,
+        resourceType: RdfParseResourceType,
+        resourceLabel: String,
+    ) {
+        val type = runCatching { event.get("type")?.toString() }.getOrNull()
+        val fdkId = runCatching { event.get("fdkId")?.toString() }.getOrNull()
+        val graph = runCatching { event.get("graph")?.toString() }.getOrNull()
+        val timestamp =
+            runCatching {
+                when (val t = event.get("timestamp")) {
+                    is Number -> t.toLong()
+                    else -> null
+                }
+            }.getOrNull()
+        val harvestRunId = runCatching { event.get("harvestRunId")?.toString() }.getOrNull()
+        val uri = runCatching { event.get("uri")?.toString() }.getOrNull()
+
+        if (type == expectedType && fdkId != null && graph != null && timestamp != null) {
+            handleRecord(fdkId, graph, timestamp, resourceType, harvestRunId, uri)
+            return
+        }
+
+        val graphForLog = graph?.let { truncateForLog(it, MAX_GRAPH_LOG_LENGTH) }
+        val reason =
+            if (type != expectedType) {
+                "event type not $expectedType (got: $type)"
+            } else {
+                "missing required fields"
+            }
+        LOGGER.warn(
+            "Ignoring generic {} message: {}. fdkId: {}, graph: {}, timestamp: {}, type: {}",
+            resourceLabel,
+            reason,
+            fdkId,
+            graphForLog,
+            timestamp,
+            type,
+        )
     }
 
     private fun handleRecord(
