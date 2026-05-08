@@ -71,6 +71,7 @@ object DatasetMerger {
             .setHasRelevanceAnnotation(datasets.firstNonNull { it.hasRelevanceAnnotation })
             .setQualityAnnotations(datasets.firstNonNull { it.qualityAnnotations })
             .setQualifiedAttributions(datasets.firstNonNull { it.qualifiedAttributions })
+            .setCosts(datasets.firstNonNull { it.costs })
             .setIsAuthoritative(datasets.firstNonNull { it.isAuthoritative } ?: false)
             .setIsOpenData(datasets.firstNonNull { it.isOpenData } ?: false)
             .setIsRelatedToTransportportal(datasets.firstNonNull { it.isRelatedToTransportportal } ?: false)

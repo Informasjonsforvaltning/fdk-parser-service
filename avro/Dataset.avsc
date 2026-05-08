@@ -437,6 +437,17 @@
       "doc": "Qualified attributions of the dataset"
     },
     {
+      "name": "costs",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.Cost"
+        }
+      ],
+      "doc": "Specifies information about the cost for reusing the dataset."
+    },
+    {
       "name": "isOpenData",
       "type": "boolean",
       "doc": "Dataset is open data"

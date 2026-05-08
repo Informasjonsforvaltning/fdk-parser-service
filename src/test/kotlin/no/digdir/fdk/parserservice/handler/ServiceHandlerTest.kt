@@ -234,7 +234,7 @@ class ServiceHandlerTest {
           "isClassifiedBy": null,
           "hasChannel": null,
           "follows": null,
-          "hasCost": null,
+          "costs": null,
           "requires": null,
           "relation": null,
           "hasLegalResource": null,

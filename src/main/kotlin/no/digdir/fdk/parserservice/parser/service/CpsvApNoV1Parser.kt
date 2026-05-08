@@ -2,12 +2,12 @@ package no.digdir.fdk.parserservice.parser.service
 
 import no.digdir.fdk.model.service.Service
 import no.digdir.fdk.parserservice.extract.containsTriple
+import no.digdir.fdk.parserservice.extract.extractListOfServiceCosts
 import no.digdir.fdk.parserservice.extract.extractListOfUriWithLabel
 import no.digdir.fdk.parserservice.extract.fdk.addFdkData
 import no.digdir.fdk.parserservice.extract.fdk.fdkRecord
 import no.digdir.fdk.parserservice.extract.fdk.resourceOfIRI
 import no.digdir.fdk.parserservice.extract.service.extractListOfServiceChannelsV1
-import no.digdir.fdk.parserservice.extract.service.extractListOfServiceCostsV1
 import no.digdir.fdk.parserservice.extract.service.extractListOfServiceEvidence
 import no.digdir.fdk.parserservice.extract.service.extractListOfServiceOutput
 import no.digdir.fdk.parserservice.model.LanguageCodes
@@ -122,7 +122,7 @@ class CpsvApNoV1Parser : BaseServiceParser() {
         builder.setHasChannel(serviceResource.extractListOfServiceChannelsV1())
         builder.setHasInput(serviceResource.extractListOfServiceEvidence(CPSVNO.hasRequiredEvidence))
         builder.setProduces(serviceResource.extractListOfServiceOutput(CPSVNO.hasPossibleOutput))
-        builder.setHasCost(serviceResource.extractListOfServiceCostsV1())
+        builder.setCosts(serviceResource.extractListOfServiceCosts())
 
         return builder.build()
     }

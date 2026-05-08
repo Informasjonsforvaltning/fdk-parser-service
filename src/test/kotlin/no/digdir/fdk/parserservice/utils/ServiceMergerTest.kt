@@ -72,18 +72,18 @@ class ServiceMergerTest {
         val s1 =
             minimal("id1", "http://1").apply {
                 keyword = listOf(LocalizedStrings().apply { en = "kw1" })
-                hasCost = null
+                costs = null
             }
         val s2 =
             minimal("id2", "http://2").apply {
                 keyword = listOf(LocalizedStrings().apply { en = "kw2" })
-                hasCost = emptyList()
+                costs = emptyList()
                 hasChannel = null
             }
         val s3 =
             minimal("id3", "http://3").apply {
                 keyword = null
-                hasCost = null
+                costs = null
                 hasChannel = listOf(ServiceChannel().apply { identifier = "channel-1" })
             }
 
@@ -92,6 +92,6 @@ class ServiceMergerTest {
         assertEquals("id1", merged.id)
         assertEquals(listOf(ServiceChannel().apply { identifier = "channel-1" }), merged.hasChannel)
         assertEquals("kw1", merged.keyword.first().en)
-        assertEquals(emptyList(), merged.hasCost)
+        assertEquals(emptyList(), merged.costs)
     }
 }

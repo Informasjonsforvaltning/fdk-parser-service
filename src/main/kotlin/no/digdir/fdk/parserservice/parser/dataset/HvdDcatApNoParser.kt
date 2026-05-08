@@ -133,6 +133,7 @@ class HvdDcatApNoParser : BaseDatasetParser() {
         }
 
         // Properties not implemented in HVD-DCAT-AP-NO
+        builder.setCosts(null)
         builder.setMobilityTheme(null)
         builder.setLegalBasisForProcessing(null)
         builder.setLegalBasisForRestriction(null)

@@ -43,7 +43,7 @@ object ServiceMerger {
             .setIsClassifiedBy(services.firstNonNull { it.isClassifiedBy })
             .setHasChannel(services.firstNonNull { it.hasChannel })
             .setFollows(services.firstNonNull { it.follows })
-            .setHasCost(services.firstNonNull { it.hasCost })
+            .setCosts(services.firstNonNull { it.costs })
             .setRequires(services.firstNonNull { it.requires })
             .setRelation(services.firstNonNull { it.relation })
             .setHasLegalResource(services.firstNonNull { it.hasLegalResource })

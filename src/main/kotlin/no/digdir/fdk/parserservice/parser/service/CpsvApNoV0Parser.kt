@@ -7,7 +7,6 @@ import no.digdir.fdk.parserservice.extract.fdk.addFdkData
 import no.digdir.fdk.parserservice.extract.fdk.fdkRecord
 import no.digdir.fdk.parserservice.extract.fdk.resourceOfIRI
 import no.digdir.fdk.parserservice.extract.service.extractListOfServiceChannelsV0
-import no.digdir.fdk.parserservice.extract.service.extractListOfServiceCostsV0
 import no.digdir.fdk.parserservice.extract.service.extractListOfServiceEvidence
 import no.digdir.fdk.parserservice.extract.service.extractListOfServiceOutput
 import no.digdir.fdk.parserservice.model.LanguageCodes
@@ -120,7 +119,7 @@ class CpsvApNoV0Parser : BaseServiceParser() {
         builder.setHasChannel(serviceResource.extractListOfServiceChannelsV0())
         builder.setHasInput(serviceResource.extractListOfServiceEvidence(CPSV.hasInput))
         builder.setProduces(serviceResource.extractListOfServiceOutput(CPSV.produces))
-        builder.setHasCost(serviceResource.extractListOfServiceCostsV0())
+        builder.setCosts(null)
 
         return builder.build()
     }

@@ -6,6 +6,7 @@ import no.digdir.fdk.parserservice.extract.containsTriple
 import no.digdir.fdk.parserservice.extract.dataset.extractInSeries
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfDatasetsInSeries
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfDistributionsV3
+import no.digdir.fdk.parserservice.extract.extractListOfCosts
 import no.digdir.fdk.parserservice.extract.extractStringValue
 import no.digdir.fdk.parserservice.extract.fdk.addFdkData
 import no.digdir.fdk.parserservice.extract.fdk.fdkRecord
@@ -116,6 +117,8 @@ class DcatApNoV3Parser : BaseDatasetParser() {
 
         builder.setDistribution(datasetResource.extractListOfDistributionsV3(DCAT.distribution))
         builder.setSample(datasetResource.extractListOfDistributionsV3(ADMS.sample))
+
+        builder.setCosts(datasetResource.extractListOfCosts())
 
         builder.setPrev(datasetResource.extractStringValue(DCAT3.prev))
         builder.setInSeries(datasetResource.extractInSeries())
