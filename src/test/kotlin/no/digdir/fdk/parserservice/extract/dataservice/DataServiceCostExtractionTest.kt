@@ -1,8 +1,9 @@
 package no.digdir.fdk.parserservice.extract.dataservice
 
+import no.digdir.fdk.model.Cost
 import no.digdir.fdk.model.LocalizedStrings
 import no.digdir.fdk.model.ReferenceDataCode
-import no.digdir.fdk.model.dataservice.DataServiceCost
+import no.digdir.fdk.parserservice.extract.extractListOfCosts
 import org.apache.jena.rdf.model.ModelFactory
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -47,8 +48,9 @@ class DataServiceCostExtractionTest {
 
         val expected =
             listOf(
-                DataServiceCost
+                Cost
                     .newBuilder()
+                    .setIdentifier(null)
                     .setHasValue("100.50")
                     .setDescription(LocalizedStrings().apply { nb = "Kostnadsbeskrivelse" })
                     .setDocumentation(listOf("https://example.com/cost-info"))
@@ -58,10 +60,11 @@ class DataServiceCostExtractionTest {
                             code = "NOK"
                             prefLabel = LocalizedStrings().apply { en = "Norwegian krone" }
                         },
-                    ).build(),
+                    ).setIsDefinedBy(null)
+                    .build(),
             )
 
-        assertEquals(expected, subject.extractListOfDataServiceCosts())
+        assertEquals(expected, subject.extractListOfCosts())
     }
 
     @Test
@@ -105,7 +108,7 @@ class DataServiceCostExtractionTest {
         m.read(StringReader(turtle), null, "TURTLE")
         val subject = m.getResource("https://test.no/data-service/1")
 
-        val result = subject.extractListOfDataServiceCosts()
+        val result = subject.extractListOfCosts()
         assertEquals(2, result?.size)
     }
 
@@ -125,6 +128,6 @@ class DataServiceCostExtractionTest {
         m.read(StringReader(turtle), null, "TURTLE")
         val subject = m.getResource("https://test.no/data-service/1")
 
-        assertNull(subject.extractListOfDataServiceCosts())
+        assertNull(subject.extractListOfCosts())
     }
 }

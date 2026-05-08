@@ -2,12 +2,12 @@ package no.digdir.fdk.parserservice.parser.dataservice
 
 import no.digdir.fdk.model.ResourceType
 import no.digdir.fdk.model.dataservice.DataService
-import no.digdir.fdk.parserservice.extract.dataservice.extractListOfDataServiceCosts
 import no.digdir.fdk.parserservice.extract.descriptionHtmlCleaner
 import no.digdir.fdk.parserservice.extract.extractCatalogData
 import no.digdir.fdk.parserservice.extract.extractEuDataTheme
 import no.digdir.fdk.parserservice.extract.extractEurovoc
 import no.digdir.fdk.parserservice.extract.extractListOfContactPoints
+import no.digdir.fdk.parserservice.extract.extractListOfCosts
 import no.digdir.fdk.parserservice.extract.extractListOfFormats
 import no.digdir.fdk.parserservice.extract.extractListOfReferenceDataCodes
 import no.digdir.fdk.parserservice.extract.extractListOfStrings
@@ -114,7 +114,7 @@ abstract class BaseDataServiceParser : DataServiceParserStrategy {
 
         setDctType(dataServiceResource.extractStringValue(DCTerms.type))
         setVersion(dataServiceResource.extractStringValue(DCAT3.version))
-        setCosts(dataServiceResource.extractListOfDataServiceCosts())
+        setCosts(dataServiceResource.extractListOfCosts())
         setLicense(dataServiceResource.extractReferenceDataCode(DCTerms.license, DC_11.identifier, SKOS.prefLabel))
         setConformsTo(dataServiceResource.extractListOfUriWithLabel(DCTerms.conformsTo, DCTerms.source, DCTerms.title))
         setContactPoint(dataServiceResource.extractListOfContactPoints())

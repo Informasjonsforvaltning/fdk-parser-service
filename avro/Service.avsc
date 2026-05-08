@@ -110,8 +110,8 @@
       "doc": "Rules that the service follows"
     },
     {
-      "name": "hasCost",
-      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.service.ServiceCost"}],
+      "name": "costs",
+      "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.Cost"}],
       "doc": "Costs associated with the service"
     },
     {

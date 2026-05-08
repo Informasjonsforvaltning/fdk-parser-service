@@ -273,7 +273,7 @@
         "null",
         {
           "type": "array",
-          "items": "no.digdir.fdk.model.dataservice.DataServiceCost"
+          "items": "no.digdir.fdk.model.Cost"
         }
       ],
       "doc": "Specifies information about the cost for reusing the data service."

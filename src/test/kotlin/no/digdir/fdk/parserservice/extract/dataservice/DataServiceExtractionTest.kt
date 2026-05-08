@@ -1,6 +1,7 @@
 package no.digdir.fdk.parserservice.extract.dataservice
 
 import no.digdir.fdk.model.ContactPoint
+import no.digdir.fdk.model.Cost
 import no.digdir.fdk.model.EuDataTheme
 import no.digdir.fdk.model.Format
 import no.digdir.fdk.model.FormatType
@@ -11,7 +12,6 @@ import no.digdir.fdk.model.ReferenceDataCode
 import no.digdir.fdk.model.ResourceType
 import no.digdir.fdk.model.UriWithLabel
 import no.digdir.fdk.model.dataservice.DataService
-import no.digdir.fdk.model.dataservice.DataServiceCost
 import no.digdir.fdk.parserservice.parser.dataservice.DcatApNoV2Parser
 import org.apache.jena.rdf.model.ModelFactory
 import org.junit.jupiter.api.Tag
@@ -331,8 +331,9 @@ class DataServiceExtractionTest {
 
         val expected =
             listOf(
-                DataServiceCost
+                Cost
                     .newBuilder()
+                    .setIdentifier(null)
                     .setHasValue("250.00")
                     .setDescription(LocalizedStrings().apply { en = "Yearly subscription" })
                     .setDocumentation(listOf("https://example.com/pricing"))
@@ -342,7 +343,8 @@ class DataServiceExtractionTest {
                             code = "EUR"
                             prefLabel = LocalizedStrings().apply { en = "Euro" }
                         },
-                    ).build(),
+                    ).setIsDefinedBy(null)
+                    .build(),
             )
 
         assertEquals(expected, dataService.costs)

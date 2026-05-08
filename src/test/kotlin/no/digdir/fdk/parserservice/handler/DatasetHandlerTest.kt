@@ -225,6 +225,7 @@ class DatasetHandlerTest {
               "hasRelevanceAnnotation": null,
               "qualityAnnotations": null,
               "qualifiedAttributions": null,
+              "costs": null,
               "isOpenData": false,
               "isAuthoritative": false,
               "isRelatedToTransportportal": false,

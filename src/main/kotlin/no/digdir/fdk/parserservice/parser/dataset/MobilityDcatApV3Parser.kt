@@ -137,6 +137,7 @@ class MobilityDcatApV3Parser : BaseDatasetParser() {
         builder.setSample(datasetResource.extractListOfMobilitySampleData())
 
         // The following properties are not implemented in mobilityDCAT-AP v3.0.0
+        builder.setCosts(null)
         builder.setHvdCategory(null)
         builder.setInSeries(null)
         builder.setDatasetsInSeries(null)
