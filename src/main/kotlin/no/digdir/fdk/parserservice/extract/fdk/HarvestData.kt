@@ -112,17 +112,23 @@ private fun isValidFDKRecord(
     fdkId: String,
 ): Boolean =
     when {
-        !recordResource.isURIResource -> false // All FDK records are URI resources.
+        // All FDK records are URI resources.
+        !recordResource.isURIResource -> false
+
+        // Checks that the record has the correct identifier value.
         !recordResource.model.containsTriple(
             recordResource.uri,
             DCTerms.identifier.uri,
             fdkId,
-        ) -> false // Checks that the record has the correct identifier value.
+        ) -> false
+
+        // All FDK records has type dcat:CatalogRecord.
         !recordResource.model.containsTriple(
             recordResource.uri,
             RDF.type.uri,
             URI.create(DCAT.CatalogRecord.uri),
-        ) -> false // All FDK records has type dcat:CatalogRecord.
+        ) -> false
+
         else -> true
     }
 

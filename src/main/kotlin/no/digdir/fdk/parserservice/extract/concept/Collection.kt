@@ -86,8 +86,14 @@ private fun Resource.getCollectionResource(): Resource? {
             .toList()
 
     return when {
-        collections.isEmpty() -> null
-        collections.size == 1 -> collections.first()
+        collections.isEmpty() -> {
+            null
+        }
+
+        collections.size == 1 -> {
+            collections.first()
+        }
+
         else -> {
             LOGGER.warn("Expecting 1 collection with $uri as a member, found ${collections.size}. Selecting random as backup")
             collections.first()
