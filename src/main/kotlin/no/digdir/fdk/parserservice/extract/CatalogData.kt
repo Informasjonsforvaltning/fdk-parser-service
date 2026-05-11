@@ -48,8 +48,14 @@ private fun Resource.getCatalogResource(memberPredicate: Property): Resource? {
             .toList()
 
     return when {
-        catalogs.isEmpty() -> null
-        catalogs.size == 1 -> catalogs.first()
+        catalogs.isEmpty() -> {
+            null
+        }
+
+        catalogs.size == 1 -> {
+            catalogs.first()
+        }
+
         else -> {
             LOGGER.warn("Expecting 1 catalog with $uri as a member, found ${catalogs.size}. Selecting random as backup")
             catalogs.first()

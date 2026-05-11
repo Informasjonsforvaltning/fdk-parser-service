@@ -46,8 +46,14 @@ class KafkaReasonedEventConsumer(
                         }
                     circuitBreaker.processDataService(dataServiceEvent)
                 }
-                is GenericRecord -> circuitBreaker.processDataServiceGeneric(message)
-                else -> LOGGER.warn("Unknown message type: {}", message?.javaClass)
+
+                is GenericRecord -> {
+                    circuitBreaker.processDataServiceGeneric(message)
+                }
+
+                else -> {
+                    LOGGER.warn("Unknown message type: {}", message?.javaClass)
+                }
             }
             ack.acknowledge()
         } catch (e: RecoverableParseException) {
@@ -81,8 +87,14 @@ class KafkaReasonedEventConsumer(
                         }
                     circuitBreaker.processConcept(conceptEvent)
                 }
-                is GenericRecord -> circuitBreaker.processConceptGeneric(message)
-                else -> LOGGER.warn("Unknown message type: {}", message?.javaClass)
+
+                is GenericRecord -> {
+                    circuitBreaker.processConceptGeneric(message)
+                }
+
+                else -> {
+                    LOGGER.warn("Unknown message type: {}", message?.javaClass)
+                }
             }
             ack.acknowledge()
         } catch (e: RecoverableParseException) {
@@ -116,8 +128,14 @@ class KafkaReasonedEventConsumer(
                         }
                     circuitBreaker.processDataset(datasetEvent)
                 }
-                is GenericRecord -> circuitBreaker.processDatasetGeneric(message)
-                else -> LOGGER.warn("Unknown message type: {}", message?.javaClass)
+
+                is GenericRecord -> {
+                    circuitBreaker.processDatasetGeneric(message)
+                }
+
+                else -> {
+                    LOGGER.warn("Unknown message type: {}", message?.javaClass)
+                }
             }
             ack.acknowledge()
         } catch (e: RecoverableParseException) {
@@ -151,8 +169,14 @@ class KafkaReasonedEventConsumer(
                         }
                     circuitBreaker.processInformationModel(infoModelEvent)
                 }
-                is GenericRecord -> circuitBreaker.processInformationModelGeneric(message)
-                else -> LOGGER.warn("Unknown message type: {}", message?.javaClass)
+
+                is GenericRecord -> {
+                    circuitBreaker.processInformationModelGeneric(message)
+                }
+
+                else -> {
+                    LOGGER.warn("Unknown message type: {}", message?.javaClass)
+                }
             }
             ack.acknowledge()
         } catch (e: RecoverableParseException) {
@@ -186,8 +210,14 @@ class KafkaReasonedEventConsumer(
                         }
                     circuitBreaker.processService(serviceEvent)
                 }
-                is GenericRecord -> circuitBreaker.processServiceGeneric(message)
-                else -> LOGGER.warn("Unknown message type: {}", message?.javaClass)
+
+                is GenericRecord -> {
+                    circuitBreaker.processServiceGeneric(message)
+                }
+
+                else -> {
+                    LOGGER.warn("Unknown message type: {}", message?.javaClass)
+                }
             }
             ack.acknowledge()
         } catch (e: RecoverableParseException) {
@@ -221,8 +251,14 @@ class KafkaReasonedEventConsumer(
                         }
                     circuitBreaker.processEvent(eventEvent)
                 }
-                is GenericRecord -> circuitBreaker.processEventGeneric(message)
-                else -> LOGGER.warn("Unknown message type: {}", message?.javaClass)
+
+                is GenericRecord -> {
+                    circuitBreaker.processEventGeneric(message)
+                }
+
+                else -> {
+                    LOGGER.warn("Unknown message type: {}", message?.javaClass)
+                }
             }
             ack.acknowledge()
         } catch (e: RecoverableParseException) {
