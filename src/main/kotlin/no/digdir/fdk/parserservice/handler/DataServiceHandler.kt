@@ -34,6 +34,8 @@ class DataServiceHandler(
      *
      * @param fdkId The FDK identifier for the data service
      * @param graph The Turtle-formatted RDF graph containing the data service
+     * @param catalogGraph The Turtle-formatted RDF graph of the catalog the data service
+     *   belongs to, merged into the model before parsing, or null if not available
      * @return JSON representation of the parsed data service
      * @throws NoAcceptableFDKRecordsException if no data service is found with the given identifier
      * @throws IllegalStateException if no parsers can successfully parse the data service
@@ -41,11 +43,13 @@ class DataServiceHandler(
     fun parseDataService(
         fdkId: String,
         graph: String,
+        catalogGraph: String?,
     ): JsonNode {
         val model = ModelFactory.createDefaultModel()
         val dataService: DataService =
             try {
                 model.readTurtle(graph)
+                if (catalogGraph != null) model.readTurtle(catalogGraph)
                 val resourceIRI = topicUriOfRecordWithID(fdkId, model)
                 if (resourceIRI != null) {
                     // Parse with all registered parsers in priority order

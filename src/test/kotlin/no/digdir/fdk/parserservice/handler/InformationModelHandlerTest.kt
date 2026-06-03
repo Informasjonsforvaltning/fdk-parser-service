@@ -265,7 +265,7 @@ class InformationModelHandlerTest {
             }
             """.trimIndent()
 
-        val result = handler.parseInformationModel("d1d698ef-267a-3d57-949f-b2bc44657f3e", turtle)
+        val result = handler.parseInformationModel("d1d698ef-267a-3d57-949f-b2bc44657f3e", turtle, null)
 
         result.toString().shouldEqualJson(expected)
     }
@@ -283,7 +283,7 @@ class InformationModelHandlerTest {
             """.trimIndent()
 
         assertThrows<no.digdir.fdk.parserservice.model.NoAcceptableFDKRecordsException> {
-            handler.parseInformationModel("non-existent-id", turtle)
+            handler.parseInformationModel("non-existent-id", turtle, null)
         }
     }
 }

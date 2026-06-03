@@ -72,14 +72,14 @@ class KafkaReasonedEventConsumerTest {
     fun `concept listener should produce a rdf parse event`() {
         val parsedJson = "{\"data\":\"my-parsed-rdf\"}"
         val timestamp = System.currentTimeMillis()
-        every { conceptHandler.parseConcept(any(), any()) } returns mapper.readTree(parsedJson)
+        every { conceptHandler.parseConcept(any(), any(), any()) } returns mapper.readTree(parsedJson)
         every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { ack.acknowledge() } returns Unit
         every { ack.nack(Duration.ZERO) } returns Unit
 
         val conceptEvent =
-            ConceptEvent(ConceptEventType.CONCEPT_REASONED, "harvest-run-id", "uri", "my-id", "graph", timestamp)
+            ConceptEvent(ConceptEventType.CONCEPT_REASONED, "harvest-run-id", "uri", "my-id", "graph", timestamp, null)
         kafkaReasonedEventConsumer.conceptListener(
             record = ConsumerRecord("concept-events", 0, 0, "my-id", conceptEvent as Any),
             ack = ack,
@@ -105,13 +105,13 @@ class KafkaReasonedEventConsumerTest {
 
     @Test
     fun `concept listener should acknowledge when a recoverable exception occurs`() {
-        every { conceptHandler.parseConcept(any(), any()) } throws RecoverableParseException("Error parsing RDF: invalid rdf")
+        every { conceptHandler.parseConcept(any(), any(), any()) } throws RecoverableParseException("Error parsing RDF: invalid rdf")
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { ack.acknowledge() } returns Unit
         every { ack.nack(Duration.ZERO) } returns Unit
 
         val conceptEvent =
-            ConceptEvent(ConceptEventType.CONCEPT_REASONED, "harvest-run-id", "uri", "my-id", "graph", System.currentTimeMillis())
+            ConceptEvent(ConceptEventType.CONCEPT_REASONED, "harvest-run-id", "uri", "my-id", "graph", System.currentTimeMillis(), null)
         kafkaReasonedEventConsumer.conceptListener(
             record = ConsumerRecord("concept-events", 0, 0, "my-id", conceptEvent as Any),
             ack = ack,
@@ -126,12 +126,12 @@ class KafkaReasonedEventConsumerTest {
 
     @Test
     fun `concept listener should not acknowledge when a unrecoverable exception occurs`() {
-        every { conceptHandler.parseConcept(any(), any()) } throws UnrecoverableParseException("Error parsing RDF")
+        every { conceptHandler.parseConcept(any(), any(), any()) } throws UnrecoverableParseException("Error parsing RDF")
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { ack.nack(Duration.ZERO) } returns Unit
 
         val conceptEvent =
-            ConceptEvent(ConceptEventType.CONCEPT_REASONED, "harvest-run-id", "uri", "my-id", "graph", System.currentTimeMillis())
+            ConceptEvent(ConceptEventType.CONCEPT_REASONED, "harvest-run-id", "uri", "my-id", "graph", System.currentTimeMillis(), null)
         kafkaReasonedEventConsumer.conceptListener(
             record = ConsumerRecord("concept-events", 0, 0, "my-id", conceptEvent as Any),
             ack = ack,
@@ -151,7 +151,7 @@ class KafkaReasonedEventConsumerTest {
         every { event.fdkId } returns "fdk-id"
         every { event.graph } returns "graph"
         every { event.timestamp } returns 12345L
-        every { conceptHandler.parseConcept(any(), any()) } returns mapper.readTree("{\"ok\":true}")
+        every { conceptHandler.parseConcept(any(), any(), any()) } returns mapper.readTree("{\"ok\":true}")
         every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
 
         circuitBreaker.processConcept(event)
@@ -165,13 +165,13 @@ class KafkaReasonedEventConsumerTest {
     fun `dataset listener should produce a rdf parse event`() {
         val parsedJson = "{\"data\":\"my-parsed-rdf\"}"
         val timestamp = System.currentTimeMillis()
-        every { datasetHandler.parseDataset(any(), any()) } returns mapper.readTree(parsedJson)
+        every { datasetHandler.parseDataset(any(), any(), any()) } returns mapper.readTree(parsedJson)
         every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { ack.acknowledge() } returns Unit
         every { ack.nack(Duration.ZERO) } returns Unit
 
-        val datasetEvent = DatasetEvent(DatasetEventType.DATASET_REASONED, "harvest-run-id", "uri", "my-id", "graph", timestamp)
+        val datasetEvent = DatasetEvent(DatasetEventType.DATASET_REASONED, "harvest-run-id", "uri", "my-id", "graph", timestamp, null)
         kafkaReasonedEventConsumer.datasetListener(
             record = ConsumerRecord("dataset-events", 0, 0, "my-id", datasetEvent as Any),
             ack = ack,
@@ -200,14 +200,14 @@ class KafkaReasonedEventConsumerTest {
     @Test
     fun `dataset listener should acknowledge when a recoverable exception occurs`() {
         every {
-            datasetHandler.parseDataset(any(), any())
+            datasetHandler.parseDataset(any(), any(), any())
         } throws RecoverableParseException("Error parsing RDF: invalid rdf")
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { ack.acknowledge() } returns Unit
         every { ack.nack(Duration.ZERO) } returns Unit
 
         val datasetEvent =
-            DatasetEvent(DatasetEventType.DATASET_REASONED, "harvest-run-id", "uri", "my-id", "graph", System.currentTimeMillis())
+            DatasetEvent(DatasetEventType.DATASET_REASONED, "harvest-run-id", "uri", "my-id", "graph", System.currentTimeMillis(), null)
         kafkaReasonedEventConsumer.datasetListener(
             record = ConsumerRecord("dataset-events", 0, 0, "my-id", datasetEvent as Any),
             ack = ack,
@@ -222,12 +222,12 @@ class KafkaReasonedEventConsumerTest {
 
     @Test
     fun `dataset listener should not acknowledge when a unrecoverable exception occurs`() {
-        every { datasetHandler.parseDataset(any(), any()) } throws UnrecoverableParseException("Error parsing RDF")
+        every { datasetHandler.parseDataset(any(), any(), any()) } throws UnrecoverableParseException("Error parsing RDF")
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { ack.nack(Duration.ZERO) } returns Unit
 
         val datasetEvent =
-            DatasetEvent(DatasetEventType.DATASET_REASONED, "harvest-run-id", "uri", "my-id", "graph", System.currentTimeMillis())
+            DatasetEvent(DatasetEventType.DATASET_REASONED, "harvest-run-id", "uri", "my-id", "graph", System.currentTimeMillis(), null)
         kafkaReasonedEventConsumer.datasetListener(
             record = ConsumerRecord("dataset-events", 0, 0, "my-id", datasetEvent as Any),
             ack = ack,
@@ -254,7 +254,7 @@ class KafkaReasonedEventConsumerTest {
         every { event.get("fdkId") } returns "fdk-id"
         every { event.get("graph") } returns "graph"
         every { event.get("timestamp") } returns 12345L
-        every { conceptHandler.parseConcept(any(), any()) } returns mapper.readTree("{\"ok\":true}")
+        every { conceptHandler.parseConcept(any(), any(), any()) } returns mapper.readTree("{\"ok\":true}")
         every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
 
         circuitBreaker.processConceptGeneric(event)
@@ -273,7 +273,7 @@ class KafkaReasonedEventConsumerTest {
         every { event.get("timestamp") } returns 12345L
         every { event.get("harvestRunId") } returns "harvest-run-id"
         every { event.get("uri") } returns "uri"
-        every { datasetHandler.parseDataset(any(), any()) } returns mapper.readTree("{\"ok\":true}")
+        every { datasetHandler.parseDataset(any(), any(), any()) } returns mapper.readTree("{\"ok\":true}")
         every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
 
@@ -294,7 +294,7 @@ class KafkaReasonedEventConsumerTest {
         every { event.timestamp } returns 12345L
         every { event.harvestRunId } returns "harvest-run-id"
         every { event.uri } returns "uri"
-        every { datasetHandler.parseDataset(any(), any()) } returns mapper.readTree("{\"ok\":true}")
+        every { datasetHandler.parseDataset(any(), any(), any()) } returns mapper.readTree("{\"ok\":true}")
         every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
 
@@ -310,14 +310,14 @@ class KafkaReasonedEventConsumerTest {
     fun `data service listener should produce a rdf parse event`() {
         val parsedJson = "{\"data\":\"my-parsed-rdf\"}"
         val timestamp = System.currentTimeMillis()
-        every { dataServiceHandler.parseDataService(any(), any()) } returns mapper.readTree(parsedJson)
+        every { dataServiceHandler.parseDataService(any(), any(), any()) } returns mapper.readTree(parsedJson)
         every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { ack.acknowledge() } returns Unit
         every { ack.nack(Duration.ZERO) } returns Unit
 
         val dataServiceEvent =
-            DataServiceEvent(DataServiceEventType.DATA_SERVICE_REASONED, "harvest-run-id", "uri", "my-id", "graph", timestamp)
+            DataServiceEvent(DataServiceEventType.DATA_SERVICE_REASONED, "harvest-run-id", "uri", "my-id", "graph", timestamp, null)
         kafkaReasonedEventConsumer.dataServiceListener(
             record = ConsumerRecord("data-service-events", 0, 0, "my-id", dataServiceEvent as Any),
             ack = ack,
@@ -345,7 +345,8 @@ class KafkaReasonedEventConsumerTest {
 
     @Test
     fun `data service listener should acknowledge when a recoverable exception occurs`() {
-        every { dataServiceHandler.parseDataService(any(), any()) } throws RecoverableParseException("Error parsing RDF: invalid rdf")
+        every { dataServiceHandler.parseDataService(any(), any(), any()) } throws
+            RecoverableParseException("Error parsing RDF: invalid rdf")
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { ack.acknowledge() } returns Unit
         every { ack.nack(Duration.ZERO) } returns Unit
@@ -358,6 +359,7 @@ class KafkaReasonedEventConsumerTest {
                 "my-id",
                 "graph",
                 System.currentTimeMillis(),
+                null,
             )
         kafkaReasonedEventConsumer.dataServiceListener(
             record = ConsumerRecord("data-service-events", 0, 0, "my-id", dataServiceEvent as Any),
@@ -373,7 +375,7 @@ class KafkaReasonedEventConsumerTest {
 
     @Test
     fun `data service listener should not acknowledge when a unrecoverable exception occurs`() {
-        every { dataServiceHandler.parseDataService(any(), any()) } throws UnrecoverableParseException("Error parsing RDF")
+        every { dataServiceHandler.parseDataService(any(), any(), any()) } throws UnrecoverableParseException("Error parsing RDF")
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { ack.nack(Duration.ZERO) } returns Unit
 
@@ -385,6 +387,7 @@ class KafkaReasonedEventConsumerTest {
                 "my-id",
                 "graph",
                 System.currentTimeMillis(),
+                null,
             )
         kafkaReasonedEventConsumer.dataServiceListener(
             record = ConsumerRecord("data-service-events", 0, 0, "my-id", dataServiceEvent as Any),
@@ -407,7 +410,7 @@ class KafkaReasonedEventConsumerTest {
         every { event.timestamp } returns 12345L
         every { event.harvestRunId } returns "harvest-run-id"
         every { event.uri } returns "uri"
-        every { dataServiceHandler.parseDataService(any(), any()) } returns mapper.readTree("{\"ok\":true}")
+        every { dataServiceHandler.parseDataService(any(), any(), any()) } returns mapper.readTree("{\"ok\":true}")
         every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
 
@@ -423,7 +426,7 @@ class KafkaReasonedEventConsumerTest {
     fun `information model listener should produce a rdf parse event`() {
         val parsedJson = "{\"data\":\"my-parsed-rdf\"}"
         val timestamp = System.currentTimeMillis()
-        every { informationModelHandler.parseInformationModel(any(), any()) } returns mapper.readTree(parsedJson)
+        every { informationModelHandler.parseInformationModel(any(), any(), any()) } returns mapper.readTree(parsedJson)
         every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { ack.acknowledge() } returns Unit
@@ -437,6 +440,7 @@ class KafkaReasonedEventConsumerTest {
                 "my-id",
                 "graph",
                 timestamp,
+                null,
             )
         kafkaReasonedEventConsumer.informationModelListener(
             record = ConsumerRecord("information-model-events", 0, 0, "my-id", informationModelEvent as Any),
@@ -465,7 +469,7 @@ class KafkaReasonedEventConsumerTest {
 
     @Test
     fun `information model listener should acknowledge when a recoverable exception occurs`() {
-        every { informationModelHandler.parseInformationModel(any(), any()) } throws
+        every { informationModelHandler.parseInformationModel(any(), any(), any()) } throws
             RecoverableParseException("Error parsing RDF: invalid rdf")
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { ack.acknowledge() } returns Unit
@@ -479,6 +483,7 @@ class KafkaReasonedEventConsumerTest {
                 "my-id",
                 "graph",
                 System.currentTimeMillis(),
+                null,
             )
         kafkaReasonedEventConsumer.informationModelListener(
             record = ConsumerRecord("information-model-events", 0, 0, "my-id", informationModelEvent as Any),
@@ -494,7 +499,7 @@ class KafkaReasonedEventConsumerTest {
 
     @Test
     fun `information model listener should not acknowledge when a unrecoverable exception occurs`() {
-        every { informationModelHandler.parseInformationModel(any(), any()) } throws UnrecoverableParseException("Error parsing RDF")
+        every { informationModelHandler.parseInformationModel(any(), any(), any()) } throws UnrecoverableParseException("Error parsing RDF")
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { ack.nack(Duration.ZERO) } returns Unit
 
@@ -506,6 +511,7 @@ class KafkaReasonedEventConsumerTest {
                 "my-id",
                 "graph",
                 System.currentTimeMillis(),
+                null,
             )
         kafkaReasonedEventConsumer.informationModelListener(
             record = ConsumerRecord("information-model-events", 0, 0, "my-id", informationModelEvent as Any),
@@ -528,7 +534,7 @@ class KafkaReasonedEventConsumerTest {
         every { event.timestamp } returns 12345L
         every { event.harvestRunId } returns "harvest-run-id"
         every { event.uri } returns "uri"
-        every { informationModelHandler.parseInformationModel(any(), any()) } returns mapper.readTree("{\"ok\":true}")
+        every { informationModelHandler.parseInformationModel(any(), any(), any()) } returns mapper.readTree("{\"ok\":true}")
         every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
 
@@ -544,14 +550,14 @@ class KafkaReasonedEventConsumerTest {
     fun `service listener should produce a rdf parse event`() {
         val parsedJson = "{\"data\":\"my-parsed-rdf\"}"
         val timestamp = System.currentTimeMillis()
-        every { serviceHandler.parseService(any(), any()) } returns mapper.readTree(parsedJson)
+        every { serviceHandler.parseService(any(), any(), any()) } returns mapper.readTree(parsedJson)
         every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { ack.acknowledge() } returns Unit
         every { ack.nack(Duration.ZERO) } returns Unit
 
         val serviceEvent =
-            ServiceEvent(ServiceEventType.SERVICE_REASONED, "harvest-run-id", "uri", "my-id", "graph", timestamp)
+            ServiceEvent(ServiceEventType.SERVICE_REASONED, "harvest-run-id", "uri", "my-id", "graph", timestamp, null)
         kafkaReasonedEventConsumer.serviceListener(
             record = ConsumerRecord("service-events", 0, 0, "my-id", serviceEvent as Any),
             ack = ack,
@@ -577,13 +583,13 @@ class KafkaReasonedEventConsumerTest {
 
     @Test
     fun `service listener should acknowledge when a recoverable exception occurs`() {
-        every { serviceHandler.parseService(any(), any()) } throws RecoverableParseException("Error parsing RDF: invalid rdf")
+        every { serviceHandler.parseService(any(), any(), any()) } throws RecoverableParseException("Error parsing RDF: invalid rdf")
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { ack.acknowledge() } returns Unit
         every { ack.nack(Duration.ZERO) } returns Unit
 
         val serviceEvent =
-            ServiceEvent(ServiceEventType.SERVICE_REASONED, "harvest-run-id", "uri", "my-id", "graph", System.currentTimeMillis())
+            ServiceEvent(ServiceEventType.SERVICE_REASONED, "harvest-run-id", "uri", "my-id", "graph", System.currentTimeMillis(), null)
         kafkaReasonedEventConsumer.serviceListener(
             record = ConsumerRecord("service-events", 0, 0, "my-id", serviceEvent as Any),
             ack = ack,
@@ -598,12 +604,12 @@ class KafkaReasonedEventConsumerTest {
 
     @Test
     fun `service listener should not acknowledge when a unrecoverable exception occurs`() {
-        every { serviceHandler.parseService(any(), any()) } throws UnrecoverableParseException("Error parsing RDF")
+        every { serviceHandler.parseService(any(), any(), any()) } throws UnrecoverableParseException("Error parsing RDF")
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { ack.nack(Duration.ZERO) } returns Unit
 
         val serviceEvent =
-            ServiceEvent(ServiceEventType.SERVICE_REASONED, "harvest-run-id", "uri", "my-id", "graph", System.currentTimeMillis())
+            ServiceEvent(ServiceEventType.SERVICE_REASONED, "harvest-run-id", "uri", "my-id", "graph", System.currentTimeMillis(), null)
         kafkaReasonedEventConsumer.serviceListener(
             record = ConsumerRecord("service-events", 0, 0, "my-id", serviceEvent as Any),
             ack = ack,
@@ -625,7 +631,7 @@ class KafkaReasonedEventConsumerTest {
         every { event.timestamp } returns 12345L
         every { event.harvestRunId } returns "harvest-run-id"
         every { event.uri } returns "uri"
-        every { serviceHandler.parseService(any(), any()) } returns mapper.readTree("{\"ok\":true}")
+        every { serviceHandler.parseService(any(), any(), any()) } returns mapper.readTree("{\"ok\":true}")
         every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
 
@@ -641,14 +647,14 @@ class KafkaReasonedEventConsumerTest {
     fun `event listener should produce a rdf parse event`() {
         val parsedJson = "{\"data\":\"my-parsed-rdf\"}"
         val timestamp = System.currentTimeMillis()
-        every { eventHandler.parseEvent(any(), any()) } returns mapper.readTree(parsedJson)
+        every { eventHandler.parseEvent(any(), any(), any()) } returns mapper.readTree(parsedJson)
         every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { ack.acknowledge() } returns Unit
         every { ack.nack(Duration.ZERO) } returns Unit
 
         val eventEvent =
-            EventEvent(EventEventType.EVENT_REASONED, "harvest-run-id", "uri", "my-id", "graph", timestamp)
+            EventEvent(EventEventType.EVENT_REASONED, "harvest-run-id", "uri", "my-id", "graph", timestamp, null)
         kafkaReasonedEventConsumer.eventListener(
             record = ConsumerRecord("event-events", 0, 0, "my-id", eventEvent as Any),
             ack = ack,
@@ -674,13 +680,13 @@ class KafkaReasonedEventConsumerTest {
 
     @Test
     fun `event listener should acknowledge when a recoverable exception occurs`() {
-        every { eventHandler.parseEvent(any(), any()) } throws RecoverableParseException("Error parsing RDF: invalid rdf")
+        every { eventHandler.parseEvent(any(), any(), any()) } throws RecoverableParseException("Error parsing RDF: invalid rdf")
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { ack.acknowledge() } returns Unit
         every { ack.nack(Duration.ZERO) } returns Unit
 
         val eventEvent =
-            EventEvent(EventEventType.EVENT_REASONED, "harvest-run-id", "uri", "my-id", "graph", System.currentTimeMillis())
+            EventEvent(EventEventType.EVENT_REASONED, "harvest-run-id", "uri", "my-id", "graph", System.currentTimeMillis(), null)
         kafkaReasonedEventConsumer.eventListener(
             record = ConsumerRecord("event-events", 0, 0, "my-id", eventEvent as Any),
             ack = ack,
@@ -695,12 +701,12 @@ class KafkaReasonedEventConsumerTest {
 
     @Test
     fun `event listener should not acknowledge when a unrecoverable exception occurs`() {
-        every { eventHandler.parseEvent(any(), any()) } throws UnrecoverableParseException("Error parsing RDF")
+        every { eventHandler.parseEvent(any(), any(), any()) } throws UnrecoverableParseException("Error parsing RDF")
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { ack.nack(Duration.ZERO) } returns Unit
 
         val eventEvent =
-            EventEvent(EventEventType.EVENT_REASONED, "harvest-run-id", "uri", "my-id", "graph", System.currentTimeMillis())
+            EventEvent(EventEventType.EVENT_REASONED, "harvest-run-id", "uri", "my-id", "graph", System.currentTimeMillis(), null)
         kafkaReasonedEventConsumer.eventListener(
             record = ConsumerRecord("event-events", 0, 0, "my-id", eventEvent as Any),
             ack = ack,
@@ -722,7 +728,7 @@ class KafkaReasonedEventConsumerTest {
         every { event.timestamp } returns 12345L
         every { event.harvestRunId } returns "harvest-run-id"
         every { event.uri } returns "uri"
-        every { eventHandler.parseEvent(any(), any()) } returns mapper.readTree("{\"ok\":true}")
+        every { eventHandler.parseEvent(any(), any(), any()) } returns mapper.readTree("{\"ok\":true}")
         every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
         every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
 

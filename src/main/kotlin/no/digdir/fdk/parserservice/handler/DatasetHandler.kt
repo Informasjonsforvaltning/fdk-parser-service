@@ -25,6 +25,8 @@ class DatasetHandler(
      *
      * @param fdkId The FDK identifier for the dataset
      * @param graph The Turtle-formatted RDF graph containing the dataset
+     * @param catalogGraph The Turtle-formatted RDF graph of the catalog the dataset
+     *   belongs to, merged into the model before parsing, or null if not available
      * @return JSON representation of the parsed dataset
      * @throws NoAcceptableFDKRecordsException if no dataset is found with the given identifier
      * @throws IllegalStateException if no parsers can successfully parse the dataset
@@ -32,11 +34,13 @@ class DatasetHandler(
     fun parseDataset(
         fdkId: String,
         graph: String,
+        catalogGraph: String?,
     ): JsonNode {
         val model = ModelFactory.createDefaultModel()
         val dataset: Dataset =
             try {
                 model.readTurtle(graph)
+                if (catalogGraph != null) model.readTurtle(catalogGraph)
                 val resourceIRI = topicUriOfRecordWithID(fdkId, model)
                 if (resourceIRI != null) {
                     // Parse with all registered parsers in priority order
