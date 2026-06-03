@@ -116,7 +116,7 @@ class DataServiceHandlerTest {
             }
             """.trimIndent()
 
-        val result = handler.parseDataService("a1c680ca-62d7-34d5-aa4c-d39b5db033ae", turtle)
+        val result = handler.parseDataService("a1c680ca-62d7-34d5-aa4c-d39b5db033ae", turtle, null)
         result.toString().shouldEqualJson(expected)
     }
 }

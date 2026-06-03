@@ -238,7 +238,7 @@ class DatasetHandlerTest {
             }
             """.trimIndent()
 
-        val result = handler.parseDataset("a1c680ca-62d7-34d5-aa4c-d39b5db033ae", turtle)
+        val result = handler.parseDataset("a1c680ca-62d7-34d5-aa4c-d39b5db033ae", turtle, null)
         result.toString().shouldEqualJson(expected)
     }
 
@@ -256,7 +256,7 @@ class DatasetHandlerTest {
                     dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" .
             """.trimIndent()
 
-        assertThrows<Exception> { handler.parseDataset("a1c680ca-62d7-34d5-aa4c-d39b5db033ae", turtle) }
+        assertThrows<Exception> { handler.parseDataset("a1c680ca-62d7-34d5-aa4c-d39b5db033ae", turtle, null) }
     }
 
     @Test
@@ -332,7 +332,7 @@ class DatasetHandlerTest {
             ]
             """.trimIndent()
 
-        val result = handler.parseDataset("a1c680ca-62d7-34d5-aa4c-d39b5db033ae", turtle)
+        val result = handler.parseDataset("a1c680ca-62d7-34d5-aa4c-d39b5db033ae", turtle, null)
         result.get("distribution").toString().shouldEqualJson(expected)
     }
 
@@ -367,7 +367,7 @@ class DatasetHandlerTest {
             }
             """.trimIndent()
 
-        val result = handler.parseDataset("a1c680ca-62d7-34d5-aa4c-d39b5db033ae", turtle)
+        val result = handler.parseDataset("a1c680ca-62d7-34d5-aa4c-d39b5db033ae", turtle, null)
         result.get("title").toString().shouldEqualJson(expected)
     }
 
@@ -428,7 +428,7 @@ class DatasetHandlerTest {
             <http://example.org/ds> a dcat:Dataset .
             """.trimIndent()
 
-        val json = localHandler.parseDataset("id", graph)
+        val json = localHandler.parseDataset("id", graph, null)
 
         val expectedTitle =
             """

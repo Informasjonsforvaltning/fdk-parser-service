@@ -91,9 +91,10 @@ class KafkaReasonedEventCircuitBreaker(
                 val timestamp = runCatching { event.timestamp }.getOrNull()
                 val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
                 val uri = runCatching { event.uri?.toString() }.getOrNull()
+                val catalogGraph = runCatching { event.catalogGraph?.toString() }.getOrNull()
 
                 if (fdkId != null && graph != null && timestamp != null) {
-                    handleRecord(fdkId, graph, timestamp, RdfParseResourceType.CONCEPT, harvestRunId, uri)
+                    handleRecord(fdkId, graph, timestamp, RdfParseResourceType.CONCEPT, harvestRunId, uri, catalogGraph)
                 } else {
                     val graphForLog = graph?.let { truncateForLog(it, MAX_GRAPH_LOG_LENGTH) }
                     LOGGER.warn(
@@ -116,9 +117,10 @@ class KafkaReasonedEventCircuitBreaker(
                 val timestamp = runCatching { event.timestamp }.getOrNull()
                 val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
                 val uri = runCatching { event.uri?.toString() }.getOrNull()
+                val catalogGraph = runCatching { event.catalogGraph?.toString() }.getOrNull()
 
                 if (fdkId != null && graph != null && timestamp != null) {
-                    handleRecord(fdkId, graph, timestamp, RdfParseResourceType.DATA_SERVICE, harvestRunId, uri)
+                    handleRecord(fdkId, graph, timestamp, RdfParseResourceType.DATA_SERVICE, harvestRunId, uri, catalogGraph)
                 } else {
                     val graphForLog = graph?.let { truncateForLog(it, MAX_GRAPH_LOG_LENGTH) }
                     LOGGER.warn(
@@ -141,9 +143,10 @@ class KafkaReasonedEventCircuitBreaker(
                 val timestamp = runCatching { event.timestamp }.getOrNull()
                 val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
                 val uri = runCatching { event.uri?.toString() }.getOrNull()
+                val catalogGraph = runCatching { event.catalogGraph?.toString() }.getOrNull()
 
                 if (fdkId != null && graph != null && timestamp != null) {
-                    handleRecord(fdkId, graph, timestamp, RdfParseResourceType.DATASET, harvestRunId, uri)
+                    handleRecord(fdkId, graph, timestamp, RdfParseResourceType.DATASET, harvestRunId, uri, catalogGraph)
                 } else {
                     val graphForLog = graph?.let { truncateForLog(it, MAX_GRAPH_LOG_LENGTH) }
                     LOGGER.warn(
@@ -166,9 +169,10 @@ class KafkaReasonedEventCircuitBreaker(
                 val timestamp = runCatching { event.timestamp }.getOrNull()
                 val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
                 val uri = runCatching { event.uri?.toString() }.getOrNull()
+                val catalogGraph = runCatching { event.catalogGraph?.toString() }.getOrNull()
 
                 if (fdkId != null && graph != null && timestamp != null) {
-                    handleRecord(fdkId, graph, timestamp, RdfParseResourceType.INFORMATION_MODEL, harvestRunId, uri)
+                    handleRecord(fdkId, graph, timestamp, RdfParseResourceType.INFORMATION_MODEL, harvestRunId, uri, catalogGraph)
                 } else {
                     val graphForLog = graph?.let { truncateForLog(it, MAX_GRAPH_LOG_LENGTH) }
                     LOGGER.warn(
@@ -191,9 +195,10 @@ class KafkaReasonedEventCircuitBreaker(
                 val timestamp = runCatching { event.timestamp }.getOrNull()
                 val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
                 val uri = runCatching { event.uri?.toString() }.getOrNull()
+                val catalogGraph = runCatching { event.catalogGraph?.toString() }.getOrNull()
 
                 if (fdkId != null && graph != null && timestamp != null) {
-                    handleRecord(fdkId, graph, timestamp, RdfParseResourceType.SERVICE, harvestRunId, uri)
+                    handleRecord(fdkId, graph, timestamp, RdfParseResourceType.SERVICE, harvestRunId, uri, catalogGraph)
                 } else {
                     val graphForLog = graph?.let { truncateForLog(it, MAX_GRAPH_LOG_LENGTH) }
                     LOGGER.warn(
@@ -216,9 +221,10 @@ class KafkaReasonedEventCircuitBreaker(
                 val timestamp = runCatching { event.timestamp }.getOrNull()
                 val harvestRunId = runCatching { event.harvestRunId?.toString() }.getOrNull()
                 val uri = runCatching { event.uri?.toString() }.getOrNull()
+                val catalogGraph = runCatching { event.catalogGraph?.toString() }.getOrNull()
 
                 if (fdkId != null && graph != null && timestamp != null) {
-                    handleRecord(fdkId, graph, timestamp, RdfParseResourceType.EVENT, harvestRunId, uri)
+                    handleRecord(fdkId, graph, timestamp, RdfParseResourceType.EVENT, harvestRunId, uri, catalogGraph)
                 } else {
                     val graphForLog = graph?.let { truncateForLog(it, MAX_GRAPH_LOG_LENGTH) }
                     LOGGER.warn(
@@ -259,9 +265,10 @@ class KafkaReasonedEventCircuitBreaker(
             }.getOrNull()
         val harvestRunId = runCatching { event.get("harvestRunId")?.toString() }.getOrNull()
         val uri = runCatching { event.get("uri")?.toString() }.getOrNull()
+        val catalogGraph = runCatching { event.get("catalogGraph")?.toString() }.getOrNull()
 
         if (type == expectedType && fdkId != null && graph != null && timestamp != null) {
-            handleRecord(fdkId, graph, timestamp, resourceType, harvestRunId, uri)
+            handleRecord(fdkId, graph, timestamp, resourceType, harvestRunId, uri, catalogGraph)
             return
         }
 
@@ -290,10 +297,11 @@ class KafkaReasonedEventCircuitBreaker(
         resourceType: RdfParseResourceType,
         harvestRunId: String?,
         uri: String?,
+        catalogGraph: String?,
     ) {
         val startTime = Instant.now().toString()
         try {
-            parseAndProduce(fdkId, graph, timestamp, resourceType, harvestRunId, uri)
+            parseAndProduce(fdkId, graph, timestamp, resourceType, harvestRunId, uri, catalogGraph)
             // Produce harvest event on success
             produceHarvestEvent(
                 harvestRunId = harvestRunId,
@@ -352,18 +360,19 @@ class KafkaReasonedEventCircuitBreaker(
         type: RdfParseResourceType,
         harvestRunId: String?,
         uri: String?,
+        catalogGraph: String?,
     ) {
         val timeElapsed =
             measureTimedValue {
                 LOGGER.debug("Parse ${type.toString().lowercase()} - id: $fdkId")
                 val json =
                     when (type) {
-                        RdfParseResourceType.CONCEPT -> conceptHandler.parseConcept(fdkId, graph)
-                        RdfParseResourceType.DATA_SERVICE -> dataServiceHandler.parseDataService(fdkId, graph)
-                        RdfParseResourceType.DATASET -> datasetHandler.parseDataset(fdkId, graph)
-                        RdfParseResourceType.EVENT -> eventHandler.parseEvent(fdkId, graph)
-                        RdfParseResourceType.INFORMATION_MODEL -> informationModelHandler.parseInformationModel(fdkId, graph)
-                        RdfParseResourceType.SERVICE -> serviceHandler.parseService(fdkId, graph)
+                        RdfParseResourceType.CONCEPT -> conceptHandler.parseConcept(fdkId, graph, catalogGraph)
+                        RdfParseResourceType.DATA_SERVICE -> dataServiceHandler.parseDataService(fdkId, graph, catalogGraph)
+                        RdfParseResourceType.DATASET -> datasetHandler.parseDataset(fdkId, graph, catalogGraph)
+                        RdfParseResourceType.EVENT -> eventHandler.parseEvent(fdkId, graph, catalogGraph)
+                        RdfParseResourceType.INFORMATION_MODEL -> informationModelHandler.parseInformationModel(fdkId, graph, catalogGraph)
+                        RdfParseResourceType.SERVICE -> serviceHandler.parseService(fdkId, graph, catalogGraph)
                     }
                 val rdfParseEvent =
                     RdfParseEvent

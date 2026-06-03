@@ -110,7 +110,7 @@ class ServiceHandlerTest {
                     skos:prefLabel     "Engelsk"@nb , "Engelsk"@nn , "Engelsk"@no , "English"@en .
             """.trimIndent()
 
-        val result = handler.parseService("1fc38c3c-1c86-3161-a9a7-e443fd94d413", turtle)
+        val result = handler.parseService("1fc38c3c-1c86-3161-a9a7-e443fd94d413", turtle, null)
 
         val expected = """{
           "id": "1fc38c3c-1c86-3161-a9a7-e443fd94d413",
@@ -334,7 +334,7 @@ class ServiceHandlerTest {
                     foaf:primaryTopic <https://raw.example.org/service/with-adms-status> .
             """.trimIndent()
 
-        val result = handler.parseService("adms-test", turtle)
+        val result = handler.parseService("adms-test", turtle, null)
 
         val expectedAdms = """{
           "uri": "http://purl.org/adms/status/Completed",
@@ -412,7 +412,7 @@ class ServiceHandlerTest {
                     dct:identifier   "3" .
             """.trimIndent()
 
-        val result = handler.parseService("1fc38c3c-1c86-3161-a9a7-e443fd94d413", turtle)
+        val result = handler.parseService("1fc38c3c-1c86-3161-a9a7-e443fd94d413", turtle, null)
 
         val expectedEvidence = """[
           {
@@ -538,7 +538,7 @@ class ServiceHandlerTest {
             """.trimIndent()
 
         assertThrows<Exception> {
-            handler.parseService("1fc38c3c-1c86-3161-a9a7-e443fd94d413", turtle)
+            handler.parseService("1fc38c3c-1c86-3161-a9a7-e443fd94d413", turtle, null)
         }
     }
 }

@@ -58,7 +58,7 @@ class EventHandlerTest {
             .
             """.trimIndent()
 
-        val result = handler.parseEvent("fdk-1", turtle)
+        val result = handler.parseEvent("fdk-1", turtle, null)
 
         val expected = """{
           "id": "fdk-1",
@@ -137,7 +137,7 @@ class EventHandlerTest {
             .
             """.trimIndent()
 
-        val result = handler.parseEvent("fdk-2", turtle)
+        val result = handler.parseEvent("fdk-2", turtle, null)
 
         val expected = """{
           "id": "fdk-2",
@@ -198,7 +198,7 @@ class EventHandlerTest {
             """.trimIndent()
 
         assertThrows<Exception> {
-            handler.parseEvent("fdk-1", turtle)
+            handler.parseEvent("fdk-1", turtle, null)
         }
     }
 }

@@ -41,7 +41,7 @@ class ConceptHandlerTest {
                 foaf:primaryTopic  <https://registrering-begrep-api.staging.fellesdatakatalog.digdir.no/910258028/concept-1> .
             """.trimIndent()
 
-        val result = handler.parseConcept("fdk-1", turtle)
+        val result = handler.parseConcept("fdk-1", turtle, null)
 
         val expected = """{
           "id": "fdk-1",
@@ -132,7 +132,7 @@ class ConceptHandlerTest {
             """.trimIndent()
 
         assertThrows<Exception> {
-            handler.parseConcept("fdk-1", turtle)
+            handler.parseConcept("fdk-1", turtle, null)
         }
     }
 
@@ -205,7 +205,7 @@ class ConceptHandlerTest {
                 foaf:primaryTopic  <https://registrering-begrep-api.staging.fellesdatakatalog.digdir.no/910258028/concept-1> .
             """.trimIndent()
 
-        val result = handler.parseConcept("fdk-2", turtle)
+        val result = handler.parseConcept("fdk-2", turtle, null)
 
         val expected = """{
           "id": "fdk-2",
@@ -392,7 +392,7 @@ class ConceptHandlerTest {
                 foaf:primaryTopic  <https://registrering-begrep-api.staging.fellesdatakatalog.digdir.no/910258028/concept-1> .
             """.trimIndent()
 
-        val result = handler.parseConcept("fdk-3", turtle)
+        val result = handler.parseConcept("fdk-3", turtle, null)
 
         val expectedAssociative = """[
             {
