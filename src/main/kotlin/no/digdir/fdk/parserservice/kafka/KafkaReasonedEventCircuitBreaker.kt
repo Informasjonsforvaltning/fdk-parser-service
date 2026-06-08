@@ -273,21 +273,27 @@ class KafkaReasonedEventCircuitBreaker(
         }
 
         val graphForLog = graph?.let { truncateForLog(it, MAX_GRAPH_LOG_LENGTH) }
-        val reason =
-            if (type != expectedType) {
-                "event type not $expectedType (got: $type)"
-            } else {
-                "missing required fields"
-            }
-        LOGGER.warn(
-            "Ignoring generic {} message: {}. fdkId: {}, graph: {}, timestamp: {}, type: {}",
-            resourceLabel,
-            reason,
-            fdkId,
-            graphForLog,
-            timestamp,
-            type,
-        )
+        if (type != expectedType) {
+            LOGGER.debug(
+                "Ignoring generic {} message: event type not {} (got: {}). fdkId: {}, graph: {}, timestamp: {}, type: {}",
+                resourceLabel,
+                expectedType,
+                type,
+                fdkId,
+                graphForLog,
+                timestamp,
+                type,
+            )
+        } else {
+            LOGGER.warn(
+                "Ignoring generic {} message: missing required fields. fdkId: {}, graph: {}, timestamp: {}, type: {}",
+                resourceLabel,
+                fdkId,
+                graphForLog,
+                timestamp,
+                type,
+            )
+        }
     }
 
     private fun handleRecord(
