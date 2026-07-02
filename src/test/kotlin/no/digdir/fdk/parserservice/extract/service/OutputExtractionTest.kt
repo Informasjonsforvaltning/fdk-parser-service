@@ -34,7 +34,8 @@ class OutputExtractionTest {
                 dct:title       "Output name"@en ;
                 dct:description "Output description"@en ;
                 dct:language    <http://publications.europa.eu/resource/authority/language/ENG> ;
-                dct:type        <https://test.no/concept/1> .
+                dct:type        <https://test.no/concept/1> ;
+                dct:isPartOf    <https://test.no/dataset/1> .
 
             <http://publications.europa.eu/resource/authority/language/ENG>
                 a                  skos:Concept;
@@ -74,7 +75,8 @@ class OutputExtractionTest {
                                 prefLabel = LocalizedStrings().apply { en = "Output type" }
                             },
                         ),
-                    ).build(),
+                    ).setIsPartOf(listOf("https://test.no/dataset/1"))
+                    .build(),
             )
 
         assertEquals(expected, subject.extractListOfServiceOutput(CPSV.produces))

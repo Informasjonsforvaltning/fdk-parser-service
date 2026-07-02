@@ -33,6 +33,11 @@
       "name": "type",
       "type": ["null", {"type": "array", "items": "no.digdir.fdk.model.ReferenceDataCode"}],
       "doc": "Type for the output"
+    },
+    {
+      "name": "isPartOf",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "Datasets that the output can be part of (dct:isPartOf)"
     }
   ]
 }
