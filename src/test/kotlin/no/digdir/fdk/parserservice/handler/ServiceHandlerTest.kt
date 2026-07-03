@@ -222,7 +222,8 @@ class ServiceHandlerTest {
                   }
                 }
               ],
-              "type": null
+              "type": null,
+              "isPartOf": null
             }
           ],
           "spatial": null,

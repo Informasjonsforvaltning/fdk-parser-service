@@ -2,6 +2,7 @@ package no.digdir.fdk.parserservice.extract.service
 
 import no.digdir.fdk.model.service.ServiceOutput
 import no.digdir.fdk.parserservice.extract.extractListOfReferenceDataCodes
+import no.digdir.fdk.parserservice.extract.extractListOfUriOrIdentifier
 import no.digdir.fdk.parserservice.extract.extractLocalizedStrings
 import no.digdir.fdk.parserservice.extract.extractStringValue
 import no.digdir.fdk.parserservice.extract.extractURIStringValue
@@ -20,6 +21,7 @@ private fun ServiceOutput.hasContent() =
         description != null -> true
         language != null -> true
         type != null -> true
+        isPartOf != null -> true
         else -> false
     }
 
@@ -33,6 +35,7 @@ private fun Resource.buildServiceOutput(): ServiceOutput? {
         .setDescription(extractLocalizedStrings(DCTerms.description))
         .setLanguage(extractListOfReferenceDataCodes(DCTerms.language, EUAT.authorityCode, SKOS.prefLabel))
         .setType(extractListOfReferenceDataCodes(DCTerms.type, "#", SKOS.prefLabel))
+        .setIsPartOf(extractListOfUriOrIdentifier(DCTerms.isPartOf))
 
     return builder.build().takeIf { it.hasContent() }
 }
