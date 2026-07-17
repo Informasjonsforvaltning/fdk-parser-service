@@ -115,6 +115,63 @@ class ExtractConceptDefinitions {
         }
 
         @Test
+        fun filtersSourcesMissingBothTextAndUri() {
+            val turtle =
+                """
+                @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+                @prefix dct:   <http://purl.org/dc/terms/> .
+                @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+                @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+                @prefix euvoc: <http://publications.europa.eu/ontology/euvoc#> .
+                @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+                @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+
+                <https://registrering-begrep-api.staging.fellesdatakatalog.digdir.no/910258028/concept-1>
+                    a                   skos:Concept ;
+                    dct:identifier      "concept-1" ;
+                    skos:prefLabel      "Test concept"@nb ;
+                    euvoc:xlDefinition  [ a         euvoc:XlNote ;
+                                          rdf:value "definition with mixed sources"@en ;
+                                          dct:source <https://uri-and-label.no> ;
+                                          dct:source <https://uri-only.no> ;
+                                          dct:source <https://registrering-begrep-api.staging.fellesdatakatalog.digdir.no/910258028/concept-1/.well-known/skolem/fede04e4-a7ba-36ef-bf0a-ff71a4137298> ;
+                                          dct:source [] ] .
+
+                <https://uri-and-label.no>
+                    rdfs:label "uri and label"@en .
+
+                <https://registrering-begrep-api.staging.fellesdatakatalog.digdir.no/910258028/concept-1/.well-known/skolem/fede04e4-a7ba-36ef-bf0a-ff71a4137298>
+                    rdfs:label "label only"@en .
+
+                <https://concepts.staging.fellesdatakatalog.digdir.no/concepts/fdk-1>
+                    a                  dcat:CatalogRecord ;
+                    dct:identifier     "fdk-1" ;
+                    foaf:primaryTopic  <https://registrering-begrep-api.staging.fellesdatakatalog.digdir.no/910258028/concept-1> .
+                """.trimIndent()
+
+            val m = ModelFactory.createDefaultModel()
+            m.read(StringReader(turtle), null, "TURTLE")
+            val result = parser.parse(m, conceptIRI, fdkId)
+
+            val expectedSources =
+                listOf(
+                    UriWithText().apply {
+                        uri = "https://uri-and-label.no"
+                        text = LocalizedStrings().apply { en = "uri and label" }
+                    },
+                    UriWithText().apply {
+                        uri = "https://uri-only.no"
+                    },
+                    UriWithText().apply {
+                        text = LocalizedStrings().apply { en = "label only" }
+                    },
+                )
+
+            assertEquals(expectedSources.size, result.definition.sources.size)
+            assertTrue { result.definition.sources.containsAll(expectedSources) }
+        }
+
+        @Test
         fun definitionWithNoSpecificAudienceIsPrioritized() {
             val turtle =
                 """
