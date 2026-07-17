@@ -24,7 +24,7 @@ private fun Resource.extractSources(): List<UriWithText>? =
                 .setUri(source.extractURIStringValue())
                 .setText(source.extractLocalizedStrings(RDFS.label))
                 .build()
-        }?.filter { it.uri != null && it.text != null }
+        }?.filter { it.uri != null || it.text != null }
         ?.takeIf { it.isNotEmpty() }
 
 private fun Resource.buildXlDefinition(): ConceptDefinition? {
@@ -84,7 +84,7 @@ private fun Resource.extractV1Sources(): List<UriWithText>? =
                 .setUri(source.singleResource(RDFS.seeAlso)?.extractURIStringValue())
                 .setText(source.extractLocalizedStrings(RDFS.label))
                 .build()
-        }?.filter { it.uri != null && it.text != null }
+        }?.filter { it.uri != null || it.text != null }
         ?.takeIf { it.isNotEmpty() }
 
 private fun Resource.extractV1TargetGroup(): String? {
