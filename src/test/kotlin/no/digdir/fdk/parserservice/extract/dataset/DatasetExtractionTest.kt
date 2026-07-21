@@ -494,7 +494,7 @@ class DatasetExtractionTest {
             assertEquals(expectedSpatial, result.spatial)
             assertEquals(expectedProvenance, result.provenance)
             assertEquals(expectedFrequency, result.accrualPeriodicity)
-            assertEquals(expectedType, result.dctType)
+            assertEquals(listOf(expectedType), result.dctType)
         }
 
         @Test
