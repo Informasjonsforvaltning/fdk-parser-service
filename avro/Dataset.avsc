@@ -214,9 +214,12 @@
       "name": "dctType",
       "type": [
         "null",
-        "no.digdir.fdk.model.ReferenceDataCode"
+        {
+          "type": "array",
+          "items": "no.digdir.fdk.model.ReferenceDataCode"
+        }
       ],
-      "doc": "Type of dataset"
+      "doc": "List of dataset types from dct:type"
     },
     {
       "name": "accessRights",

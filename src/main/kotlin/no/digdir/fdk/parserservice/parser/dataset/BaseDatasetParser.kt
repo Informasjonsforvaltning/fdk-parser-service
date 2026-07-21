@@ -127,7 +127,7 @@ abstract class BaseDatasetParser : DatasetParserStrategy {
         setEurovocThemes(themeResources?.filter { isEurovocURI(it.uri) }?.mapNotNull { it.extractEurovoc() }?.takeIf { it.isNotEmpty() })
 
         setAccrualPeriodicity(datasetResource.extractReferenceDataCode(DCTerms.accrualPeriodicity, DC_11.identifier, SKOS.prefLabel))
-        setDctType(datasetResource.extractReferenceDataCode(DCTerms.type, DC_11.identifier, SKOS.prefLabel))
+        setDctType(datasetResource.extractListOfReferenceDataCodes(DCTerms.type, DC_11.identifier, SKOS.prefLabel))
         setProvenance(datasetResource.extractReferenceDataCode(DCTerms.provenance, EUAT.authorityCode, SKOS.prefLabel))
         setSpatial(datasetResource.extractListOfReferenceDataCodes(DCTerms.spatial, DCTerms.identifier, DCTerms.title))
         setConformsTo(datasetResource.extractListOfUriWithLabel(DCTerms.conformsTo, DCTerms.source, DCTerms.title))
