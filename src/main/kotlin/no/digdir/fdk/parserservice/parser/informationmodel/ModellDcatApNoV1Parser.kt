@@ -20,7 +20,6 @@ import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDF
 import org.springframework.stereotype.Component
 import java.net.URI
-import kotlin.collections.mutableMapOf
 
 /**
  * Parser implementation for ModellDCAT-AP-NO.
@@ -99,9 +98,11 @@ class ModellDcatApNoV1Parser : BaseInformationModelParser() {
         fdkId: String,
     ): InformationModel = parseInformationModel(model, iri, fdkId)
 
-    private val modelElementsMap = mutableMapOf<CharSequence, InformationModelElement>()
-    private val modelPropertiesMap = mutableMapOf<CharSequence, InformationModelProperty>()
-    private val containsSubjects = mutableSetOf<CharSequence>()
+    private data class ParseContext(
+        val modelElements: MutableMap<CharSequence, InformationModelElement> = mutableMapOf(),
+        val modelProperties: MutableMap<CharSequence, InformationModelProperty> = mutableMapOf(),
+        val containsSubjects: MutableSet<CharSequence> = mutableSetOf(),
+    )
 
     /**
      * Parses an RDF model into an InformationModel object according to ModelDCAT-AP-NO.
@@ -136,88 +137,89 @@ class ModellDcatApNoV1Parser : BaseInformationModelParser() {
 
         builder.addCommonInformationModelValues(infoModelResource)
 
-        // Remove any remaining subjects, elements or properties from previous parse events
-        modelElementsMap.clear()
-        modelPropertiesMap.clear()
-        containsSubjects.clear()
+        val parseContext = ParseContext()
 
         // Extract model subjects, elements and properties
         val modelSubjects = infoModelResource.extractListOfStrings(DCTerms.subject)
 
         builder.setSubjects(modelSubjects)
-        if (modelSubjects != null) containsSubjects.addAll(modelSubjects)
+        if (modelSubjects != null) parseContext.containsSubjects.addAll(modelSubjects)
 
         infoModelResource
             .listResources(MODELLDCATNO.containsModelElement)
-            ?.forEach { it.addElementToMap() }
+            ?.forEach { it.addElementToMap(parseContext) }
 
-        builder.setModelElements(modelElementsMap.takeIf { it.isNotEmpty() })
-        builder.setModelProperties(modelPropertiesMap.takeIf { it.isNotEmpty() })
-        builder.setContainsModelElements(modelElementsMap.keys.toList().takeIf { it.isNotEmpty() })
-        builder.setContainsSubjects(containsSubjects.toList().takeIf { it.isNotEmpty() })
+        builder.setModelElements(parseContext.modelElements.takeIf { it.isNotEmpty() })
+        builder.setModelProperties(parseContext.modelProperties.takeIf { it.isNotEmpty() })
+        builder.setContainsModelElements(
+            parseContext.modelElements.keys
+                .toList()
+                .takeIf { it.isNotEmpty() },
+        )
+        builder.setContainsSubjects(parseContext.containsSubjects.toList().takeIf { it.isNotEmpty() })
 
         return builder.build()
     }
 
-    private fun Resource.addElementToMap() {
+    private fun Resource.addElementToMap(context: ParseContext) {
         val element = buildModelElement()
         if (element != null) {
             val elementKey = element.uri ?: element.identifier
-            if (elementKey != null && !modelElementsMap.containsKey(elementKey)) {
-                modelElementsMap[elementKey] = element
+            if (elementKey != null && !context.modelElements.containsKey(elementKey)) {
+                context.modelElements[elementKey] = element
 
                 // Add subjects to set of subjects contained in the model
-                if (element.subject != null) containsSubjects.add(element.subject)
+                if (element.subject != null) context.containsSubjects.add(element.subject)
                 element.codes?.forEach { code ->
-                    if (code.subject != null) containsSubjects.add(code.subject)
+                    if (code.subject != null) context.containsSubjects.add(code.subject)
                 }
 
                 // Extract properties from element
                 listResources(MODELLDCATNO.hasProperty)
-                    ?.forEach { it.addPropertyToMap() }
+                    ?.forEach { it.addPropertyToMap(context) }
             }
         }
     }
 
-    private fun Resource.addPropertyToMap() {
+    private fun Resource.addPropertyToMap(context: ParseContext) {
         val property = buildModelProperty()
         if (property != null) {
             val propertyKey = property.uri ?: property.identifier
-            if (propertyKey != null && !modelPropertiesMap.containsKey(propertyKey)) {
-                modelPropertiesMap[propertyKey] = property
+            if (propertyKey != null && !context.modelProperties.containsKey(propertyKey)) {
+                context.modelProperties[propertyKey] = property
 
                 // Add subject to set of subjects contained in the model
-                if (property.subject != null) containsSubjects.add(property.subject)
+                if (property.subject != null) context.containsSubjects.add(property.subject)
 
                 // Extract properties from property
                 listResources(MODELLDCATNO.formsSymmetryWith)
-                    ?.forEach { it.addPropertyToMap() }
+                    ?.forEach { it.addPropertyToMap(context) }
 
                 // Extract elements from property
                 listResources(MODELLDCATNO.hasType)
-                    ?.forEach { it.addElementToMap() }
+                    ?.forEach { it.addElementToMap(context) }
                 listResources(MODELLDCATNO.isAbstractionOf)
-                    ?.forEach { it.addElementToMap() }
+                    ?.forEach { it.addElementToMap(context) }
                 listResources(MODELLDCATNO.refersTo)
-                    ?.forEach { it.addElementToMap() }
+                    ?.forEach { it.addElementToMap(context) }
                 listResources(MODELLDCATNO.hasDataType)
-                    ?.forEach { it.addElementToMap() }
+                    ?.forEach { it.addElementToMap(context) }
                 listResources(MODELLDCATNO.hasSimpleType)
-                    ?.forEach { it.addElementToMap() }
+                    ?.forEach { it.addElementToMap(context) }
                 listResources(MODELLDCATNO.hasObjectType)
-                    ?.forEach { it.addElementToMap() }
+                    ?.forEach { it.addElementToMap(context) }
                 listResources(MODELLDCATNO.hasValueFrom)
-                    ?.forEach { it.addElementToMap() }
+                    ?.forEach { it.addElementToMap(context) }
                 listResources(MODELLDCATNO.hasSome)
-                    ?.forEach { it.addElementToMap() }
+                    ?.forEach { it.addElementToMap(context) }
                 listResources(MODELLDCATNO.hasMember)
-                    ?.forEach { it.addElementToMap() }
+                    ?.forEach { it.addElementToMap(context) }
                 listResources(MODELLDCATNO.contains)
-                    ?.forEach { it.addElementToMap() }
+                    ?.forEach { it.addElementToMap(context) }
                 listResources(MODELLDCATNO.hasSupplier)
-                    ?.forEach { it.addElementToMap() }
+                    ?.forEach { it.addElementToMap(context) }
                 listResources(MODELLDCATNO.hasGeneralConcept)
-                    ?.forEach { it.addElementToMap() }
+                    ?.forEach { it.addElementToMap(context) }
             }
         }
     }
