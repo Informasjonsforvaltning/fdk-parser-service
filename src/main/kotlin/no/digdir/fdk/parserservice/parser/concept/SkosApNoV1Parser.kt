@@ -43,32 +43,12 @@ import java.net.URI
  */
 @Component(value = "ConceptSkosApNoV1Parser")
 class SkosApNoV1Parser : BaseConceptParser() {
-    /**
-     * Gets the default language for SKOS-AP-NO.
-     *
-     * @return "no" (Norwegian)
-     */
     override fun getDefaultLanguage(): String = LanguageCodes.NORWEGIAN.code
 
-    /**
-     * Gets the version string for this parser.
-     *
-     * @return "1.0"
-     */
     override fun getVersion(): String = "1.1.1"
 
-    /**
-     * Gets the source format identifier.
-     *
-     * @return "SKOS-AP-NO"
-     */
     override fun getSourceFormat(): String = "SKOS-AP-NO"
 
-    /**
-     * Gets the acceptable RDF types for concepts.
-     *
-     * @return List containing SKOS.Concept
-     */
     private fun getAcceptableTypes(): List<Resource> = listOf(SKOS.Concept)
 
     override fun parse(

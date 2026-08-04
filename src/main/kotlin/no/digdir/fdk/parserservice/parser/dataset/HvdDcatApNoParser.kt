@@ -40,34 +40,12 @@ import java.net.URI
  */
 @Component(value = "DatasetHvdDcatApNoParser")
 class HvdDcatApNoParser : BaseDatasetParser() {
-    /**
-     * Gets the default language for HVD-DCAT-AP-NO.
-     *
-     * @return "no" (Norwegian)
-     */
     override fun getDefaultLanguage(): String = LanguageCodes.NORWEGIAN.code
 
-    /**
-     * Gets the version string for this parser.
-     *
-     * @return "1.0.2" (current HVD-DCAT-AP-NO version)
-     */
     override fun getVersion(): String = "1.0.2"
 
-    /**
-     * Gets the source format identifier.
-     *
-     * @return "HVD-DCAT-AP-NO"
-     */
     override fun getSourceFormat(): String = "HVD-DCAT-AP-NO"
 
-    /**
-     * Gets the acceptable RDF types for datasets.
-     *
-     * Accepts both regular datasets and dataset series, as both can be HVDs.
-     *
-     * @return List containing DCAT.Dataset and DCAT3.DatasetSeries
-     */
     override fun getAcceptableTypes(): List<Resource> = listOf(DCAT.Dataset, DCAT3.DatasetSeries)
 
     override fun parse(

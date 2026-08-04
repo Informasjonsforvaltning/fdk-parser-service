@@ -40,34 +40,12 @@ import java.net.URI
  */
 @Component(value = "DatasetDcatApNoV3Parser")
 class DcatApNoV3Parser : BaseDatasetParser() {
-    /**
-     * Gets the default language for DCAT-AP-NO v3.0.
-     *
-     * @return "no" (Norwegian)
-     */
     override fun getDefaultLanguage(): String = LanguageCodes.NORWEGIAN.code
 
-    /**
-     * Gets the version string for this parser.
-     *
-     * @return "3.0.6"
-     */
     override fun getVersion(): String = "3.0.6"
 
-    /**
-     * Gets the source format identifier.
-     *
-     * @return "DCAT-AP-NO"
-     */
     override fun getSourceFormat(): String = "DCAT-AP-NO"
 
-    /**
-     * Gets the acceptable RDF types for datasets.
-     *
-     * Accepts both regular datasets and dataset series.
-     *
-     * @return List containing DCAT.Dataset and DCAT3.DatasetSeries
-     */
     override fun getAcceptableTypes(): List<Resource> = listOf(DCAT.Dataset, DCAT3.DatasetSeries)
 
     override fun parse(

@@ -57,32 +57,12 @@ import java.net.URI
  */
 @Component
 class MobilityDcatApV3Parser : BaseDatasetParser() {
-    /**
-     * Gets the default language for Mobility DCAT-AP v3.0.0.
-     *
-     * @return "no" (Norwegian)
-     */
     override fun getDefaultLanguage(): String = LanguageCodes.NORWEGIAN.code
 
-    /**
-     * Gets the version string for this parser.
-     *
-     * @return "3.0.0"
-     */
     override fun getVersion(): String = "3.0.0"
 
-    /**
-     * Gets the source format identifier.
-     *
-     * @return "mobilityDCAT-AP"
-     */
     override fun getSourceFormat(): String = "mobilityDCAT-AP"
 
-    /**
-     * Gets the acceptable RDF types for datasets.
-     *
-     * @return List containing DCAT.Dataset
-     */
     override fun getAcceptableTypes(): List<Resource> = listOf(DCAT.Dataset)
 
     override fun parse(

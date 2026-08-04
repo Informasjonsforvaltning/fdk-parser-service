@@ -39,32 +39,12 @@ import java.net.URI
  */
 @Component(value = "ServiceCpsvNoV1Parser")
 class CpsvApNoV1Parser : BaseServiceParser() {
-    /**
-     * Gets the default language for CPSVNO.
-     *
-     * @return "no" (Norwegian)
-     */
     override fun getDefaultLanguage(): String = LanguageCodes.NORWEGIAN.code
 
-    /**
-     * Gets the version string for this parser.
-     *
-     * @return "0.9"
-     */
     override fun getVersion(): String = "1.1.2"
 
-    /**
-     * Gets the source format identifier.
-     *
-     * @return "CPSV-AP-NO"
-     */
     override fun getSourceFormat(): String = "CPSV-AP-NO"
 
-    /**
-     * Gets the acceptable RDF types for services.
-     *
-     * @return List containing CPSVNO.Service and CPSV.PublicService
-     */
     override fun getAcceptableTypes(): List<Resource> =
         listOf(
             ResourceFactory

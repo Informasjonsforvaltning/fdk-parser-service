@@ -34,32 +34,12 @@ import java.net.URI
  */
 @Component(value = "EventCpsvNoV0Parser")
 class CpsvApNoV0Parser : BaseEventParser() {
-    /**
-     * Gets the default language for CPSVNO.
-     *
-     * @return "no" (Norwegian)
-     */
     override fun getDefaultLanguage(): String = LanguageCodes.NORWEGIAN.code
 
-    /**
-     * Gets the version string for this parser.
-     *
-     * @return "0.9"
-     */
     override fun getVersion(): String = "0.9"
 
-    /**
-     * Gets the source format identifier.
-     *
-     * @return "CPSV-AP-NO"
-     */
     override fun getSourceFormat(): String = "CPSV-AP-NO"
 
-    /**
-     * Gets the acceptable RDF types for events.
-     *
-     * @return List containing CV.Event, CV.BusinessEvent, and CV.LifeEvent
-     */
     override fun getAcceptableTypes(): List<Resource> =
         listOf(
             ResourceFactory.createResource(CV.Event.uri),
