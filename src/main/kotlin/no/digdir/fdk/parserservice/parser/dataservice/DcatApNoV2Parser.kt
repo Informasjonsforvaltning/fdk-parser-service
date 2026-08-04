@@ -53,32 +53,12 @@ import java.net.URI
  */
 @Component(value = "DataServiceDcatApNoV2Parser")
 class DcatApNoV2Parser : BaseDataServiceParser() {
-    /**
-     * Gets the default language for DCAT-AP-NO v2.2.
-     *
-     * @return "no" (Norwegian)
-     */
     override fun getDefaultLanguage(): String = LanguageCodes.NORWEGIAN.code
 
-    /**
-     * Gets the version string for this parser.
-     *
-     * @return "2.2"
-     */
     override fun getVersion(): String = "2.2"
 
-    /**
-     * Gets the source format identifier.
-     *
-     * @return "DCAT-AP-NO"
-     */
     override fun getSourceFormat(): String = "DCAT-AP-NO"
 
-    /**
-     * Gets the acceptable RDF types for data services.
-     *
-     * @return List containing DCAT.DataService
-     */
     override fun getAcceptableTypes(): List<Resource> = listOf(DCAT.DataService)
 
     override fun parse(

@@ -59,32 +59,12 @@ import java.net.URI
  */
 @Component
 class ModellDcatApNoV1Parser : BaseInformationModelParser() {
-    /**
-     * Gets the default language for ModellDCAT-AP-NO.
-     *
-     * @return "no" (Norwegian)
-     */
     override fun getDefaultLanguage(): String = LanguageCodes.NORWEGIAN.code
 
-    /**
-     * Gets the version string for this parser.
-     *
-     * @return "1.3.2"
-     */
     override fun getVersion(): String = "1.3.2"
 
-    /**
-     * Gets the source format identifier.
-     *
-     * @return "ModellDCAT-AP-NO"
-     */
     override fun getSourceFormat(): String = "ModellDCAT-AP-NO"
 
-    /**
-     * Gets the acceptable RDF types for information models.
-     *
-     * @return List containing MODELDCATNO.InformationModel
-     */
     override fun getAcceptableTypes(): List<Resource> = listOf(MODELLDCATNO.InformationModel)
 
     override fun parse(
