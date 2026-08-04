@@ -18,6 +18,7 @@ class CircuitBreakerConsumerConfiguration(
 ) {
     private val circuitBreakerToListenerMapping =
         mapOf(
+            "rdf-parse-concept" to "concept-event-consumer",
             "rdf-parse-data-service" to "data-service-event-consumer",
             "rdf-parse-dataset" to "dataset-event-consumer",
             "rdf-parse-event" to "event-event-consumer",
