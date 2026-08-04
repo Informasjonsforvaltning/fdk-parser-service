@@ -73,21 +73,25 @@ private fun Resource.buildDistributionV1(): Distribution? {
     return builder.build().takeIf { it.hasContent() }
 }
 
-private fun Resource.buildDistributionV2(): Distribution? {
-    val builder = Distribution.newBuilder()
-
-    addCommonDistributionValuesToBuilder(builder)
-
+private fun Resource.addFormatFieldsToBuilder(builder: Distribution.Builder) {
     val formats = extractListOfFormats(DCTerms.format) ?: emptyList()
     val mediaTypes = extractListOfFormats(DCAT.mediaType) ?: emptyList()
     val allFormats = formats + mediaTypes
 
     builder
-        .setAccessURL(extractListOfStrings(DCAT.accessURL))
         .setFdkFormat(allFormats.takeIf { it.isNotEmpty() })
         .setCompressFormat(extractFormat(DCAT.compressFormat))
         .setPackageFormat(extractFormat(DCAT.packageFormat))
         .setAccessService(extractListOfAccessServices())
+}
+
+private fun Resource.buildDistributionV2(): Distribution? {
+    val builder = Distribution.newBuilder()
+
+    addCommonDistributionValuesToBuilder(builder)
+
+    builder.setAccessURL(extractListOfStrings(DCAT.accessURL))
+    addFormatFieldsToBuilder(builder)
 
     // The following properties are not implemented in DCAT-AP-NO v2.2
     builder
@@ -101,16 +105,9 @@ private fun Resource.buildDistributionV2(): Distribution? {
 
 private fun Resource.addCommonDistributionValuesToBuilderV3(builder: Distribution.Builder) {
     addCommonDistributionValuesToBuilder(builder)
-
-    val formats = extractListOfFormats(DCTerms.format) ?: emptyList()
-    val mediaTypes = extractListOfFormats(DCAT.mediaType) ?: emptyList()
-    val allFormats = formats + mediaTypes
+    addFormatFieldsToBuilder(builder)
 
     builder
-        .setFdkFormat(allFormats.takeIf { it.isNotEmpty() })
-        .setCompressFormat(extractFormat(DCAT.compressFormat))
-        .setPackageFormat(extractFormat(DCAT.packageFormat))
-        .setAccessService(extractListOfAccessServices())
         .setStatus(extractReferenceDataCode(ADMS.status, DC_11.identifier, SKOS.prefLabel))
         .setRights(extractRightsStatement())
         .setApplicableLegislation(extractListOfLegalResources(DCATAP.applicableLegislation))

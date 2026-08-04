@@ -8,4 +8,15 @@ enum class LanguageCodes(
     ENGLISH("en"),
     NORWEGIAN("no"),
     NONE(""),
+    ;
+
+    companion object {
+        private val byCode = entries.filter { it != NONE }.associateBy { it.code }
+
+        fun fromCode(code: String?): LanguageCodes? =
+            when {
+                code == null || code.isEmpty() -> NONE
+                else -> byCode[code]
+            }
+    }
 }
