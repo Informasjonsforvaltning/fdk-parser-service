@@ -1,6 +1,8 @@
 package no.digdir.fdk.parserservice.kafka
 
-import no.digdir.fdk.parserservice.model.RecoverableParseException
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException
+import no.digdir.fdk.parserservice.metrics.KafkaParseMetrics
+import no.digdir.fdk.parserservice.metrics.KafkaParseMetrics.EventProcessingResult
 import no.digdir.fdk.parserservice.model.UnrecoverableParseException
 import no.fdk.concept.ConceptEvent
 import no.fdk.dataservice.DataServiceEvent
@@ -146,35 +148,60 @@ class KafkaReasonedEventConsumer(
         record: ConsumerRecord<String, Any>,
         ack: Acknowledgment,
         resourceLabel: String,
-        processSpecific: (T) -> Unit,
-        processGeneric: (GenericRecord) -> Unit,
+        processSpecific: (T) -> KafkaReasonedEventCircuitBreaker.ProcessOutcome,
+        processGeneric: (GenericRecord) -> KafkaReasonedEventCircuitBreaker.ProcessOutcome,
     ) {
         LOGGER.debug("Received $resourceLabel message - offset: " + record.offset())
         try {
-            when (val message = runCatching { record.value() }.getOrNull()) {
-                is SpecificRecord -> {
-                    val typedEvent =
-                        try {
-                            message as T
-                        } catch (ex: Exception) {
-                            LOGGER.error("Error parsing $resourceLabel message", ex)
-                            throw UnrecoverableParseException("Error parsing $resourceLabel message")
-                        }
-                    processSpecific(typedEvent)
+            val outcome =
+                when (val message = runCatching { record.value() }.getOrNull()) {
+                    is SpecificRecord -> {
+                        val typedEvent =
+                            try {
+                                message as T
+                            } catch (ex: Exception) {
+                                LOGGER.error("Error parsing $resourceLabel message", ex)
+                                throw UnrecoverableParseException("Error parsing $resourceLabel message")
+                            }
+                        processSpecific(typedEvent)
+                    }
+
+                    is GenericRecord -> {
+                        processGeneric(message)
+                    }
+
+                    else -> {
+                        LOGGER.warn("Unknown message type: {}", message?.javaClass)
+                        KafkaReasonedEventCircuitBreaker.ProcessOutcome.Skipped
+                    }
+                }
+            when (outcome) {
+                is KafkaReasonedEventCircuitBreaker.ProcessOutcome.Skipped -> {
+                    KafkaParseMetrics.recordEventProcessed(null, EventProcessingResult.SKIPPED)
                 }
 
-                is GenericRecord -> {
-                    processGeneric(message)
-                }
-
-                else -> {
-                    LOGGER.warn("Unknown message type: {}", message?.javaClass)
+                is KafkaReasonedEventCircuitBreaker.ProcessOutcome.Success -> {
+                    KafkaParseMetrics.recordEventProcessed(outcome.resourceType, EventProcessingResult.ACKED)
                 }
             }
             ack.acknowledge()
-        } catch (e: RecoverableParseException) {
+        } catch (e: CallNotPermittedException) {
+            LOGGER.warn(
+                "Circuit breaker open, nacking $resourceLabel message - topic: {} partition: {} offset: {}",
+                record.topic(),
+                record.partition(),
+                record.offset(),
+            )
+            KafkaParseMetrics.recordEventProcessed(null, EventProcessingResult.CIRCUIT_OPEN)
+            ack.nack(Duration.ZERO)
+        } catch (e: RecoverableParseProcessingException) {
+            KafkaParseMetrics.recordEventProcessed(e.resourceType, EventProcessingResult.ACKED)
             ack.acknowledge()
+        } catch (e: UnrecoverableParseProcessingException) {
+            KafkaParseMetrics.recordEventProcessed(e.resourceType, EventProcessingResult.NACKED)
+            ack.nack(Duration.ZERO)
         } catch (e: UnrecoverableParseException) {
+            KafkaParseMetrics.recordEventProcessed(null, EventProcessingResult.NACKED)
             ack.nack(Duration.ZERO)
         }
     }

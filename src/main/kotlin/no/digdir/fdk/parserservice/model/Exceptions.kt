@@ -2,11 +2,13 @@ package no.digdir.fdk.parserservice.model
 
 open class RecoverableParseException(
     message: String,
-) : Exception(message)
+    cause: Throwable? = null,
+) : Exception(message, cause)
 
 open class UnrecoverableParseException(
     message: String,
-) : Exception(message)
+    cause: Throwable? = null,
+) : Exception(message, cause)
 
 class NoAcceptableFDKRecordsException(
     message: String,
@@ -27,3 +29,8 @@ class NoResourceFoundException(
 class UnableToParseException(
     message: String,
 ) : UnrecoverableParseException(message)
+
+class NoParserMatchedException(
+    message: String,
+    cause: Throwable? = null,
+) : UnrecoverableParseException(message, cause)

@@ -145,6 +145,28 @@ class KafkaReasonedEventConsumerTest {
     }
 
     @Test
+    fun `concept listener should not acknowledge when no parser can parse the resource`() {
+        every {
+            conceptHandler.parseConcept(any(), any(), any())
+        } throws IllegalStateException("No parsers were able to successfully parse the concept for my-id")
+        every { harvestEventKafkaTemplate.send(any(), any()) } returns CompletableFuture()
+        every { ack.nack(Duration.ZERO) } returns Unit
+
+        val conceptEvent =
+            ConceptEvent(ConceptEventType.CONCEPT_REASONED, "harvest-run-id", "uri", "my-id", "graph", System.currentTimeMillis(), null)
+        kafkaReasonedEventConsumer.conceptListener(
+            record = ConsumerRecord("concept-events", 0, 0, "my-id", conceptEvent as Any),
+            ack = ack,
+        )
+
+        verify(exactly = 0) { kafkaTemplate.send(any(), any()) }
+        verify(exactly = 1) { harvestEventKafkaTemplate.send(any(), any()) }
+        verify(exactly = 0) { ack.acknowledge() }
+        verify(exactly = 1) { ack.nack(Duration.ZERO) }
+        confirmVerified(kafkaTemplate, harvestEventKafkaTemplate, ack)
+    }
+
+    @Test
     fun `processConcept should handle valid concept reasoned event`() {
         val event = mockk<ConceptEvent>()
         every { event.type } returns ConceptEventType.CONCEPT_REASONED

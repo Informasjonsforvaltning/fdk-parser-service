@@ -2,6 +2,8 @@ package no.digdir.fdk.parserservice.parser
 
 import no.digdir.fdk.model.dataset.Dataset
 import no.digdir.fdk.parserservice.LOGGER
+import no.digdir.fdk.parserservice.metrics.ParseMetrics
+import no.fdk.rdf.parse.RdfParseResourceType
 import org.apache.jena.rdf.model.Model
 import org.springframework.stereotype.Component
 
@@ -57,8 +59,10 @@ class DatasetParserRegistry {
             try {
                 val dataset = entry.parser.parse(model, iri, fdkId)
                 results.add(dataset)
+                ParseMetrics.recordProfileMatch(RdfParseResourceType.DATASET, entry.name, matched = true)
                 LOGGER.debug("Successfully parsed dataset with parser '${entry.name}'")
             } catch (e: Exception) {
+                ParseMetrics.recordProfileMatch(RdfParseResourceType.DATASET, entry.name, matched = false)
                 LOGGER.warn("Failed to parse dataset with parser '${entry.name}' for $fdkId", e)
             }
         }

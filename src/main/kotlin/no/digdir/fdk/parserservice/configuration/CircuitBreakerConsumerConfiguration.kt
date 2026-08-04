@@ -5,6 +5,7 @@ import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import io.github.resilience4j.circuitbreaker.event.CircuitBreakerOnStateTransitionEvent
 import no.digdir.fdk.parserservice.kafka.KafkaManager
+import no.digdir.fdk.parserservice.metrics.KafkaParseMetrics
 import no.digdir.fdk.parserservice.model.RecoverableParseException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -54,6 +55,9 @@ class CircuitBreakerConsumerConfiguration(
         circuitBreakerName: String,
         listenerId: String?,
     ) {
+        if (listenerId != null) {
+            KafkaParseMetrics.registerListenerPausedGauge(listenerId)
+        }
         registry
             .circuitBreaker(circuitBreakerName)
             .eventPublisher
@@ -64,15 +68,23 @@ class CircuitBreakerConsumerConfiguration(
                         StateTransition.CLOSED_TO_OPEN,
                         StateTransition.CLOSED_TO_FORCED_OPEN,
                         StateTransition.HALF_OPEN_TO_OPEN,
-                        -> kafkaManager.pause(listenerId)
+                        -> {
+                            kafkaManager.pause(listenerId)
+                            KafkaParseMetrics.setListenerPaused(listenerId, true)
+                        }
 
                         StateTransition.OPEN_TO_HALF_OPEN,
                         StateTransition.HALF_OPEN_TO_CLOSED,
                         StateTransition.FORCED_OPEN_TO_CLOSED,
                         StateTransition.FORCED_OPEN_TO_HALF_OPEN,
-                        -> kafkaManager.resume(listenerId)
+                        -> {
+                            kafkaManager.resume(listenerId)
+                            KafkaParseMetrics.setListenerPaused(listenerId, false)
+                        }
 
-                        else -> throw IllegalStateException("Unknown transition state: " + event.stateTransition)
+                        else -> {
+                            throw IllegalStateException("Unknown transition state: " + event.stateTransition)
+                        }
                     }
                 }
             }

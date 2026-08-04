@@ -2,6 +2,8 @@ package no.digdir.fdk.parserservice.parser
 
 import no.digdir.fdk.model.informationmodel.InformationModel
 import no.digdir.fdk.parserservice.LOGGER
+import no.digdir.fdk.parserservice.metrics.ParseMetrics
+import no.fdk.rdf.parse.RdfParseResourceType
 import org.apache.jena.rdf.model.Model
 import org.springframework.stereotype.Component
 
@@ -57,8 +59,10 @@ class InformationModelParserRegistry {
             try {
                 val result = entry.parser.parse(model, iri, fdkId)
                 results.add(result)
+                ParseMetrics.recordProfileMatch(RdfParseResourceType.INFORMATION_MODEL, entry.name, matched = true)
                 LOGGER.debug("Parser '${entry.name}' successfully parsed information model $iri")
             } catch (e: Exception) {
+                ParseMetrics.recordProfileMatch(RdfParseResourceType.INFORMATION_MODEL, entry.name, matched = false)
                 LOGGER.debug("Parser '${entry.name}' failed to parse information model $iri: ${e.message}")
             }
         }

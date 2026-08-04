@@ -1,6 +1,7 @@
 package no.digdir.fdk.parserservice.configuration
 
 import io.confluent.kafka.serializers.KafkaAvroSerializer
+import io.micrometer.core.instrument.MeterRegistry
 import no.fdk.harvest.HarvestEvent
 import no.fdk.rdf.parse.RdfParseEvent
 import org.apache.kafka.clients.producer.ProducerConfig
@@ -10,18 +11,27 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.core.KafkaTemplate
+import org.springframework.kafka.core.MicrometerProducerListener
 import org.springframework.kafka.core.ProducerFactory
 
 @Configuration
 open class KafkaProducerConfig(
     @param:Value("\${spring.kafka.bootstrap-servers}") private val bootstrapServers: String,
     @param:Value("\${spring.kafka.properties.schema.registry.url}") private val schemaRegistryUrl: String,
+    private val meterRegistry: MeterRegistry,
 ) {
     @Bean
-    open fun rdfParseEventProducerFactory(): ProducerFactory<String, RdfParseEvent> = DefaultKafkaProducerFactory(producerProperties())
+    open fun rdfParseEventProducerFactory(): ProducerFactory<String, RdfParseEvent> =
+        DefaultKafkaProducerFactory<String, RdfParseEvent>(producerProperties()).apply {
+            // Exposes native Kafka producer metrics to Micrometer.
+            addListener(MicrometerProducerListener(meterRegistry))
+        }
 
     @Bean
-    open fun harvestEventProducerFactory(): ProducerFactory<String, HarvestEvent> = DefaultKafkaProducerFactory(producerProperties())
+    open fun harvestEventProducerFactory(): ProducerFactory<String, HarvestEvent> =
+        DefaultKafkaProducerFactory<String, HarvestEvent>(producerProperties()).apply {
+            addListener(MicrometerProducerListener(meterRegistry))
+        }
 
     @Bean
     open fun kafkaTemplate(rdfParseEventProducerFactory: ProducerFactory<String, RdfParseEvent>): KafkaTemplate<String, RdfParseEvent> =
