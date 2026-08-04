@@ -1,13 +1,14 @@
 package no.digdir.fdk.parserservice.kafka
 
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
-import io.micrometer.core.instrument.Metrics
 import no.digdir.fdk.parserservice.handler.ConceptHandler
 import no.digdir.fdk.parserservice.handler.DataServiceHandler
 import no.digdir.fdk.parserservice.handler.DatasetHandler
 import no.digdir.fdk.parserservice.handler.EventHandler
 import no.digdir.fdk.parserservice.handler.InformationModelHandler
 import no.digdir.fdk.parserservice.handler.ServiceHandler
+import no.digdir.fdk.parserservice.metrics.ParseMetrics
+import no.digdir.fdk.parserservice.model.NoParserMatchedException
 import no.digdir.fdk.parserservice.model.RecoverableParseException
 import no.digdir.fdk.parserservice.model.UnrecoverableParseException
 import no.fdk.concept.ConceptEvent
@@ -33,7 +34,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.time.Instant
 import kotlin.time.measureTimedValue
-import kotlin.time.toJavaDuration
 
 @Component
 class KafkaReasonedEventCircuitBreaker(
@@ -47,22 +47,22 @@ class KafkaReasonedEventCircuitBreaker(
     private val serviceHandler: ServiceHandler,
     private val circuitBreakerRegistry: CircuitBreakerRegistry,
 ) {
-    fun processConceptGeneric(event: GenericRecord) =
+    fun processConceptGeneric(event: GenericRecord): ProcessOutcome =
         executeWithCircuitBreaker("rdf-parse-concept") {
             processGeneric(event, ConceptEventType.CONCEPT_REASONED.name, RdfParseResourceType.CONCEPT, "concept")
         }
 
-    fun processDataServiceGeneric(event: GenericRecord) =
+    fun processDataServiceGeneric(event: GenericRecord): ProcessOutcome =
         executeWithCircuitBreaker("rdf-parse-data-service") {
             processGeneric(event, DataServiceEventType.DATA_SERVICE_REASONED.name, RdfParseResourceType.DATA_SERVICE, "data service")
         }
 
-    fun processDatasetGeneric(event: GenericRecord) =
+    fun processDatasetGeneric(event: GenericRecord): ProcessOutcome =
         executeWithCircuitBreaker("rdf-parse-dataset") {
             processGeneric(event, DatasetEventType.DATASET_REASONED.name, RdfParseResourceType.DATASET, "dataset")
         }
 
-    fun processInformationModelGeneric(event: GenericRecord) =
+    fun processInformationModelGeneric(event: GenericRecord): ProcessOutcome =
         executeWithCircuitBreaker("rdf-parse-information-model") {
             processGeneric(
                 event,
@@ -72,17 +72,17 @@ class KafkaReasonedEventCircuitBreaker(
             )
         }
 
-    fun processServiceGeneric(event: GenericRecord) =
+    fun processServiceGeneric(event: GenericRecord): ProcessOutcome =
         executeWithCircuitBreaker("rdf-parse-service") {
             processGeneric(event, ServiceEventType.SERVICE_REASONED.name, RdfParseResourceType.SERVICE, "service")
         }
 
-    fun processEventGeneric(event: GenericRecord) =
+    fun processEventGeneric(event: GenericRecord): ProcessOutcome =
         executeWithCircuitBreaker("rdf-parse-event") {
             processGeneric(event, EventEventType.EVENT_REASONED.name, RdfParseResourceType.EVENT, "event")
         }
 
-    fun processConcept(event: ConceptEvent) {
+    fun processConcept(event: ConceptEvent): ProcessOutcome =
         processTypedEvent(
             circuitBreakerName = "rdf-parse-concept",
             resourceType = RdfParseResourceType.CONCEPT,
@@ -100,9 +100,8 @@ class KafkaReasonedEventCircuitBreaker(
                 )
             },
         )
-    }
 
-    fun processDataService(event: DataServiceEvent) {
+    fun processDataService(event: DataServiceEvent): ProcessOutcome =
         processTypedEvent(
             circuitBreakerName = "rdf-parse-data-service",
             resourceType = RdfParseResourceType.DATA_SERVICE,
@@ -120,9 +119,8 @@ class KafkaReasonedEventCircuitBreaker(
                 )
             },
         )
-    }
 
-    fun processDataset(event: DatasetEvent) {
+    fun processDataset(event: DatasetEvent): ProcessOutcome =
         processTypedEvent(
             circuitBreakerName = "rdf-parse-dataset",
             resourceType = RdfParseResourceType.DATASET,
@@ -140,9 +138,8 @@ class KafkaReasonedEventCircuitBreaker(
                 )
             },
         )
-    }
 
-    fun processInformationModel(event: InformationModelEvent) {
+    fun processInformationModel(event: InformationModelEvent): ProcessOutcome =
         processTypedEvent(
             circuitBreakerName = "rdf-parse-information-model",
             resourceType = RdfParseResourceType.INFORMATION_MODEL,
@@ -162,9 +159,8 @@ class KafkaReasonedEventCircuitBreaker(
                 )
             },
         )
-    }
 
-    fun processService(event: ServiceEvent) {
+    fun processService(event: ServiceEvent): ProcessOutcome =
         processTypedEvent(
             circuitBreakerName = "rdf-parse-service",
             resourceType = RdfParseResourceType.SERVICE,
@@ -182,9 +178,8 @@ class KafkaReasonedEventCircuitBreaker(
                 )
             },
         )
-    }
 
-    fun processEvent(event: EventEvent) {
+    fun processEvent(event: EventEvent): ProcessOutcome =
         processTypedEvent(
             circuitBreakerName = "rdf-parse-event",
             resourceType = RdfParseResourceType.EVENT,
@@ -202,7 +197,6 @@ class KafkaReasonedEventCircuitBreaker(
                 )
             },
         )
-    }
 
     private inline fun <T> processTypedEvent(
         circuitBreakerName: String,
@@ -211,9 +205,11 @@ class KafkaReasonedEventCircuitBreaker(
         event: T,
         crossinline isExpectedType: (T) -> Boolean,
         crossinline extractFields: (T) -> ReasonedEventFields,
-    ) {
+    ): ProcessOutcome =
         executeWithCircuitBreaker(circuitBreakerName) {
-            if (!isExpectedType(event)) return@executeWithCircuitBreaker
+            if (!isExpectedType(event)) {
+                return@executeWithCircuitBreaker ProcessOutcome.Skipped
+            }
 
             val fields = extractFields(event)
             if (fields.fdkId != null && fields.graph != null && fields.timestamp != null) {
@@ -226,6 +222,7 @@ class KafkaReasonedEventCircuitBreaker(
                     uri = fields.uri,
                     catalogGraph = fields.catalogGraph,
                 )
+                ProcessOutcome.Success(resourceType)
             } else {
                 val graphForLog = fields.graph?.let { truncateForLog(it, MAX_GRAPH_LOG_LENGTH) }
                 LOGGER.warn(
@@ -234,9 +231,9 @@ class KafkaReasonedEventCircuitBreaker(
                     graphForLog,
                     fields.timestamp,
                 )
+                ProcessOutcome.Skipped
             }
         }
-    }
 
     private fun extractReasonedEventFields(
         fdkId: () -> Any?,
@@ -266,19 +263,18 @@ class KafkaReasonedEventCircuitBreaker(
 
     private fun executeWithCircuitBreaker(
         circuitBreakerName: String,
-        block: () -> Unit,
-    ) {
+        block: () -> ProcessOutcome,
+    ): ProcessOutcome =
         circuitBreakerRegistry
             .circuitBreaker(circuitBreakerName)
-            .executeRunnable(block)
-    }
+            .executeSupplier(block)
 
     private fun processGeneric(
         event: GenericRecord,
         expectedType: String,
         resourceType: RdfParseResourceType,
         resourceLabel: String,
-    ) {
+    ): ProcessOutcome {
         val type = runCatching { event.get("type")?.toString() }.getOrNull()
         val fdkId = runCatching { event.get("fdkId")?.toString() }.getOrNull()
         val graph = runCatching { event.get("graph")?.toString() }.getOrNull()
@@ -295,7 +291,7 @@ class KafkaReasonedEventCircuitBreaker(
 
         if (type == expectedType && fdkId != null && graph != null && timestamp != null) {
             handleRecord(fdkId, graph, timestamp, resourceType, harvestRunId, uri, catalogGraph)
-            return
+            return ProcessOutcome.Success(resourceType)
         }
 
         val graphForLog = graph?.let { truncateForLog(it, MAX_GRAPH_LOG_LENGTH) }
@@ -320,6 +316,7 @@ class KafkaReasonedEventCircuitBreaker(
                 type,
             )
         }
+        return ProcessOutcome.Skipped
     }
 
     private fun handleRecord(
@@ -332,6 +329,8 @@ class KafkaReasonedEventCircuitBreaker(
         catalogGraph: String?,
     ) {
         val startTime = Instant.now().toString()
+        ParseMetrics.recordPipelineLag(resourceType, System.currentTimeMillis() - timestamp)
+        ParseMetrics.recordPayloadSize(resourceType, ParseMetrics.PayloadDirection.INPUT, graph.length)
         try {
             parseAndProduce(fdkId, graph, timestamp, resourceType, harvestRunId, uri, catalogGraph)
             produceHarvestEvent(
@@ -347,6 +346,15 @@ class KafkaReasonedEventCircuitBreaker(
             handleParseFailure(e, resourceType, harvestRunId, fdkId, uri, startTime)
         } catch (e: UnrecoverableParseException) {
             handleParseFailure(e, resourceType, harvestRunId, fdkId, uri, startTime)
+        } catch (e: IllegalStateException) {
+            handleParseFailure(
+                NoParserMatchedException(e.message ?: "No parser could parse the resource", e),
+                resourceType,
+                harvestRunId,
+                fdkId,
+                uri,
+                startTime,
+            )
         }
     }
 
@@ -362,12 +370,7 @@ class KafkaReasonedEventCircuitBreaker(
             is RecoverableParseException -> LOGGER.warn("Recoverable parsing error: " + e.message)
             is UnrecoverableParseException -> LOGGER.error("Unrecoverable parsing error: " + e.message)
         }
-        Metrics
-            .counter(
-                "rdf_parse_error",
-                "type",
-                resourceType.toString().lowercase(),
-            ).increment()
+        ParseMetrics.recordError(resourceType, e)
         produceHarvestEvent(
             harvestRunId = harvestRunId,
             resourceType = resourceType,
@@ -377,7 +380,11 @@ class KafkaReasonedEventCircuitBreaker(
             endTime = Instant.now().toString(),
             errorMessage = e.message,
         )
-        throw e
+        throw when (e) {
+            is RecoverableParseException -> RecoverableParseProcessingException(resourceType, e)
+            is UnrecoverableParseException -> UnrecoverableParseProcessingException(resourceType, e)
+            else -> e
+        }
     }
 
     private fun parseAndProduce(
@@ -401,6 +408,8 @@ class KafkaReasonedEventCircuitBreaker(
                         RdfParseResourceType.INFORMATION_MODEL -> informationModelHandler.parseInformationModel(fdkId, graph, catalogGraph)
                         RdfParseResourceType.SERVICE -> serviceHandler.parseService(fdkId, graph, catalogGraph)
                     }
+                val data = json.toString()
+                ParseMetrics.recordPayloadSize(type, ParseMetrics.PayloadDirection.OUTPUT, data.length)
                 val rdfParseEvent =
                     RdfParseEvent
                         .newBuilder()
@@ -408,17 +417,12 @@ class KafkaReasonedEventCircuitBreaker(
                         .setHarvestRunId(harvestRunId)
                         .setUri(uri)
                         .setFdkId(fdkId)
-                        .setData(json.toString())
+                        .setData(data)
                         .setTimestamp(timestamp)
                         .build()
                 producer.sendMessage(rdfParseEvent)
             }
-        Metrics
-            .timer(
-                "rdf_parse",
-                "type",
-                type.toString().lowercase(),
-            ).record(timeElapsed.duration.toJavaDuration())
+        ParseMetrics.recordTotal(type, timeElapsed.duration)
     }
 
     private fun mapResourceTypeToDataType(resourceType: RdfParseResourceType): DataType =
@@ -462,6 +466,14 @@ class KafkaReasonedEventCircuitBreaker(
         harvestEventProducer.sendMessage(harvestEvent)
     }
 
+    sealed class ProcessOutcome {
+        data object Skipped : ProcessOutcome()
+
+        data class Success(
+            val resourceType: RdfParseResourceType,
+        ) : ProcessOutcome()
+    }
+
     companion object {
         private const val MAX_GRAPH_LOG_LENGTH = 200
         private val LOGGER: Logger = LoggerFactory.getLogger(KafkaReasonedEventCircuitBreaker::class.java)
@@ -472,3 +484,13 @@ class KafkaReasonedEventCircuitBreaker(
         ): String = if (s.length <= maxLength) s else s.take(maxLength) + "... (${s.length} chars total)"
     }
 }
+
+class RecoverableParseProcessingException(
+    val resourceType: RdfParseResourceType,
+    cause: Throwable,
+) : RuntimeException(cause.message, cause)
+
+class UnrecoverableParseProcessingException(
+    val resourceType: RdfParseResourceType,
+    cause: Throwable,
+) : RuntimeException(cause.message, cause)

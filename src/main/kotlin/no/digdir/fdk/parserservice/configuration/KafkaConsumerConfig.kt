@@ -1,6 +1,7 @@
 package no.digdir.fdk.parserservice.configuration
 
 import io.confluent.kafka.serializers.KafkaAvroDeserializer
+import io.micrometer.core.instrument.MeterRegistry
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.springframework.beans.factory.annotation.Value
@@ -10,6 +11,7 @@ import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
 import org.springframework.kafka.core.ConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
+import org.springframework.kafka.core.MicrometerConsumerListener
 import org.springframework.kafka.listener.ContainerProperties
 
 @EnableKafka
@@ -17,6 +19,7 @@ import org.springframework.kafka.listener.ContainerProperties
 class KafkaConsumerConfig(
     @param:Value("\${spring.kafka.bootstrap-servers}") private val bootstrapServers: String,
     @param:Value("\${spring.kafka.properties.schema.registry.url}") private val schemaRegistryUrl: String,
+    private val meterRegistry: MeterRegistry,
 ) {
     @Bean
     fun consumerFactory(): ConsumerFactory<String, Any> {
@@ -28,7 +31,9 @@ class KafkaConsumerConfig(
         props[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest"
         props["schema.registry.url"] = schemaRegistryUrl
         props["specific.avro.reader"] = false
-        return DefaultKafkaConsumerFactory(props)
+        return DefaultKafkaConsumerFactory<String, Any>(props).apply {
+            addListener(MicrometerConsumerListener(meterRegistry))
+        }
     }
 
     @Bean
