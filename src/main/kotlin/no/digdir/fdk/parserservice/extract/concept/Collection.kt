@@ -1,7 +1,6 @@
 package no.digdir.fdk.parserservice.extract.concept
 
 import no.digdir.fdk.model.concept.ConceptCollection
-import no.digdir.fdk.parserservice.LOGGER
 import no.digdir.fdk.parserservice.extract.containsTriple
 import no.digdir.fdk.parserservice.extract.extractLocalizedStrings
 import no.digdir.fdk.parserservice.extract.extractOrganization
@@ -12,7 +11,11 @@ import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDF
 import org.apache.jena.vocabulary.RDFS
 import org.apache.jena.vocabulary.SKOS
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.net.URI
+
+private val LOGGER: Logger = LoggerFactory.getLogger("no.digdir.fdk.parserservice.extract.concept.Collection")
 
 private fun ConceptCollection.hasData(): Boolean =
     when {

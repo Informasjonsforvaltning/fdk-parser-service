@@ -1,13 +1,16 @@
 package no.digdir.fdk.parserservice.extract
 
 import no.digdir.fdk.model.Catalog
-import no.digdir.fdk.parserservice.LOGGER
 import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDF
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.net.URI
+
+private val LOGGER: Logger = LoggerFactory.getLogger("no.digdir.fdk.parserservice.extract.CatalogData")
 
 private fun Catalog.hasData(): Boolean = uri != null || id != null || title != null || description != null || publisher != null
 
