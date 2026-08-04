@@ -33,34 +33,13 @@ class KafkaReasonedEventConsumer(
         record: ConsumerRecord<String, Any>,
         ack: Acknowledgment,
     ) {
-        LOGGER.debug("Received data service message - offset: " + record.offset())
-        try {
-            when (val message = runCatching { record.value() }.getOrNull()) {
-                is SpecificRecord -> {
-                    val dataServiceEvent =
-                        try {
-                            message as DataServiceEvent
-                        } catch (ex: Exception) {
-                            LOGGER.error("Error parsing data service message", ex)
-                            throw UnrecoverableParseException("Error parsing data service message")
-                        }
-                    circuitBreaker.processDataService(dataServiceEvent)
-                }
-
-                is GenericRecord -> {
-                    circuitBreaker.processDataServiceGeneric(message)
-                }
-
-                else -> {
-                    LOGGER.warn("Unknown message type: {}", message?.javaClass)
-                }
-            }
-            ack.acknowledge()
-        } catch (e: RecoverableParseException) {
-            ack.acknowledge()
-        } catch (e: UnrecoverableParseException) {
-            ack.nack(Duration.ZERO)
-        }
+        handleListenerMessage<DataServiceEvent>(
+            record = record,
+            ack = ack,
+            resourceLabel = "data service",
+            processSpecific = circuitBreaker::processDataService,
+            processGeneric = circuitBreaker::processDataServiceGeneric,
+        )
     }
 
     @KafkaListener(
@@ -74,34 +53,13 @@ class KafkaReasonedEventConsumer(
         record: ConsumerRecord<String, Any>,
         ack: Acknowledgment,
     ) {
-        LOGGER.debug("Received concept message - offset: " + record.offset())
-        try {
-            when (val message = runCatching { record.value() }.getOrNull()) {
-                is SpecificRecord -> {
-                    val conceptEvent =
-                        try {
-                            message as ConceptEvent
-                        } catch (ex: Exception) {
-                            LOGGER.error("Error parsing concept message", ex)
-                            throw UnrecoverableParseException("Error parsing concept message")
-                        }
-                    circuitBreaker.processConcept(conceptEvent)
-                }
-
-                is GenericRecord -> {
-                    circuitBreaker.processConceptGeneric(message)
-                }
-
-                else -> {
-                    LOGGER.warn("Unknown message type: {}", message?.javaClass)
-                }
-            }
-            ack.acknowledge()
-        } catch (e: RecoverableParseException) {
-            ack.acknowledge()
-        } catch (e: UnrecoverableParseException) {
-            ack.nack(Duration.ZERO)
-        }
+        handleListenerMessage<ConceptEvent>(
+            record = record,
+            ack = ack,
+            resourceLabel = "concept",
+            processSpecific = circuitBreaker::processConcept,
+            processGeneric = circuitBreaker::processConceptGeneric,
+        )
     }
 
     @KafkaListener(
@@ -115,34 +73,13 @@ class KafkaReasonedEventConsumer(
         record: ConsumerRecord<String, Any>,
         ack: Acknowledgment,
     ) {
-        LOGGER.debug("Received dataset message - offset: " + record.offset())
-        try {
-            when (val message = runCatching { record.value() }.getOrNull()) {
-                is SpecificRecord -> {
-                    val datasetEvent =
-                        try {
-                            message as DatasetEvent
-                        } catch (ex: Exception) {
-                            LOGGER.error("Error parsing dataset message", ex)
-                            throw UnrecoverableParseException("Error parsing dataset message")
-                        }
-                    circuitBreaker.processDataset(datasetEvent)
-                }
-
-                is GenericRecord -> {
-                    circuitBreaker.processDatasetGeneric(message)
-                }
-
-                else -> {
-                    LOGGER.warn("Unknown message type: {}", message?.javaClass)
-                }
-            }
-            ack.acknowledge()
-        } catch (e: RecoverableParseException) {
-            ack.acknowledge()
-        } catch (e: UnrecoverableParseException) {
-            ack.nack(Duration.ZERO)
-        }
+        handleListenerMessage<DatasetEvent>(
+            record = record,
+            ack = ack,
+            resourceLabel = "dataset",
+            processSpecific = circuitBreaker::processDataset,
+            processGeneric = circuitBreaker::processDatasetGeneric,
+        )
     }
 
     @KafkaListener(
@@ -156,34 +93,13 @@ class KafkaReasonedEventConsumer(
         record: ConsumerRecord<String, Any>,
         ack: Acknowledgment,
     ) {
-        LOGGER.debug("Received information model message - offset: " + record.offset())
-        try {
-            when (val message = runCatching { record.value() }.getOrNull()) {
-                is SpecificRecord -> {
-                    val infoModelEvent =
-                        try {
-                            message as InformationModelEvent
-                        } catch (ex: Exception) {
-                            LOGGER.error("Error parsing information model message", ex)
-                            throw UnrecoverableParseException("Error parsing information model message")
-                        }
-                    circuitBreaker.processInformationModel(infoModelEvent)
-                }
-
-                is GenericRecord -> {
-                    circuitBreaker.processInformationModelGeneric(message)
-                }
-
-                else -> {
-                    LOGGER.warn("Unknown message type: {}", message?.javaClass)
-                }
-            }
-            ack.acknowledge()
-        } catch (e: RecoverableParseException) {
-            ack.acknowledge()
-        } catch (e: UnrecoverableParseException) {
-            ack.nack(Duration.ZERO)
-        }
+        handleListenerMessage<InformationModelEvent>(
+            record = record,
+            ack = ack,
+            resourceLabel = "information model",
+            processSpecific = circuitBreaker::processInformationModel,
+            processGeneric = circuitBreaker::processInformationModelGeneric,
+        )
     }
 
     @KafkaListener(
@@ -197,34 +113,13 @@ class KafkaReasonedEventConsumer(
         record: ConsumerRecord<String, Any>,
         ack: Acknowledgment,
     ) {
-        LOGGER.debug("Received service message - offset: " + record.offset())
-        try {
-            when (val message = runCatching { record.value() }.getOrNull()) {
-                is SpecificRecord -> {
-                    val serviceEvent =
-                        try {
-                            message as ServiceEvent
-                        } catch (ex: Exception) {
-                            LOGGER.error("Error parsing service message", ex)
-                            throw UnrecoverableParseException("Error parsing service message")
-                        }
-                    circuitBreaker.processService(serviceEvent)
-                }
-
-                is GenericRecord -> {
-                    circuitBreaker.processServiceGeneric(message)
-                }
-
-                else -> {
-                    LOGGER.warn("Unknown message type: {}", message?.javaClass)
-                }
-            }
-            ack.acknowledge()
-        } catch (e: RecoverableParseException) {
-            ack.acknowledge()
-        } catch (e: UnrecoverableParseException) {
-            ack.nack(Duration.ZERO)
-        }
+        handleListenerMessage<ServiceEvent>(
+            record = record,
+            ack = ack,
+            resourceLabel = "service",
+            processSpecific = circuitBreaker::processService,
+            processGeneric = circuitBreaker::processServiceGeneric,
+        )
     }
 
     @KafkaListener(
@@ -238,22 +133,38 @@ class KafkaReasonedEventConsumer(
         record: ConsumerRecord<String, Any>,
         ack: Acknowledgment,
     ) {
-        LOGGER.debug("Received event message - offset: " + record.offset())
+        handleListenerMessage<EventEvent>(
+            record = record,
+            ack = ack,
+            resourceLabel = "event",
+            processSpecific = circuitBreaker::processEvent,
+            processGeneric = circuitBreaker::processEventGeneric,
+        )
+    }
+
+    private inline fun <reified T : SpecificRecord> handleListenerMessage(
+        record: ConsumerRecord<String, Any>,
+        ack: Acknowledgment,
+        resourceLabel: String,
+        processSpecific: (T) -> Unit,
+        processGeneric: (GenericRecord) -> Unit,
+    ) {
+        LOGGER.debug("Received $resourceLabel message - offset: " + record.offset())
         try {
             when (val message = runCatching { record.value() }.getOrNull()) {
                 is SpecificRecord -> {
-                    val eventEvent =
+                    val typedEvent =
                         try {
-                            message as EventEvent
+                            message as T
                         } catch (ex: Exception) {
-                            LOGGER.error("Error parsing event message", ex)
-                            throw UnrecoverableParseException("Error parsing event message")
+                            LOGGER.error("Error parsing $resourceLabel message", ex)
+                            throw UnrecoverableParseException("Error parsing $resourceLabel message")
                         }
-                    circuitBreaker.processEvent(eventEvent)
+                    processSpecific(typedEvent)
                 }
 
                 is GenericRecord -> {
-                    circuitBreaker.processEventGeneric(message)
+                    processGeneric(message)
                 }
 
                 else -> {
