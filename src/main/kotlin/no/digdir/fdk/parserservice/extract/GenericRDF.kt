@@ -1,6 +1,5 @@
 package no.digdir.fdk.parserservice.extract
 
-import no.digdir.fdk.parserservice.LOGGER
 import no.digdir.fdk.parserservice.model.LanguageCodes
 import org.apache.jena.query.QueryExecutionFactory
 import org.apache.jena.query.QueryFactory
@@ -9,7 +8,11 @@ import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.rdf.model.Statement
 import org.apache.jena.vocabulary.DCTerms
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.net.URI
+
+private val LOGGER: Logger = LoggerFactory.getLogger("no.digdir.fdk.parserservice.extract.GenericRDF")
 
 /**
  * Extension function to get a single object statement for a given predicate.
