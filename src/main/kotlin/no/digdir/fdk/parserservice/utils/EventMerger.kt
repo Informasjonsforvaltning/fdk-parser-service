@@ -22,19 +22,19 @@ object EventMerger {
 
         return Event
             .newBuilder()
-            .setId(events.firstNonNull { it.id })
-            .setUri(events.firstNonNull { it.uri })
-            .setIdentifier(events.firstNonNull { it.identifier })
-            .setHarvest(events.firstNonNull { it.harvest })
-            .setTitle(events.firstNonNull { it.title })
-            .setDescription(events.firstNonNull { it.description })
-            .setDctType(events.firstNonNull { it.dctType })
-            .setRelation(events.firstNonNull { it.relation })
-            .setMayInitiate(events.firstNonNull { it.mayInitiate })
-            .setSubject(events.firstNonNull { it.subject })
-            .setDistribution(events.firstNonNull { it.distribution })
-            .setCatalog(events.firstNonNull { it.catalog })
-            .setSpecializedType(events.firstNonNull { it.specializedType })
+            .setId(events.firstNotNullOfOrNull { it.id })
+            .setUri(events.firstNotNullOfOrNull { it.uri })
+            .setIdentifier(events.firstNotNullOfOrNull { it.identifier })
+            .setHarvest(events.firstNotNullOfOrNull { it.harvest })
+            .setTitle(events.firstNotNullOfOrNull { it.title })
+            .setDescription(events.firstNotNullOfOrNull { it.description })
+            .setDctType(events.firstNotNullOfOrNull { it.dctType })
+            .setRelation(events.firstNotNullOfOrNull { it.relation })
+            .setMayInitiate(events.firstNotNullOfOrNull { it.mayInitiate })
+            .setSubject(events.firstNotNullOfOrNull { it.subject })
+            .setDistribution(events.firstNotNullOfOrNull { it.distribution })
+            .setCatalog(events.firstNotNullOfOrNull { it.catalog })
+            .setSpecializedType(events.firstNotNullOfOrNull { it.specializedType })
             .build()
     }
 
@@ -45,9 +45,4 @@ object EventMerger {
         prioritized: Event,
         vararg fallbacks: Event,
     ): Event = merge(listOf(prioritized) + fallbacks)
-
-    /**
-     * Finds the first non-null value for a field across the prioritized events.
-     */
-    private inline fun <T> List<Event>.firstNonNull(extractor: (Event) -> T?): T? = this.firstNotNullOfOrNull(extractor)
 }

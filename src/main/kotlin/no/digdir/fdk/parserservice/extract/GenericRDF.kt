@@ -189,16 +189,7 @@ fun Resource.extractListOfStrings(pred: Property): List<String>? =
  */
 fun Statement.extractStringLanguagePair(): Pair<LanguageCodes, String>? {
     try {
-        val lang =
-            when (language) {
-                null -> LanguageCodes.NONE
-                "" -> LanguageCodes.NONE
-                "no" -> LanguageCodes.NORWEGIAN
-                "nb" -> LanguageCodes.NORWEGIAN_BOKMAL
-                "nn" -> LanguageCodes.NORWEGIAN_NYNORSK
-                "en" -> LanguageCodes.ENGLISH
-                else -> null
-            }
+        val lang = LanguageCodes.fromCode(language)
         val str = string
         return when {
             str == null -> null
