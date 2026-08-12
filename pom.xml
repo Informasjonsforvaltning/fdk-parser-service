@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.6</version>
+        <version>4.1.0</version>
         <relativePath/>
     </parent>
 
@@ -276,6 +276,12 @@
                 </executions>
             </plugin>
 
+            <!-- ktlint derives its source roots from the project's compile source roots.
+                 Those resolve to <sourceDirectory>/<testSourceDirectory> above, which point
+                 at src/main/kotlin and src/test/kotlin - that is what makes ktlint see the
+                 Kotlin sources. Do not repoint those without registering the Kotlin
+                 directories some other way (e.g. build-helper add-source), or ktlint
+                 silently degrades to inspecting no files while still reporting green. -->
             <plugin>
                 <groupId>com.github.gantsign.maven</groupId>
                 <artifactId>ktlint-maven-plugin</artifactId>
