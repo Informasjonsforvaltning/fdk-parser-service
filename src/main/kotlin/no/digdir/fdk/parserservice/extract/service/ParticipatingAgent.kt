@@ -12,15 +12,14 @@ import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.SKOS
 
-private fun ServiceParticipation.hasContent() =
-    when {
-        uri != null -> true
-        identifier != null -> true
-        description != null -> true
-        role != null -> true
-        agent != null -> true
-        else -> false
-    }
+private fun ServiceParticipation.hasContent() = when {
+    uri != null -> true
+    identifier != null -> true
+    description != null -> true
+    role != null -> true
+    agent != null -> true
+    else -> false
+}
 
 private fun Resource.buildServiceParticipation(): ServiceParticipation? {
     val builder = ServiceParticipation.newBuilder()
@@ -35,14 +34,13 @@ private fun Resource.buildServiceParticipation(): ServiceParticipation? {
     return builder.build().takeIf { it.hasContent() }
 }
 
-private fun ServiceAgent.hasContent() =
-    when {
-        uri != null -> true
-        identifier != null -> true
-        name != null -> true
-        playsRole != null -> true
-        else -> false
-    }
+private fun ServiceAgent.hasContent() = when {
+    uri != null -> true
+    identifier != null -> true
+    name != null -> true
+    playsRole != null -> true
+    else -> false
+}
 
 private fun Resource.buildServiceAgent(participation: List<ServiceParticipation>?): ServiceAgent? {
     val builder = ServiceAgent.newBuilder()

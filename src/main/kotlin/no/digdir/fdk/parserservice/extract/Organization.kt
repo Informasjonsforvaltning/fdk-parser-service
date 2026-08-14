@@ -12,17 +12,16 @@ import org.apache.jena.vocabulary.RDF
 import org.apache.jena.vocabulary.ROV
 import org.apache.jena.vocabulary.SKOS
 
-private fun Organization.hasContent() =
-    when {
-        uri != null -> true
-        id != null -> true
-        name != null -> true
-        orgPath != null -> true
-        organisasjonsform != null -> true
-        prefLabel != null -> true
-        title != null -> true
-        else -> false
-    }
+private fun Organization.hasContent() = when {
+    uri != null -> true
+    id != null -> true
+    name != null -> true
+    orgPath != null -> true
+    organisasjonsform != null -> true
+    prefLabel != null -> true
+    title != null -> true
+    else -> false
+}
 
 /**
  * Extension function to extract organization information from an RDF resource.
@@ -52,10 +51,9 @@ fun Resource.extractOrganization(pred: Property): Organization? {
  * @param pred The property predicate pointing to the organization resource
  * @return List of organization objects with extracted metadata, or null if no organizations found
  */
-fun Resource.extractListOfOrganizations(pred: Property): List<Organization>? =
-    listResources(pred)
-        ?.mapNotNull { it.buildOrganization() }
-        ?.takeIf { it.isNotEmpty() }
+fun Resource.extractListOfOrganizations(pred: Property): List<Organization>? = listResources(pred)
+    ?.mapNotNull { it.buildOrganization() }
+    ?.takeIf { it.isNotEmpty() }
 
 private fun Resource.buildOrganization(): Organization? {
     val builder = Organization.newBuilder()
@@ -117,7 +115,6 @@ private fun Resource.buildForGenericAgent(builder: Organization.Builder): Organi
  * @return The organizational form code, or null if not found
  * @see Resource.extractStringValue
  */
-private fun Resource.extractOrgForm(): String? =
-    extractStringValue(ROV.orgType)
-        ?.split("#")
-        ?.last()
+private fun Resource.extractOrgForm(): String? = extractStringValue(ROV.orgType)
+    ?.split("#")
+    ?.last()

@@ -8,18 +8,17 @@ import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDFS
 import org.apache.jena.vocabulary.SKOS
 
-private fun LegalResource.hasContent() =
-    when {
-        uri != null -> true
-        title != null -> true
-        dctTitle != null -> true
-        description != null -> true
-        language != null -> true
-        type != null -> true
-        seeAlso != null -> true
-        relation != null -> true
-        else -> false
-    }
+private fun LegalResource.hasContent() = when {
+    uri != null -> true
+    title != null -> true
+    dctTitle != null -> true
+    description != null -> true
+    language != null -> true
+    type != null -> true
+    seeAlso != null -> true
+    relation != null -> true
+    else -> false
+}
 
 private fun Resource.buildLegalResource(): LegalResource? {
     val builder = LegalResource.newBuilder()
@@ -45,7 +44,6 @@ private fun Resource.buildLegalResource(): LegalResource? {
  * @param predicate the property predicate that points to the legal resource(s)
  * @return list of legal resources or `null` when no legal resource information exists
  */
-fun Resource.extractListOfLegalResources(predicate: Property): List<LegalResource>? =
-    listResources(predicate)
-        ?.mapNotNull { it.buildLegalResource() }
-        ?.takeIf { it.isNotEmpty() }
+fun Resource.extractListOfLegalResources(predicate: Property): List<LegalResource>? = listResources(predicate)
+    ?.mapNotNull { it.buildLegalResource() }
+    ?.takeIf { it.isNotEmpty() }

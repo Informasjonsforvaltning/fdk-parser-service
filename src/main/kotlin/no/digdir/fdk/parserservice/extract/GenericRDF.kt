@@ -42,13 +42,12 @@ fun Resource.singleObjectStatement(pred: Property): Statement? {
  * @return The resource object, or null if not found or not a resource
  * @see Resource.singleObjectStatement
  */
-fun Resource.singleResource(pred: Property): Resource? =
-    try {
-        singleObjectStatement(pred)?.resource?.takeIf { it.isResource }
-    } catch (ex: Exception) {
-        LOGGER.debug("Failed to extract ${pred.uri}, found on $uri, as resource", ex)
-        null
-    }
+fun Resource.singleResource(pred: Property): Resource? = try {
+    singleObjectStatement(pred)?.resource?.takeIf { it.isResource }
+} catch (ex: Exception) {
+    LOGGER.debug("Failed to extract ${pred.uri}, found on $uri, as resource", ex)
+    null
+}
 
 /**
  * Extension function to get a list of resources for a given predicate.
@@ -60,29 +59,27 @@ fun Resource.singleResource(pred: Property): Resource? =
  * @return List of resource objects, or null if extraction fails
  * @see Resource.listProperties
  */
-fun Resource.listResources(pred: Property): List<Resource>? =
-    try {
-        listProperties(pred)
-            .asSequence()
-            .map { it.resource }
-            .filter { it.isResource }
-            .toList()
-    } catch (ex: Exception) {
-        LOGGER.debug("Failed to extract ${pred.uri}, found on $uri, as resource", ex)
-        null
-    }
+fun Resource.listResources(pred: Property): List<Resource>? = try {
+    listProperties(pred)
+        .asSequence()
+        .map { it.resource }
+        .filter { it.isResource }
+        .toList()
+} catch (ex: Exception) {
+    LOGGER.debug("Failed to extract ${pred.uri}, found on $uri, as resource", ex)
+    null
+}
 
 /**
  * Extension function to extract string value from a resource.
  *
  * @return The string value, or null if the resource is not a URIResource or the URI is skolemized
  */
-fun Resource.extractURIStringValue(): String? =
-    if (isURIResource) {
-        uri?.takeIf { !isSkolemizedURI(it) }
-    } else {
-        null
-    }
+fun Resource.extractURIStringValue(): String? = if (isURIResource) {
+    uri?.takeIf { !isSkolemizedURI(it) }
+} else {
+    null
+}
 
 /**
  * Extension function to extract the string value of either the resource URI or dct:identifier.
@@ -103,10 +100,9 @@ fun Resource.extractUriOrIdentifier(pred: Property): String? = singleResource(pr
  *
  * @return List of URI or identifier values
  */
-fun Resource.extractListOfUriOrIdentifier(pred: Property): List<String>? =
-    listResources(pred)
-        ?.mapNotNull { it.extractUriOrIdentifier() }
-        ?.takeIf { it.isNotEmpty() }
+fun Resource.extractListOfUriOrIdentifier(pred: Property): List<String>? = listResources(pred)
+    ?.mapNotNull { it.extractUriOrIdentifier() }
+    ?.takeIf { it.isNotEmpty() }
 
 /**
  * Private extension function to extract string value from a statement.
@@ -144,13 +140,12 @@ fun Resource.extractStringValue(pred: Property): String? = singleObjectStatement
  * @return The integer value, or null if not found or not a valid integer
  * @see Resource.singleObjectStatement
  */
-fun Resource.extractIntegerValue(pred: Property): Int? =
-    try {
-        singleObjectStatement(pred)?.int
-    } catch (ex: Exception) {
-        LOGGER.debug("Failed to extract integer value for ${pred.uri} from $uri", ex)
-        null
-    }
+fun Resource.extractIntegerValue(pred: Property): Int? = try {
+    singleObjectStatement(pred)?.int
+} catch (ex: Exception) {
+    LOGGER.debug("Failed to extract integer value for ${pred.uri} from $uri", ex)
+    null
+}
 
 /**
  * Extension function to extract a single double value for a given predicate.
@@ -159,13 +154,12 @@ fun Resource.extractIntegerValue(pred: Property): Int? =
  * @return The double value, or null if not found or not a valid double
  * @see Resource.singleObjectStatement
  */
-fun Resource.extractDoubleValue(pred: Property): Double? =
-    try {
-        singleObjectStatement(pred)?.double
-    } catch (ex: Exception) {
-        LOGGER.debug("Failed to extract double value for ${pred.uri} from $uri", ex)
-        null
-    }
+fun Resource.extractDoubleValue(pred: Property): Double? = try {
+    singleObjectStatement(pred)?.double
+} catch (ex: Exception) {
+    LOGGER.debug("Failed to extract double value for ${pred.uri} from $uri", ex)
+    null
+}
 
 /**
  * Extension function to extract a list of string values for a given predicate.
@@ -176,12 +170,11 @@ fun Resource.extractDoubleValue(pred: Property): Double? =
  * @return List of string values, or null if no values found
  * @see Resource.listProperties
  */
-fun Resource.extractListOfStrings(pred: Property): List<String>? =
-    listProperties(pred)
-        .asSequence()
-        .mapNotNull { it.extractStringValue() }
-        .toList()
-        .ifEmpty { null }
+fun Resource.extractListOfStrings(pred: Property): List<String>? = listProperties(pred)
+    .asSequence()
+    .mapNotNull { it.extractStringValue() }
+    .toList()
+    .ifEmpty { null }
 
 /**
  * Extension function to extract a string value with its language tag.
@@ -215,11 +208,7 @@ fun Statement.extractStringLanguagePair(): Pair<LanguageCodes, String>? {
  * @param obj The URI object value
  * @return true if the triple exists, false otherwise
  */
-fun Model.containsTriple(
-    subj: String,
-    pred: String,
-    obj: URI,
-): Boolean {
+fun Model.containsTriple(subj: String, pred: String, obj: URI): Boolean {
     val askQuery = "ASK { <$subj> <$pred> <$obj> }"
 
     return try {
@@ -240,11 +229,7 @@ fun Model.containsTriple(
  * @param obj The string object value
  * @return true if the triple exists, false otherwise
  */
-fun Model.containsTriple(
-    subj: String,
-    pred: String,
-    obj: String,
-): Boolean {
+fun Model.containsTriple(subj: String, pred: String, obj: String): Boolean {
     val askQuery = "ASK { <$subj> <$pred> '$obj' }"
 
     return try {
@@ -263,11 +248,7 @@ fun Model.containsTriple(
  * @param obj The boolean object value
  * @return true if the triple exists, false otherwise
  */
-fun Model.containsTriple(
-    subj: String,
-    pred: String,
-    obj: Boolean,
-): Boolean {
+fun Model.containsTriple(subj: String, pred: String, obj: Boolean): Boolean {
     val askQuery = "ASK { <$subj> <$pred> $obj }"
 
     return try {
@@ -284,12 +265,11 @@ fun Model.containsTriple(
  * @param stmt The statement to check
  * @return true if the object is a URI resource, false otherwise
  */
-fun isURIResource(stmt: Statement): Boolean =
-    try {
-        stmt.resource?.isURIResource == true
-    } catch (ex: Exception) {
-        false
-    }
+fun isURIResource(stmt: Statement): Boolean = try {
+    stmt.resource?.isURIResource == true
+} catch (ex: Exception) {
+    false
+}
 
 /**
  * Checks if a statement's object is a resource (URI or blank node).
@@ -297,12 +277,11 @@ fun isURIResource(stmt: Statement): Boolean =
  * @param stmt The statement to check
  * @return true if the object is a resource, false otherwise
  */
-fun isResource(stmt: Statement): Boolean =
-    try {
-        stmt.resource?.isResource == true
-    } catch (ex: Exception) {
-        false
-    }
+fun isResource(stmt: Statement): Boolean = try {
+    stmt.resource?.isResource == true
+} catch (ex: Exception) {
+    false
+}
 
 /**
  * Checks if a URI is a product of skolemization.

@@ -10,9 +10,7 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
 
 @Component
-class KafkaHarvestEventProducer(
-    private val kafkaTemplate: KafkaTemplate<String, HarvestEvent>,
-) {
+class KafkaHarvestEventProducer(private val kafkaTemplate: KafkaTemplate<String, HarvestEvent>) {
     fun sendMessage(msg: HarvestEvent) {
         LOGGER.debug("Sending harvest event to Kafka topic: $TOPIC_NAME")
         val type = msg.dataType.name.lowercase()

@@ -16,29 +16,21 @@ import org.apache.jena.vocabulary.SKOS
  * @param labelPred predicate providing a localized label
  * @return list of `UriWithLabelAndType` objects or `null` when no resources exist
  */
-fun Resource.extractListOfUriWithLabelAndType(
-    pred: Property,
-    uriPred: Property,
-    labelPred: Property,
-): List<UriWithLabelAndType>? =
+fun Resource.extractListOfUriWithLabelAndType(pred: Property, uriPred: Property, labelPred: Property): List<UriWithLabelAndType>? =
     listProperties(pred)
         .asSequence()
         .mapNotNull { it.buildUriWithLabelAndType(uriPred, labelPred) }
         .toList()
         .takeIf { it.isNotEmpty() }
 
-private fun Resource.extractNonConceptType(): String? =
-    listProperties(RDF.type)
-        .asSequence()
-        .filter { isResource(it) && it.resource != SKOS.Concept }
-        .firstOrNull()
-        ?.resource
-        ?.uri
+private fun Resource.extractNonConceptType(): String? = listProperties(RDF.type)
+    .asSequence()
+    .filter { isResource(it) && it.resource != SKOS.Concept }
+    .firstOrNull()
+    ?.resource
+    ?.uri
 
-private fun Statement.buildUriWithLabelAndType(
-    uriPred: Property,
-    labelPred: Property,
-): UriWithLabelAndType? {
+private fun Statement.buildUriWithLabelAndType(uriPred: Property, labelPred: Property): UriWithLabelAndType? {
     if (isResource(this)) {
         val builder = UriWithLabelAndType.newBuilder()
         val uriValueFromPredicate = resource.extractStringValue(uriPred)

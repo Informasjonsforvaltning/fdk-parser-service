@@ -15,17 +15,16 @@ import org.apache.jena.vocabulary.RDF
 import org.apache.jena.vocabulary.RDFS
 import org.apache.jena.vocabulary.SKOS
 
-private fun Resource.extractSources(): List<UriWithText>? =
-    listResources(DCTerms.source)
-        ?.toList()
-        ?.map { source ->
-            UriWithText
-                .newBuilder()
-                .setUri(source.extractURIStringValue())
-                .setText(source.extractLocalizedStrings(RDFS.label))
-                .build()
-        }?.filter { it.uri != null || it.text != null }
-        ?.takeIf { it.isNotEmpty() }
+private fun Resource.extractSources(): List<UriWithText>? = listResources(DCTerms.source)
+    ?.toList()
+    ?.map { source ->
+        UriWithText
+            .newBuilder()
+            .setUri(source.extractURIStringValue())
+            .setText(source.extractLocalizedStrings(RDFS.label))
+            .build()
+    }?.filter { it.uri != null || it.text != null }
+    ?.takeIf { it.isNotEmpty() }
 
 private fun Resource.buildXlDefinition(): ConceptDefinition? {
     val builder = ConceptDefinition.newBuilder()
@@ -39,15 +38,13 @@ private fun Resource.buildXlDefinition(): ConceptDefinition? {
     return builder.build().takeIf { it.text != null }
 }
 
-private fun Resource.extractXlDefinitions(): List<ConceptDefinition> =
-    listResources(EUVOC.xlDefinition)
-        ?.mapNotNull { it.buildXlDefinition() }
-        ?: emptyList()
+private fun Resource.extractXlDefinitions(): List<ConceptDefinition> = listResources(EUVOC.xlDefinition)
+    ?.mapNotNull { it.buildXlDefinition() }
+    ?: emptyList()
 
-private fun Resource.extractDirectStatementDefinition(): List<ConceptDefinition> =
-    extractLocalizedStrings(SKOS.definition)
-        ?.let { listOf(ConceptDefinition().apply { text = it }) }
-        ?: emptyList()
+private fun Resource.extractDirectStatementDefinition(): List<ConceptDefinition> = extractLocalizedStrings(SKOS.definition)
+    ?.let { listOf(ConceptDefinition().apply { text = it }) }
+    ?: emptyList()
 
 /**
  * Extracts all definitions for a concept from the RDF resource.
@@ -75,17 +72,16 @@ fun Resource.extractDefinitions(): List<ConceptDefinition>? {
     }
 }
 
-private fun Resource.extractV1Sources(): List<UriWithText>? =
-    listResources(DCTerms.source)
-        ?.toList()
-        ?.map { source ->
-            UriWithText
-                .newBuilder()
-                .setUri(source.singleResource(RDFS.seeAlso)?.extractURIStringValue())
-                .setText(source.extractLocalizedStrings(RDFS.label))
-                .build()
-        }?.filter { it.uri != null || it.text != null }
-        ?.takeIf { it.isNotEmpty() }
+private fun Resource.extractV1Sources(): List<UriWithText>? = listResources(DCTerms.source)
+    ?.toList()
+    ?.map { source ->
+        UriWithText
+            .newBuilder()
+            .setUri(source.singleResource(RDFS.seeAlso)?.extractURIStringValue())
+            .setText(source.extractLocalizedStrings(RDFS.label))
+            .build()
+    }?.filter { it.uri != null || it.text != null }
+    ?.takeIf { it.isNotEmpty() }
 
 private fun Resource.extractV1TargetGroup(): String? {
     val value = extractStringValue(DCTerms.audience)
@@ -133,7 +129,6 @@ private fun Resource.buildV1Definition(): ConceptDefinition? {
  * @see SKOSNO.definisjon
  * @see extractDefinitions
  */
-fun Resource.extractDefinitionsV1(): List<ConceptDefinition>? =
-    listResources(SKOSNO.definisjon)
-        ?.mapNotNull { it.buildV1Definition() }
-        ?.takeIf { it.isNotEmpty() }
+fun Resource.extractDefinitionsV1(): List<ConceptDefinition>? = listResources(SKOSNO.definisjon)
+    ?.mapNotNull { it.buildV1Definition() }
+    ?.takeIf { it.isNotEmpty() }

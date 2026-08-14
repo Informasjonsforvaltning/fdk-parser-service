@@ -30,10 +30,7 @@ import java.net.URI
  * @see Model.listResourcesWithProperty
  * @see isValidFDKRecord
  */
-fun fdkRecord(
-    resource: Resource,
-    fdkId: String,
-): Resource {
+fun fdkRecord(resource: Resource, fdkId: String): Resource {
     val records =
         resource.model
             .listResourcesWithProperty(FOAF.primaryTopic, resource)
@@ -64,17 +61,13 @@ fun fdkIdFromRecord(recordResource: Resource): String? = recordResource.singleOb
  * @param model The Jena RDF model containing the graph
  * @return The IRI of the primary topic in the record
  */
-fun topicUriOfRecordWithID(
-    id: String,
-    model: Model,
-): String? =
-    model
-        .listSubjectsWithProperty(DCTerms.identifier, id)
-        .asSequence()
-        .filter { it.isURIResource }
-        .firstOrNull()
-        ?.getPropertyResourceValue(FOAF.primaryTopic)
-        ?.uri
+fun topicUriOfRecordWithID(id: String, model: Model): String? = model
+    .listSubjectsWithProperty(DCTerms.identifier, id)
+    .asSequence()
+    .filter { it.isURIResource }
+    .firstOrNull()
+    ?.getPropertyResourceValue(FOAF.primaryTopic)
+    ?.uri
 
 /**
  * Extracts a resource by an identifying URI.
@@ -85,14 +78,10 @@ fun topicUriOfRecordWithID(
  * @throws Exception if no resource is found
  * @see Model.getResource
  */
-fun resourceOfIRI(
-    model: Model,
-    iri: String,
-): Resource =
-    model
-        .getResource(iri)
-        ?.takeIf { it.isURIResource }
-        ?: throw NoResourceFoundException("No resource found with uri $iri")
+fun resourceOfIRI(model: Model, iri: String): Resource = model
+    .getResource(iri)
+    ?.takeIf { it.isURIResource }
+    ?: throw NoResourceFoundException("No resource found with uri $iri")
 
 /**
  * Determines if a CatalogRecord follows the pattern of FDK harvest records.
@@ -107,30 +96,26 @@ fun resourceOfIRI(
  * @param fdkId The relevant FDK ID
  * @return true if the record is a valid FDK record, false otherwise
  */
-private fun isValidFDKRecord(
-    recordResource: Resource,
-    fdkId: String,
-): Boolean =
-    when {
-        // All FDK records are URI resources.
-        !recordResource.isURIResource -> false
+private fun isValidFDKRecord(recordResource: Resource, fdkId: String): Boolean = when {
+    // All FDK records are URI resources.
+    !recordResource.isURIResource -> false
 
-        // Checks that the record has the correct identifier value.
-        !recordResource.model.containsTriple(
-            recordResource.uri,
-            DCTerms.identifier.uri,
-            fdkId,
-        ) -> false
+    // Checks that the record has the correct identifier value.
+    !recordResource.model.containsTriple(
+        recordResource.uri,
+        DCTerms.identifier.uri,
+        fdkId,
+    ) -> false
 
-        // All FDK records has type dcat:CatalogRecord.
-        !recordResource.model.containsTriple(
-            recordResource.uri,
-            RDF.type.uri,
-            URI.create(DCAT.CatalogRecord.uri),
-        ) -> false
+    // All FDK records has type dcat:CatalogRecord.
+    !recordResource.model.containsTriple(
+        recordResource.uri,
+        RDF.type.uri,
+        URI.create(DCAT.CatalogRecord.uri),
+    ) -> false
 
-        else -> true
-    }
+    else -> true
+}
 
 /**
  * Constructs HarvestMetaData from FDK harvest metadata.

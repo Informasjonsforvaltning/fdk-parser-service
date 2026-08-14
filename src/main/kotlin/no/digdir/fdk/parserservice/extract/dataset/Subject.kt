@@ -9,14 +9,13 @@ import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.SKOS
 
-private fun Subject.hasContent() =
-    when {
-        uri != null -> true
-        identifier != null -> true
-        prefLabel != null -> true
-        definition != null -> true
-        else -> false
-    }
+private fun Subject.hasContent() = when {
+    uri != null -> true
+    identifier != null -> true
+    prefLabel != null -> true
+    definition != null -> true
+    else -> false
+}
 
 private fun Resource.buildSubject(): Subject? {
     val builder = Subject.newBuilder()
@@ -36,7 +35,6 @@ private fun Resource.buildSubject(): Subject? {
  *
  * @return list of dataset subjects or `null` when none are declared
  */
-fun Resource.extractListOfSubjects(): List<Subject>? =
-    listResources(DCTerms.subject)
-        ?.mapNotNull { it.buildSubject() }
-        ?.takeIf { it.isNotEmpty() }
+fun Resource.extractListOfSubjects(): List<Subject>? = listResources(DCTerms.subject)
+    ?.mapNotNull { it.buildSubject() }
+    ?.takeIf { it.isNotEmpty() }

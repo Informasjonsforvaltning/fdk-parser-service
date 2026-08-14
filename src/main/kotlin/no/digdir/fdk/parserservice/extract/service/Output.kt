@@ -13,17 +13,16 @@ import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.SKOS
 
-private fun ServiceOutput.hasContent() =
-    when {
-        uri != null -> true
-        identifier != null -> true
-        name != null -> true
-        description != null -> true
-        language != null -> true
-        type != null -> true
-        isPartOf != null -> true
-        else -> false
-    }
+private fun ServiceOutput.hasContent() = when {
+    uri != null -> true
+    identifier != null -> true
+    name != null -> true
+    description != null -> true
+    language != null -> true
+    type != null -> true
+    isPartOf != null -> true
+    else -> false
+}
 
 private fun Resource.buildServiceOutput(): ServiceOutput? {
     val builder = ServiceOutput.newBuilder()
@@ -47,7 +46,6 @@ private fun Resource.buildServiceOutput(): ServiceOutput? {
  * @param predicate the property predicate that points to the output resource(s)
  * @return list of service outputs or `null` when no output information exists
  */
-fun Resource.extractListOfServiceOutput(predicate: Property): List<ServiceOutput>? =
-    listResources(predicate)
-        ?.mapNotNull { it.buildServiceOutput() }
-        ?.takeIf { it.isNotEmpty() }
+fun Resource.extractListOfServiceOutput(predicate: Property): List<ServiceOutput>? = listResources(predicate)
+    ?.mapNotNull { it.buildServiceOutput() }
+    ?.takeIf { it.isNotEmpty() }

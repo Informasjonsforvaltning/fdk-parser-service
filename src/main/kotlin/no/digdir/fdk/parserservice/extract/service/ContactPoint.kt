@@ -12,28 +12,25 @@ import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.SKOS
 import org.apache.jena.vocabulary.VCARD4
 
-private fun ServiceContactPoint.hasContent() =
-    when {
-        uri != null -> true
-        contactType != null -> true
-        email != null -> true
-        telephone != null -> true
-        contactPage != null -> true
-        language != null -> true
-        else -> false
-    }
+private fun ServiceContactPoint.hasContent() = when {
+    uri != null -> true
+    contactType != null -> true
+    email != null -> true
+    telephone != null -> true
+    contactPage != null -> true
+    language != null -> true
+    else -> false
+}
 
-private fun Resource.extractTelephone(): List<String>? =
-    extractListOfStrings(CV.telephone)
-        ?.map { it.removePrefix("tel:") }
-        ?.filter { it.isNotBlank() }
-        ?.takeIf { it.isNotEmpty() }
+private fun Resource.extractTelephone(): List<String>? = extractListOfStrings(CV.telephone)
+    ?.map { it.removePrefix("tel:") }
+    ?.filter { it.isNotBlank() }
+    ?.takeIf { it.isNotEmpty() }
 
-private fun Resource.extractEmail(): List<String>? =
-    extractListOfStrings(CV.email)
-        ?.map { it.removePrefix("mailto:") }
-        ?.filter { it.isNotBlank() }
-        ?.takeIf { it.isNotEmpty() }
+private fun Resource.extractEmail(): List<String>? = extractListOfStrings(CV.email)
+    ?.map { it.removePrefix("mailto:") }
+    ?.filter { it.isNotBlank() }
+    ?.takeIf { it.isNotEmpty() }
 
 private fun Resource.buildServiceContactPoint(): ServiceContactPoint? {
     val builder = ServiceContactPoint.newBuilder()
@@ -55,7 +52,6 @@ private fun Resource.buildServiceContactPoint(): ServiceContactPoint? {
  *
  * @return list of contact points or `null` when no contact point information exists
  */
-fun Resource.extractListOfServiceContactPoints(): List<ServiceContactPoint>? =
-    listResources(CV.contactPoint)
-        ?.mapNotNull { it.buildServiceContactPoint() }
-        ?.takeIf { it.isNotEmpty() }
+fun Resource.extractListOfServiceContactPoints(): List<ServiceContactPoint>? = listResources(CV.contactPoint)
+    ?.mapNotNull { it.buildServiceContactPoint() }
+    ?.takeIf { it.isNotEmpty() }

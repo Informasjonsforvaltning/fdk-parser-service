@@ -13,14 +13,13 @@ import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.OWL
 import org.apache.jena.vocabulary.RDFS
 
-private fun InformationModelStandard.hasContent(): Boolean =
-    when {
-        uri != null -> true
-        title != null -> true
-        seeAlso != null -> true
-        versionInfo != null -> true
-        else -> false
-    }
+private fun InformationModelStandard.hasContent(): Boolean = when {
+    uri != null -> true
+    title != null -> true
+    seeAlso != null -> true
+    versionInfo != null -> true
+    else -> false
+}
 
 /**
  * Extracts references to modelling standards/profiles and maps them to
@@ -29,12 +28,11 @@ private fun InformationModelStandard.hasContent(): Boolean =
  * @param pred predicate (e.g. `prof:isProfileOf`) pointing to the standard resource
  * @return list of standards or `null` when no references exist
  */
-fun Resource.extractListOfModelStandard(pred: Property): List<InformationModelStandard>? =
-    listProperties(pred)
-        .asSequence()
-        .mapNotNull { it.buildModelStandard() }
-        .toList()
-        .takeIf { it.isNotEmpty() }
+fun Resource.extractListOfModelStandard(pred: Property): List<InformationModelStandard>? = listProperties(pred)
+    .asSequence()
+    .mapNotNull { it.buildModelStandard() }
+    .toList()
+    .takeIf { it.isNotEmpty() }
 
 private fun Statement.buildModelStandard(): InformationModelStandard? {
     if (isResource(this)) {

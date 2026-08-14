@@ -14,14 +14,10 @@ import kotlin.test.assertTrue
  */
 @Tag("unit")
 class DataServiceParserRegistryTest {
-    private fun minimalDataService(
-        id: String,
-        uri: String,
-    ): DataService =
-        DataService().apply {
-            this.id = id
-            this.uri = uri
-        }
+    private fun minimalDataService(id: String, uri: String): DataService = DataService().apply {
+        this.id = id
+        this.uri = uri
+    }
 
     @Test
     fun `should register parsers and execute in priority order`() {
@@ -69,16 +65,9 @@ class DataServiceParserRegistryTest {
         // Create parsers where one fails
         val failingParser =
             object : DataServiceParserStrategy {
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                ): DataService = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String): DataService = throw RuntimeException("Parser failed")
 
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                    fdkId: String,
-                ): DataService = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String, fdkId: String): DataService = throw RuntimeException("Parser failed")
             }
 
         val succeedingParser = createMockParser("success", 50)
@@ -99,16 +88,9 @@ class DataServiceParserRegistryTest {
 
         val failingParser =
             object : DataServiceParserStrategy {
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                ): DataService = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String): DataService = throw RuntimeException("Parser failed")
 
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                    fdkId: String,
-                ): DataService = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String, fdkId: String): DataService = throw RuntimeException("Parser failed")
             }
 
         registry.registerParser(failingParser, 100, "Failing Parser")
@@ -119,20 +101,9 @@ class DataServiceParserRegistryTest {
         }
     }
 
-    private fun createMockParser(
-        id: String,
-        priority: Int,
-    ): DataServiceParserStrategy =
-        object : DataServiceParserStrategy {
-            override fun parse(
-                model: Model,
-                iri: String,
-            ): DataService = minimalDataService(id, iri)
+    private fun createMockParser(id: String, priority: Int): DataServiceParserStrategy = object : DataServiceParserStrategy {
+        override fun parse(model: Model, iri: String): DataService = minimalDataService(id, iri)
 
-            override fun parse(
-                model: Model,
-                iri: String,
-                fdkId: String,
-            ): DataService = minimalDataService(id, iri)
-        }
+        override fun parse(model: Model, iri: String, fdkId: String): DataService = minimalDataService(id, iri)
+    }
 }

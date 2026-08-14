@@ -22,9 +22,7 @@ import tools.jackson.databind.JsonNode
  * @since 1.0.0
  */
 @Service
-class ConceptHandler(
-    private val parserRegistry: ConceptParserRegistry,
-) {
+class ConceptHandler(private val parserRegistry: ConceptParserRegistry) {
     /**
      * Parses a concept from RDF graph data and returns it as JSON.
      *
@@ -41,11 +39,7 @@ class ConceptHandler(
      * @throws NoAcceptableFDKRecordsException if no concept is found with the given identifier
      * @throws IllegalStateException if no parsers can successfully parse the concept
      */
-    fun parseConcept(
-        fdkId: String,
-        graph: String,
-        catalogGraph: String?,
-    ): JsonNode {
+    fun parseConcept(fdkId: String, graph: String, catalogGraph: String?): JsonNode {
         val model = ModelFactory.createDefaultModel()
         val concept: Concept =
             try {

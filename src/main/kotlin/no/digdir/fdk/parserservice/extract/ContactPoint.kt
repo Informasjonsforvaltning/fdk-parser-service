@@ -5,17 +5,16 @@ import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.VCARD4
 
-private fun ContactPoint.hasContent() =
-    when {
-        uri != null -> true
-        fullname != null -> true
-        email != null -> true
-        hasURL != null -> true
-        hasTelephone != null -> true
-        organizationName != null -> true
-        organizationUnit != null -> true
-        else -> false
-    }
+private fun ContactPoint.hasContent() = when {
+    uri != null -> true
+    fullname != null -> true
+    email != null -> true
+    hasURL != null -> true
+    hasTelephone != null -> true
+    organizationName != null -> true
+    organizationUnit != null -> true
+    else -> false
+}
 
 private fun Resource.extractVcardTelephone(): String? {
     val value =
@@ -57,7 +56,6 @@ private fun Resource.buildContactPoint(): ContactPoint? {
  *
  * @return list of contact points or `null` when no contact point information exists
  */
-fun Resource.extractListOfContactPoints(): List<ContactPoint>? =
-    listResources(DCAT.contactPoint)
-        ?.mapNotNull { it.buildContactPoint() }
-        ?.takeIf { it.isNotEmpty() }
+fun Resource.extractListOfContactPoints(): List<ContactPoint>? = listResources(DCAT.contactPoint)
+    ?.mapNotNull { it.buildContactPoint() }
+    ?.takeIf { it.isNotEmpty() }

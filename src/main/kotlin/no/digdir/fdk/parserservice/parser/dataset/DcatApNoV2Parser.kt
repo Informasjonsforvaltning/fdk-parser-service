@@ -76,16 +76,9 @@ class DcatApNoV2Parser : BaseDatasetParser() {
 
     override fun getAcceptableTypes(): List<Resource> = listOf(DCAT.Dataset, DCAT3.DatasetSeries)
 
-    override fun parse(
-        model: Model,
-        iri: String,
-    ): Dataset = parseDataset(model, iri, null)
+    override fun parse(model: Model, iri: String): Dataset = parseDataset(model, iri, null)
 
-    override fun parse(
-        model: Model,
-        iri: String,
-        fdkId: String,
-    ): Dataset = parseDataset(model, iri, fdkId)
+    override fun parse(model: Model, iri: String, fdkId: String): Dataset = parseDataset(model, iri, fdkId)
 
     /**
      * Parses an RDF model into a Dataset object according to DCAT-AP-NO v2.2.
@@ -100,11 +93,7 @@ class DcatApNoV2Parser : BaseDatasetParser() {
      * @throws IllegalArgumentException if the model is null or invalid
      * @throws UnsupportedOperationException if no valid FDK record is found
      */
-    private fun parseDataset(
-        model: Model,
-        iri: String,
-        fdkId: String?,
-    ): Dataset {
+    private fun parseDataset(model: Model, iri: String, fdkId: String?): Dataset {
         if (getAcceptableTypes().none { model.containsTriple(iri, RDF.type.uri, URI.create(it.uri)) }) {
             throw NoAcceptableTypesException("No acceptable types found for $iri")
         }

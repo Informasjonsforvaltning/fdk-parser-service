@@ -53,10 +53,7 @@ fun Model.readTurtle(turtleGraph: String) {
  * @throws Exception if serialization fails
  * @see FlatteningJsonEncoder
  */
-inline fun <reified T> avroToJson(
-    avroObject: T,
-    schema: Schema,
-): JsonNode {
+inline fun <reified T> avroToJson(avroObject: T, schema: Schema): JsonNode {
     val mapper = jacksonObjectMapper()
     val outputStream = ByteArrayOutputStream()
     val datumWriter: DatumWriter<T> = SpecificDatumWriter(schema)

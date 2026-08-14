@@ -21,9 +21,7 @@ import tools.jackson.databind.JsonNode
  * @since 1.0.0
  */
 @Service
-class EventHandler(
-    private val parserRegistry: EventParserRegistry,
-) {
+class EventHandler(private val parserRegistry: EventParserRegistry) {
     /**
      * Parses an event from RDF graph data and returns it as JSON.
      *
@@ -40,11 +38,7 @@ class EventHandler(
      * @throws NoAcceptableFDKRecordsException if no event is found with the given identifier
      * @throws IllegalStateException if no parsers can successfully parse the event
      */
-    fun parseEvent(
-        fdkId: String,
-        graph: String,
-        catalogGraph: String?,
-    ): JsonNode {
+    fun parseEvent(fdkId: String, graph: String, catalogGraph: String?): JsonNode {
         val model = ModelFactory.createDefaultModel()
         val event: no.digdir.fdk.model.event.Event =
             try {

@@ -5,14 +5,13 @@ import no.digdir.fdk.parserservice.model.LanguageCodes
 import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
 
-fun LocalizedStrings.hasContent() =
-    when {
-        no != null -> true
-        nb != null -> true
-        nn != null -> true
-        en != null -> true
-        else -> false
-    }
+fun LocalizedStrings.hasContent() = when {
+    no != null -> true
+    nb != null -> true
+    nn != null -> true
+    en != null -> true
+    else -> false
+}
 
 /**
  * Extension function to extract localized strings from an RDF resource.
@@ -99,17 +98,16 @@ fun LocalizedStrings.descriptionHtmlCleaner(): LocalizedStrings {
  * @return List of LocalizedStrings objects, or null if no values found
  * @see Statement.extractStringLanguagePair
  */
-fun Resource.extractLocalizedStringList(pred: Property): List<LocalizedStrings>? =
-    listProperties(pred)
-        .asSequence()
-        .mapNotNull { it.extractStringLanguagePair() }
-        .map { pair ->
-            when (pair.first) {
-                LanguageCodes.NORWEGIAN -> LocalizedStrings().also { it.no = pair.second }
-                LanguageCodes.NORWEGIAN_BOKMAL -> LocalizedStrings().also { it.nb = pair.second }
-                LanguageCodes.NORWEGIAN_NYNORSK -> LocalizedStrings().also { it.nn = pair.second }
-                LanguageCodes.ENGLISH -> LocalizedStrings().also { it.en = pair.second }
-                LanguageCodes.NONE -> LocalizedStrings().also { it.no = pair.second }
-            }
-        }.toList()
-        .takeIf { it.isNotEmpty() }
+fun Resource.extractLocalizedStringList(pred: Property): List<LocalizedStrings>? = listProperties(pred)
+    .asSequence()
+    .mapNotNull { it.extractStringLanguagePair() }
+    .map { pair ->
+        when (pair.first) {
+            LanguageCodes.NORWEGIAN -> LocalizedStrings().also { it.no = pair.second }
+            LanguageCodes.NORWEGIAN_BOKMAL -> LocalizedStrings().also { it.nb = pair.second }
+            LanguageCodes.NORWEGIAN_NYNORSK -> LocalizedStrings().also { it.nn = pair.second }
+            LanguageCodes.ENGLISH -> LocalizedStrings().also { it.en = pair.second }
+            LanguageCodes.NONE -> LocalizedStrings().also { it.no = pair.second }
+        }
+    }.toList()
+    .takeIf { it.isNotEmpty() }

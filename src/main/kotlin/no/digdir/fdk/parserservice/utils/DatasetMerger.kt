@@ -91,8 +91,5 @@ object DatasetMerger {
      * @param fallbacks Additional datasets in priority order
      * @return A new Dataset with values from the highest priority non-null source
      */
-    fun merge(
-        prioritized: Dataset,
-        vararg fallbacks: Dataset,
-    ): Dataset = merge(listOf(prioritized) + fallbacks)
+    fun merge(prioritized: Dataset, vararg fallbacks: Dataset): Dataset = merge(listOf(prioritized) + fallbacks)
 }

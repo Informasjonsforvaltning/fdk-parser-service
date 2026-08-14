@@ -41,8 +41,5 @@ object EventMerger {
     /**
      * Convenience overload for merging a prioritized event with fallback events.
      */
-    fun merge(
-        prioritized: Event,
-        vararg fallbacks: Event,
-    ): Event = merge(listOf(prioritized) + fallbacks)
+    fun merge(prioritized: Event, vararg fallbacks: Event): Event = merge(listOf(prioritized) + fallbacks)
 }

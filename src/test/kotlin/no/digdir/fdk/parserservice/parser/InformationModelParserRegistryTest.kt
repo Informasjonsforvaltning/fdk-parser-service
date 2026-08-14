@@ -11,14 +11,10 @@ import kotlin.test.assertTrue
 
 @Tag("unit")
 class InformationModelParserRegistryTest {
-    private fun minimalInformationModel(
-        id: String,
-        uri: String,
-    ): InformationModel =
-        InformationModel().apply {
-            this.id = id
-            this.uri = uri
-        }
+    private fun minimalInformationModel(id: String, uri: String): InformationModel = InformationModel().apply {
+        this.id = id
+        this.uri = uri
+    }
 
     @Test
     fun `should register parsers and execute in priority order`() {
@@ -61,16 +57,9 @@ class InformationModelParserRegistryTest {
 
         val failingParser =
             object : InformationModelParserStrategy {
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                ): InformationModel = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String): InformationModel = throw RuntimeException("Parser failed")
 
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                    fdkId: String,
-                ): InformationModel = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String, fdkId: String): InformationModel = throw RuntimeException("Parser failed")
             }
 
         val succeedingParser = createMockParser("success", 50)
@@ -91,16 +80,9 @@ class InformationModelParserRegistryTest {
 
         val failingParser =
             object : InformationModelParserStrategy {
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                ): InformationModel = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String): InformationModel = throw RuntimeException("Parser failed")
 
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                    fdkId: String,
-                ): InformationModel = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String, fdkId: String): InformationModel = throw RuntimeException("Parser failed")
             }
 
         registry.registerParser(failingParser, 100, "Failing Parser")
@@ -111,20 +93,9 @@ class InformationModelParserRegistryTest {
         }
     }
 
-    private fun createMockParser(
-        id: String,
-        priority: Int,
-    ): InformationModelParserStrategy =
-        object : InformationModelParserStrategy {
-            override fun parse(
-                model: Model,
-                iri: String,
-            ): InformationModel = minimalInformationModel(id, iri)
+    private fun createMockParser(id: String, priority: Int): InformationModelParserStrategy = object : InformationModelParserStrategy {
+        override fun parse(model: Model, iri: String): InformationModel = minimalInformationModel(id, iri)
 
-            override fun parse(
-                model: Model,
-                iri: String,
-                fdkId: String,
-            ): InformationModel = minimalInformationModel(id, iri)
-        }
+        override fun parse(model: Model, iri: String, fdkId: String): InformationModel = minimalInformationModel(id, iri)
+    }
 }

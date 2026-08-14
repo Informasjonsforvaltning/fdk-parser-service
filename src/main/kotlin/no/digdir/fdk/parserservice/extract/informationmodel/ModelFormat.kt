@@ -13,15 +13,14 @@ import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDFS
 import org.apache.jena.vocabulary.SKOS
 
-private fun InformationModelFormat.hasContent(): Boolean =
-    when {
-        uri != null -> true
-        title != null -> true
-        seeAlso != null -> true
-        format != null -> true
-        language != null -> true
-        else -> false
-    }
+private fun InformationModelFormat.hasContent(): Boolean = when {
+    uri != null -> true
+    title != null -> true
+    seeAlso != null -> true
+    format != null -> true
+    language != null -> true
+    else -> false
+}
 
 /**
  * Extracts `dct:hasFormat` resources and converts them into `InformationModelFormat`
@@ -29,12 +28,11 @@ private fun InformationModelFormat.hasContent(): Boolean =
  *
  * @return list of model formats or `null` when the information model declares none
  */
-fun Resource.extractListOfModelFormat(): List<InformationModelFormat>? =
-    listProperties(DCTerms.hasFormat)
-        .asSequence()
-        .mapNotNull { it.buildModelFormat() }
-        .toList()
-        .takeIf { it.isNotEmpty() }
+fun Resource.extractListOfModelFormat(): List<InformationModelFormat>? = listProperties(DCTerms.hasFormat)
+    .asSequence()
+    .mapNotNull { it.buildModelFormat() }
+    .toList()
+    .takeIf { it.isNotEmpty() }
 
 private fun Statement.buildModelFormat(): InformationModelFormat? {
     if (isResource(this)) {

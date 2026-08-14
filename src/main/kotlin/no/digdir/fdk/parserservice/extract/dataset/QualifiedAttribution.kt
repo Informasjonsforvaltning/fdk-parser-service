@@ -8,12 +8,11 @@ import no.digdir.fdk.parserservice.vocabulary.PROV
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCAT
 
-private fun QualifiedAttribution.hasContent() =
-    when {
-        role != null -> true
-        agent != null -> true
-        else -> false
-    }
+private fun QualifiedAttribution.hasContent() = when {
+    role != null -> true
+    agent != null -> true
+    else -> false
+}
 
 private fun Resource.buildQualifiedAttribution(): QualifiedAttribution? {
     val builder = QualifiedAttribution.newBuilder()
@@ -31,7 +30,6 @@ private fun Resource.buildQualifiedAttribution(): QualifiedAttribution? {
  *
  * @return list of `QualifiedAttribution` items or `null` when none exist
  */
-fun Resource.extractListOfQualifiedAttributions(): List<QualifiedAttribution>? =
-    listResources(PROV.qualifiedAttribution)
-        ?.mapNotNull { it.buildQualifiedAttribution() }
-        ?.takeIf { it.isNotEmpty() }
+fun Resource.extractListOfQualifiedAttributions(): List<QualifiedAttribution>? = listResources(PROV.qualifiedAttribution)
+    ?.mapNotNull { it.buildQualifiedAttribution() }
+    ?.takeIf { it.isNotEmpty() }

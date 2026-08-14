@@ -12,16 +12,15 @@ import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.SKOS
 
-private fun ServiceRequirement.hasContent() =
-    when {
-        uri != null -> true
-        identifier != null -> true
-        dctTitle != null -> true
-        dctType != null -> true
-        description != null -> true
-        fulfils != null -> true
-        else -> false
-    }
+private fun ServiceRequirement.hasContent() = when {
+    uri != null -> true
+    identifier != null -> true
+    dctTitle != null -> true
+    dctType != null -> true
+    description != null -> true
+    fulfils != null -> true
+    else -> false
+}
 
 private fun Resource.buildServiceRequirement(): ServiceRequirement? {
     val builder = ServiceRequirement.newBuilder()
@@ -44,7 +43,6 @@ private fun Resource.buildServiceRequirement(): ServiceRequirement? {
  *
  * @return list of service requirements or `null` when no requirement information exists
  */
-fun Resource.extractListOfServiceRequirements(): List<ServiceRequirement>? =
-    listResources(CV.holdsRequirement)
-        ?.mapNotNull { it.buildServiceRequirement() }
-        ?.takeIf { it.isNotEmpty() }
+fun Resource.extractListOfServiceRequirements(): List<ServiceRequirement>? = listResources(CV.holdsRequirement)
+    ?.mapNotNull { it.buildServiceRequirement() }
+    ?.takeIf { it.isNotEmpty() }

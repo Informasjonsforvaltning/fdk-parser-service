@@ -23,17 +23,11 @@ object KafkaParseMetrics {
         ensureListenerPausedGaugeRegistered(listenerId)
     }
 
-    fun setListenerPaused(
-        listenerId: String,
-        paused: Boolean,
-    ) {
+    fun setListenerPaused(listenerId: String, paused: Boolean) {
         ensureListenerPausedGaugeRegistered(listenerId).set(if (paused) 1 else 0)
     }
 
-    fun recordEventProcessed(
-        resourceType: RdfParseResourceType?,
-        result: EventProcessingResult,
-    ) {
+    fun recordEventProcessed(resourceType: RdfParseResourceType?, result: EventProcessingResult) {
         registry
             .counter(
                 "rdf_parse_event_processing_total",
@@ -56,9 +50,7 @@ object KafkaParseMetrics {
         return state
     }
 
-    enum class EventProcessingResult(
-        val label: String,
-    ) {
+    enum class EventProcessingResult(val label: String) {
         ACKED("acked"),
         NACKED("nacked"),
         SKIPPED("skipped"),

@@ -30,11 +30,7 @@ class DataServiceParserRegistry {
      * @param priority The priority level (higher = more priority)
      * @param name Human-readable name for logging
      */
-    fun registerParser(
-        parser: DataServiceParserStrategy,
-        priority: Int,
-        name: String,
-    ) {
+    fun registerParser(parser: DataServiceParserStrategy, priority: Int, name: String) {
         parsers.add(ParserEntry(parser, priority, name))
         parsers.sortByDescending { it.priority }
         LOGGER.info("Registered data service parser '$name' with priority $priority")
@@ -48,11 +44,7 @@ class DataServiceParserRegistry {
      * @param fdkId The FDK ID of the resource
      * @return List of successfully parsed data services in priority order
      */
-    fun parseWithAllParsers(
-        model: Model,
-        iri: String,
-        fdkId: String,
-    ): List<DataService> {
+    fun parseWithAllParsers(model: Model, iri: String, fdkId: String): List<DataService> {
         val results = mutableListOf<DataService>()
 
         for (entry in parsers) {
@@ -83,25 +75,17 @@ class DataServiceParserRegistry {
     /**
      * Gets information about registered parsers.
      */
-    fun getParserInfo(): List<ParserInfo> =
-        parsers.map {
-            ParserInfo(it.name, it.priority)
-        }
+    fun getParserInfo(): List<ParserInfo> = parsers.map {
+        ParserInfo(it.name, it.priority)
+    }
 
     /**
      * Internal data class for storing parser entries.
      */
-    private data class ParserEntry(
-        val parser: DataServiceParserStrategy,
-        val priority: Int,
-        val name: String,
-    )
+    private data class ParserEntry(val parser: DataServiceParserStrategy, val priority: Int, val name: String)
 
     /**
      * Data class for parser information.
      */
-    data class ParserInfo(
-        val name: String,
-        val priority: Int,
-    )
+    data class ParserInfo(val name: String, val priority: Int)
 }

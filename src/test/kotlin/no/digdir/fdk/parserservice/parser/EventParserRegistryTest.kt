@@ -60,16 +60,9 @@ class EventParserRegistryTest {
         // Create parsers where one fails
         val failingParser =
             object : EventParserStrategy {
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                ): Event = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String): Event = throw RuntimeException("Parser failed")
 
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                    fdkId: String,
-                ): Event = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String, fdkId: String): Event = throw RuntimeException("Parser failed")
             }
 
         val succeedingParser = createMockParser("success", 50)
@@ -90,16 +83,9 @@ class EventParserRegistryTest {
 
         val failingParser =
             object : EventParserStrategy {
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                ): Event = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String): Event = throw RuntimeException("Parser failed")
 
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                    fdkId: String,
-                ): Event = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String, fdkId: String): Event = throw RuntimeException("Parser failed")
             }
 
         registry.registerParser(failingParser, 100, "Failing Parser")
@@ -110,28 +96,15 @@ class EventParserRegistryTest {
         }
     }
 
-    private fun createMockParser(
-        eventId: String,
-        priority: Int,
-    ): EventParserStrategy =
-        object : EventParserStrategy {
-            override fun parse(
-                model: Model,
-                iri: String,
-            ): Event =
-                Event().apply {
-                    id = eventId
-                    uri = iri
-                }
-
-            override fun parse(
-                model: Model,
-                iri: String,
-                fdkId: String,
-            ): Event =
-                Event().apply {
-                    id = eventId
-                    uri = iri
-                }
+    private fun createMockParser(eventId: String, priority: Int): EventParserStrategy = object : EventParserStrategy {
+        override fun parse(model: Model, iri: String): Event = Event().apply {
+            id = eventId
+            uri = iri
         }
+
+        override fun parse(model: Model, iri: String, fdkId: String): Event = Event().apply {
+            id = eventId
+            uri = iri
+        }
+    }
 }

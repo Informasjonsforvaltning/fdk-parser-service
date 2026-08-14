@@ -60,16 +60,9 @@ class ServiceParserRegistryTest {
         // Create parsers where one fails
         val failingParser =
             object : ServiceParserStrategy {
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                ): Service = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String): Service = throw RuntimeException("Parser failed")
 
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                    fdkId: String,
-                ): Service = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String, fdkId: String): Service = throw RuntimeException("Parser failed")
             }
 
         val succeedingParser = createMockParser("success", 50)
@@ -90,16 +83,9 @@ class ServiceParserRegistryTest {
 
         val failingParser =
             object : ServiceParserStrategy {
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                ): Service = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String): Service = throw RuntimeException("Parser failed")
 
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                    fdkId: String,
-                ): Service = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String, fdkId: String): Service = throw RuntimeException("Parser failed")
             }
 
         registry.registerParser(failingParser, 100, "Failing Parser")
@@ -110,28 +96,15 @@ class ServiceParserRegistryTest {
         }
     }
 
-    private fun createMockParser(
-        serviceId: String,
-        priority: Int,
-    ): ServiceParserStrategy =
-        object : ServiceParserStrategy {
-            override fun parse(
-                model: Model,
-                iri: String,
-            ): Service =
-                Service().apply {
-                    id = serviceId
-                    uri = iri
-                }
-
-            override fun parse(
-                model: Model,
-                iri: String,
-                fdkId: String,
-            ): Service =
-                Service().apply {
-                    id = serviceId
-                    uri = iri
-                }
+    private fun createMockParser(serviceId: String, priority: Int): ServiceParserStrategy = object : ServiceParserStrategy {
+        override fun parse(model: Model, iri: String): Service = Service().apply {
+            id = serviceId
+            uri = iri
         }
+
+        override fun parse(model: Model, iri: String, fdkId: String): Service = Service().apply {
+            id = serviceId
+            uri = iri
+        }
+    }
 }

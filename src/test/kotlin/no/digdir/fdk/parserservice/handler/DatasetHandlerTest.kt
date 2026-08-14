@@ -377,38 +377,24 @@ class DatasetHandlerTest {
 
         val mobility =
             object : DatasetParserStrategy {
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                ) = Dataset().apply {
+                override fun parse(model: Model, iri: String) = Dataset().apply {
                     id = "id"
                     uri = iri
                     title = LocalizedStrings().apply { en = "MOB" }
                 }
 
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                    fdkId: String,
-                ) = parse(model, iri)
+                override fun parse(model: Model, iri: String, fdkId: String) = parse(model, iri)
             }
 
         val v2 =
             object : DatasetParserStrategy {
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                ) = Dataset().apply {
+                override fun parse(model: Model, iri: String) = Dataset().apply {
                     id = "id"
                     uri = iri
                     title = LocalizedStrings().apply { en = "V2" }
                 }
 
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                    fdkId: String,
-                ) = parse(model, iri)
+                override fun parse(model: Model, iri: String, fdkId: String) = parse(model, iri)
             }
 
         localRegistry.registerParser(mobility, 200, "mob")

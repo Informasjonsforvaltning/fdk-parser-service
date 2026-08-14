@@ -67,8 +67,5 @@ object ConceptMerger {
      * @param fallbacks Additional concepts in priority order
      * @return A new Concept with values from the highest priority non-null source
      */
-    fun merge(
-        prioritized: Concept,
-        vararg fallbacks: Concept,
-    ): Concept = merge(listOf(prioritized) + fallbacks)
+    fun merge(prioritized: Concept, vararg fallbacks: Concept): Concept = merge(listOf(prioritized) + fallbacks)
 }

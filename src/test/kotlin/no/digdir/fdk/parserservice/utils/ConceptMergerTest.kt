@@ -18,14 +18,10 @@ import kotlin.test.assertEquals
 
 @Tag("unit")
 class ConceptMergerTest {
-    private fun minimal(
-        id: String,
-        uri: String,
-    ): Concept =
-        Concept().apply {
-            this.id = id
-            this.uri = uri
-        }
+    private fun minimal(id: String, uri: String): Concept = Concept().apply {
+        this.id = id
+        this.uri = uri
+    }
 
     @Test
     fun `should merge concepts with priority order`() {

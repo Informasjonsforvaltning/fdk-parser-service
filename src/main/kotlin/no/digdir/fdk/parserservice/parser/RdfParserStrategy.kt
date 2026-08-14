@@ -30,10 +30,7 @@ interface RdfParserStrategy<T> {
      * @throws IllegalArgumentException if the model is null or invalid
      * @throws UnsupportedOperationException if the model format is not supported
      */
-    fun parse(
-        model: Model,
-        iri: String,
-    ): T
+    fun parse(model: Model, iri: String): T
 
     /**
      * Parses an RDF model into a domain object of type T.
@@ -45,11 +42,7 @@ interface RdfParserStrategy<T> {
      * @throws IllegalArgumentException if the model is null or invalid
      * @throws UnsupportedOperationException if the model format is not supported
      */
-    fun parse(
-        model: Model,
-        iri: String,
-        fdkId: String,
-    ): T
+    fun parse(model: Model, iri: String, fdkId: String): T
 }
 
 /**

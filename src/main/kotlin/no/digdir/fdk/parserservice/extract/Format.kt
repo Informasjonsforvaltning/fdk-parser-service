@@ -17,12 +17,11 @@ import org.apache.jena.vocabulary.RDF
  * @param pred the predicate that points to the format resource(s)
  * @return list of populated `Format` objects, or `null` when no values exist
  */
-fun Resource.extractListOfFormats(pred: Property): List<Format>? =
-    listProperties(pred)
-        .asSequence()
-        .mapNotNull { it.buildFormat() }
-        .toList()
-        .takeIf { it.isNotEmpty() }
+fun Resource.extractListOfFormats(pred: Property): List<Format>? = listProperties(pred)
+    .asSequence()
+    .mapNotNull { it.buildFormat() }
+    .toList()
+    .takeIf { it.isNotEmpty() }
 
 /**
  * Extracts a single format resource reachable via the predicate and maps it to a `Format`.

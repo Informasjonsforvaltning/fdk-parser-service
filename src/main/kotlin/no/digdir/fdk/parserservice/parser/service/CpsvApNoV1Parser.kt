@@ -45,24 +45,16 @@ class CpsvApNoV1Parser : BaseServiceParser() {
 
     override fun getSourceFormat(): String = "CPSV-AP-NO"
 
-    override fun getAcceptableTypes(): List<Resource> =
-        listOf(
-            ResourceFactory
-                .createResource(CPSVNO.Service.uri),
-            ResourceFactory
-                .createResource(CPSV.PublicService.uri),
-        )
+    override fun getAcceptableTypes(): List<Resource> = listOf(
+        ResourceFactory
+            .createResource(CPSVNO.Service.uri),
+        ResourceFactory
+            .createResource(CPSV.PublicService.uri),
+    )
 
-    override fun parse(
-        model: Model,
-        iri: String,
-    ): Service = parseService(model, iri, null)
+    override fun parse(model: Model, iri: String): Service = parseService(model, iri, null)
 
-    override fun parse(
-        model: Model,
-        iri: String,
-        fdkId: String,
-    ): Service = parseService(model, iri, fdkId)
+    override fun parse(model: Model, iri: String, fdkId: String): Service = parseService(model, iri, fdkId)
 
     /**
      * Parses an RDF model into a Service object according to CPSVNO.
@@ -77,11 +69,7 @@ class CpsvApNoV1Parser : BaseServiceParser() {
      * @throws IllegalArgumentException if the model is null or invalid
      * @throws UnsupportedOperationException if no valid FDK record is found
      */
-    private fun parseService(
-        model: Model,
-        iri: String,
-        fdkId: String?,
-    ): Service {
+    private fun parseService(model: Model, iri: String, fdkId: String?): Service {
         val acceptableTypes = getAcceptableTypes()
         if (acceptableTypes.none { model.containsTriple(iri, RDF.type.uri, URI.create(it.uri)) }) {
             throw NoAcceptableTypesException("No acceptable types found for $iri")

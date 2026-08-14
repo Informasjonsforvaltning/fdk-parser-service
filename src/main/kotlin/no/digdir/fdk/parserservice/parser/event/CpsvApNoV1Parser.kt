@@ -37,23 +37,15 @@ class CpsvApNoV1Parser : BaseEventParser() {
 
     override fun getSourceFormat(): String = "CPSV-AP-NO"
 
-    override fun getAcceptableTypes(): List<Resource> =
-        listOf(
-            ResourceFactory.createResource(CV.Event.uri),
-            ResourceFactory.createResource(CV.BusinessEvent.uri),
-            ResourceFactory.createResource(CV.LifeEvent.uri),
-        )
+    override fun getAcceptableTypes(): List<Resource> = listOf(
+        ResourceFactory.createResource(CV.Event.uri),
+        ResourceFactory.createResource(CV.BusinessEvent.uri),
+        ResourceFactory.createResource(CV.LifeEvent.uri),
+    )
 
-    override fun parse(
-        model: Model,
-        iri: String,
-    ): Event = parseEvent(model, iri, null)
+    override fun parse(model: Model, iri: String): Event = parseEvent(model, iri, null)
 
-    override fun parse(
-        model: Model,
-        iri: String,
-        fdkId: String,
-    ): Event = parseEvent(model, iri, fdkId)
+    override fun parse(model: Model, iri: String, fdkId: String): Event = parseEvent(model, iri, fdkId)
 
     /**
      * Parses an RDF model into an Event object according to CPSVNO version 1.1.2.
@@ -68,11 +60,7 @@ class CpsvApNoV1Parser : BaseEventParser() {
      * @throws IllegalArgumentException if the model is null or invalid
      * @throws UnsupportedOperationException if no valid FDK record is found
      */
-    private fun parseEvent(
-        model: Model,
-        iri: String,
-        fdkId: String?,
-    ): Event {
+    private fun parseEvent(model: Model, iri: String, fdkId: String?): Event {
         val acceptableTypes = getAcceptableTypes()
         if (acceptableTypes.none { model.containsTriple(iri, RDF.type.uri, URI.create(it.uri)) }) {
             throw NoAcceptableTypesException("No acceptable types found for $iri")

@@ -20,14 +20,13 @@ import java.net.URI
  * @param rule CPSV rule predicate (e.g. `CPSV.ruleForDisclosure`)
  * @return list of legal basis descriptors or `null` when none exist
  */
-fun Resource.extractListOfLegalBasisV2(rule: Property): List<UriWithLabelAndType>? =
-    listProperties(CPSV.follows)
-        .asSequence()
-        .filter { isURIResource(it) }
-        .filter { model.containsTriple(it.resource.uri, DCTerms.type.uri, URI.create(rule.uri)) }
-        .mapNotNull { it.resource.buildLegalBasisV2(rule) }
-        .toList()
-        .takeIf { it.isNotEmpty() }
+fun Resource.extractListOfLegalBasisV2(rule: Property): List<UriWithLabelAndType>? = listProperties(CPSV.follows)
+    .asSequence()
+    .filter { isURIResource(it) }
+    .filter { model.containsTriple(it.resource.uri, DCTerms.type.uri, URI.create(rule.uri)) }
+    .mapNotNull { it.resource.buildLegalBasisV2(rule) }
+    .toList()
+    .takeIf { it.isNotEmpty() }
 
 private fun Resource.buildLegalBasisV2(rule: Property): UriWithLabelAndType? {
     val builder = UriWithLabelAndType.newBuilder()

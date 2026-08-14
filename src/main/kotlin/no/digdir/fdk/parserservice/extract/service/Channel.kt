@@ -16,19 +16,18 @@ import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.SKOS
 import org.apache.jena.vocabulary.VCARD4
 
-private fun ServiceChannel.hasContent() =
-    when {
-        uri != null -> true
-        identifier != null -> true
-        channelType != null -> true
-        description != null -> true
-        processingTime != null -> true
-        hasInput != null -> true
-        email != null -> true
-        url != null -> true
-        telephone != null -> true
-        else -> false
-    }
+private fun ServiceChannel.hasContent() = when {
+    uri != null -> true
+    identifier != null -> true
+    channelType != null -> true
+    description != null -> true
+    processingTime != null -> true
+    hasInput != null -> true
+    email != null -> true
+    url != null -> true
+    telephone != null -> true
+    else -> false
+}
 
 private fun Resource.buildServiceChannel(hasInputPredicate: Property): ServiceChannel? {
     val builder = ServiceChannel.newBuilder()
@@ -54,10 +53,9 @@ private fun Resource.buildServiceChannel(hasInputPredicate: Property): ServiceCh
  *
  * @return list of service channels or `null` when no channel information exists
  */
-fun Resource.extractListOfServiceChannelsV0(): List<ServiceChannel>? =
-    listResources(CV.hasChannel)
-        ?.mapNotNull { it.buildServiceChannel(CPSV.hasInput) }
-        ?.takeIf { it.isNotEmpty() }
+fun Resource.extractListOfServiceChannelsV0(): List<ServiceChannel>? = listResources(CV.hasChannel)
+    ?.mapNotNull { it.buildServiceChannel(CPSV.hasInput) }
+    ?.takeIf { it.isNotEmpty() }
 
 /**
  * Extracts all V1 service channel resources and converts them to `ServiceChannel`
@@ -66,7 +64,6 @@ fun Resource.extractListOfServiceChannelsV0(): List<ServiceChannel>? =
  *
  * @return list of service channels or `null` when no channel information exists
  */
-fun Resource.extractListOfServiceChannelsV1(): List<ServiceChannel>? =
-    listResources(CV.hasChannel)
-        ?.mapNotNull { it.buildServiceChannel(CPSVNO.hasRequiredEvidence) }
-        ?.takeIf { it.isNotEmpty() }
+fun Resource.extractListOfServiceChannelsV1(): List<ServiceChannel>? = listResources(CV.hasChannel)
+    ?.mapNotNull { it.buildServiceChannel(CPSVNO.hasRequiredEvidence) }
+    ?.takeIf { it.isNotEmpty() }

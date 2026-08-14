@@ -12,9 +12,7 @@ import org.springframework.stereotype.Service
 import tools.jackson.databind.JsonNode
 
 @Service
-class DatasetHandler(
-    private val parserRegistry: DatasetParserRegistry,
-) {
+class DatasetHandler(private val parserRegistry: DatasetParserRegistry) {
     /**
      * Parses a dataset from RDF graph data and returns it as JSON.
      *
@@ -31,11 +29,7 @@ class DatasetHandler(
      * @throws NoAcceptableFDKRecordsException if no dataset is found with the given identifier
      * @throws IllegalStateException if no parsers can successfully parse the dataset
      */
-    fun parseDataset(
-        fdkId: String,
-        graph: String,
-        catalogGraph: String?,
-    ): JsonNode {
+    fun parseDataset(fdkId: String, graph: String, catalogGraph: String?): JsonNode {
         val model = ModelFactory.createDefaultModel()
         val dataset: Dataset =
             try {
