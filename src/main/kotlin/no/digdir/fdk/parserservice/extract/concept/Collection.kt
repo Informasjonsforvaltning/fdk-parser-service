@@ -17,15 +17,14 @@ import java.net.URI
 
 private val LOGGER: Logger = LoggerFactory.getLogger("no.digdir.fdk.parserservice.extract.concept.Collection")
 
-private fun ConceptCollection.hasData(): Boolean =
-    when {
-        uri != null -> true
-        id != null -> true
-        label != null -> true
-        description != null -> true
-        publisher != null -> true
-        else -> false
-    }
+private fun ConceptCollection.hasData(): Boolean = when {
+    uri != null -> true
+    id != null -> true
+    label != null -> true
+    description != null -> true
+    publisher != null -> true
+    else -> false
+}
 
 /**
  * Extracts collection metadata for the concept.

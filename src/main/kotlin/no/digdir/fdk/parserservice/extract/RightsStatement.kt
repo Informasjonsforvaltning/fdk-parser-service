@@ -11,14 +11,12 @@ import org.apache.jena.vocabulary.SKOS
  *
  * @return populated `RightsStatement` or `null` when neither type nor description exists
  */
-fun Resource.extractRightsStatement(): RightsStatement? =
-    singleResource(DCTerms.rights)
-        ?.buildRightsStatement()
+fun Resource.extractRightsStatement(): RightsStatement? = singleResource(DCTerms.rights)
+    ?.buildRightsStatement()
 
-private fun Resource.buildRightsStatement(): RightsStatement? =
-    RightsStatement
-        .newBuilder()
-        .setType(extractReferenceDataCode(DCTerms.type, "/", SKOS.prefLabel))
-        .setDescription(extractLocalizedStrings(DCTerms.description))
-        .build()
-        .takeIf { it.type != null || it.description != null }
+private fun Resource.buildRightsStatement(): RightsStatement? = RightsStatement
+    .newBuilder()
+    .setType(extractReferenceDataCode(DCTerms.type, "/", SKOS.prefLabel))
+    .setDescription(extractLocalizedStrings(DCTerms.description))
+    .build()
+    .takeIf { it.type != null || it.description != null }

@@ -14,14 +14,10 @@ import kotlin.test.assertTrue
  */
 @Tag("unit")
 class ConceptParserRegistryTest {
-    private fun minimalConcept(
-        id: String,
-        uri: String,
-    ): Concept =
-        Concept().apply {
-            this.id = id
-            this.uri = uri
-        }
+    private fun minimalConcept(id: String, uri: String): Concept = Concept().apply {
+        this.id = id
+        this.uri = uri
+    }
 
     @Test
     fun `should register parsers and execute in priority order`() {
@@ -69,16 +65,9 @@ class ConceptParserRegistryTest {
         // Create parsers where one fails
         val failingParser =
             object : ConceptParserStrategy {
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                ): Concept = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String): Concept = throw RuntimeException("Parser failed")
 
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                    fdkId: String,
-                ): Concept = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String, fdkId: String): Concept = throw RuntimeException("Parser failed")
             }
 
         val succeedingParser = createMockParser("success", 50)
@@ -99,16 +88,9 @@ class ConceptParserRegistryTest {
 
         val failingParser =
             object : ConceptParserStrategy {
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                ): Concept = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String): Concept = throw RuntimeException("Parser failed")
 
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                    fdkId: String,
-                ): Concept = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String, fdkId: String): Concept = throw RuntimeException("Parser failed")
             }
 
         registry.registerParser(failingParser, 100, "Failing Parser")
@@ -119,22 +101,11 @@ class ConceptParserRegistryTest {
         }
     }
 
-    private fun createMockParser(
-        id: String,
-        priority: Int,
-    ): ConceptParserStrategy =
-        object : ConceptParserStrategy {
-            override fun parse(
-                model: Model,
-                iri: String,
-            ): Concept = minimalConcept(id, iri)
+    private fun createMockParser(id: String, priority: Int): ConceptParserStrategy = object : ConceptParserStrategy {
+        override fun parse(model: Model, iri: String): Concept = minimalConcept(id, iri)
 
-            override fun parse(
-                model: Model,
-                iri: String,
-                fdkId: String,
-            ): Concept = minimalConcept(id, iri)
-        }
+        override fun parse(model: Model, iri: String, fdkId: String): Concept = minimalConcept(id, iri)
+    }
 
     @Test
     fun `results are returned in parser priority order`() {
@@ -142,29 +113,15 @@ class ConceptParserRegistryTest {
 
         val lowPriority =
             object : ConceptParserStrategy {
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                ): Concept = minimalConcept("LOW", iri)
+                override fun parse(model: Model, iri: String): Concept = minimalConcept("LOW", iri)
 
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                    fdkId: String,
-                ): Concept = minimalConcept("LOW", iri)
+                override fun parse(model: Model, iri: String, fdkId: String): Concept = minimalConcept("LOW", iri)
             }
         val highPriority =
             object : ConceptParserStrategy {
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                ): Concept = minimalConcept("HIGH", iri)
+                override fun parse(model: Model, iri: String): Concept = minimalConcept("HIGH", iri)
 
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                    fdkId: String,
-                ): Concept = minimalConcept("HIGH", iri)
+                override fun parse(model: Model, iri: String, fdkId: String): Concept = minimalConcept("HIGH", iri)
             }
 
         registry.registerParser(lowPriority, priority = 50, name = "low")

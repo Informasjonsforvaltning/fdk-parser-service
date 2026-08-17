@@ -14,10 +14,7 @@ object ParseMetrics {
         this.registry = registry
     }
 
-    fun recordTotal(
-        resourceType: RdfParseResourceType,
-        duration: Duration,
-    ) {
+    fun recordTotal(resourceType: RdfParseResourceType, duration: Duration) {
         registry
             .timer(
                 "rdf_parse",
@@ -27,10 +24,7 @@ object ParseMetrics {
     }
 
     /** Records a parsing failure, tagged with a `reason` derived from the simple class name. */
-    fun recordError(
-        resourceType: RdfParseResourceType,
-        cause: Throwable,
-    ) {
+    fun recordError(resourceType: RdfParseResourceType, cause: Throwable) {
         registry
             .counter(
                 "rdf_parse_error",
@@ -42,11 +36,7 @@ object ParseMetrics {
     }
 
     /** Records whether a specific parser implementation matched (parsed) a resource. */
-    fun recordProfileMatch(
-        resourceType: RdfParseResourceType,
-        parserName: String,
-        matched: Boolean,
-    ) {
+    fun recordProfileMatch(resourceType: RdfParseResourceType, parserName: String, matched: Boolean) {
         registry
             .counter(
                 "rdf_parse_profile_match_total",
@@ -60,10 +50,7 @@ object ParseMetrics {
     }
 
     /** Records the end-to-end lag between when the reasoned event was produced and when parsing started. */
-    fun recordPipelineLag(
-        resourceType: RdfParseResourceType,
-        lagMillis: Long,
-    ) {
+    fun recordPipelineLag(resourceType: RdfParseResourceType, lagMillis: Long) {
         registry
             .timer(
                 "rdf_parse_pipeline_lag",
@@ -73,11 +60,7 @@ object ParseMetrics {
     }
 
     /** Records the size (in characters) of an input RDF graph or output JSON payload. */
-    fun recordPayloadSize(
-        resourceType: RdfParseResourceType,
-        direction: PayloadDirection,
-        sizeChars: Int,
-    ) {
+    fun recordPayloadSize(resourceType: RdfParseResourceType, direction: PayloadDirection, sizeChars: Int) {
         registry
             .summary(
                 "rdf_parse_payload_size_chars",
@@ -96,15 +79,12 @@ object ParseMetrics {
         return toSnakeCase(withoutSuffix)
     }
 
-    private fun toSnakeCase(value: String): String =
-        value
-            .replace(Regex("(?<=[a-z0-9])(?=[A-Z])"), "_")
-            .replace(Regex("(?<=[A-Z])(?=[A-Z][a-z])"), "_")
-            .lowercase()
+    private fun toSnakeCase(value: String): String = value
+        .replace(Regex("(?<=[a-z0-9])(?=[A-Z])"), "_")
+        .replace(Regex("(?<=[A-Z])(?=[A-Z][a-z])"), "_")
+        .lowercase()
 
-    enum class PayloadDirection(
-        val label: String,
-    ) {
+    enum class PayloadDirection(val label: String) {
         INPUT("input"),
         OUTPUT("output"),
     }

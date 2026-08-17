@@ -13,16 +13,15 @@ import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.SKOS
 
-private fun ServiceRule.hasContent() =
-    when {
-        uri != null -> true
-        identifier != null -> true
-        name != null -> true
-        description != null -> true
-        language != null -> true
-        legalResources != null -> true
-        else -> false
-    }
+private fun ServiceRule.hasContent() = when {
+    uri != null -> true
+    identifier != null -> true
+    name != null -> true
+    description != null -> true
+    language != null -> true
+    legalResources != null -> true
+    else -> false
+}
 
 private fun Resource.buildServiceRule(): ServiceRule? {
     val builder = ServiceRule.newBuilder()
@@ -45,7 +44,6 @@ private fun Resource.buildServiceRule(): ServiceRule? {
  *
  * @return list of service rules or `null` when no rule information exists
  */
-fun Resource.extractListOfServiceRules(): List<ServiceRule>? =
-    listResources(CPSV.follows)
-        ?.mapNotNull { it.buildServiceRule() }
-        ?.takeIf { it.isNotEmpty() }
+fun Resource.extractListOfServiceRules(): List<ServiceRule>? = listResources(CPSV.follows)
+    ?.mapNotNull { it.buildServiceRule() }
+    ?.takeIf { it.isNotEmpty() }

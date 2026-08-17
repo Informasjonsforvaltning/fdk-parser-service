@@ -14,14 +14,10 @@ import kotlin.test.assertTrue
  */
 @Tag("unit")
 class DatasetParserRegistryTest {
-    private fun minimalDataset(
-        id: String,
-        uri: String,
-    ): Dataset =
-        Dataset().apply {
-            this.id = id
-            this.uri = uri
-        }
+    private fun minimalDataset(id: String, uri: String): Dataset = Dataset().apply {
+        this.id = id
+        this.uri = uri
+    }
 
     @Test
     fun `should register parsers and execute in priority order`() {
@@ -69,16 +65,9 @@ class DatasetParserRegistryTest {
         // Create parsers where one fails
         val failingParser =
             object : DatasetParserStrategy {
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                ): Dataset = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String): Dataset = throw RuntimeException("Parser failed")
 
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                    fdkId: String,
-                ): Dataset = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String, fdkId: String): Dataset = throw RuntimeException("Parser failed")
             }
 
         val succeedingParser = createMockParser("success", 50)
@@ -99,16 +88,9 @@ class DatasetParserRegistryTest {
 
         val failingParser =
             object : DatasetParserStrategy {
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                ): Dataset = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String): Dataset = throw RuntimeException("Parser failed")
 
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                    fdkId: String,
-                ): Dataset = throw RuntimeException("Parser failed")
+                override fun parse(model: Model, iri: String, fdkId: String): Dataset = throw RuntimeException("Parser failed")
             }
 
         registry.registerParser(failingParser, 100, "Failing Parser")
@@ -119,22 +101,11 @@ class DatasetParserRegistryTest {
         }
     }
 
-    private fun createMockParser(
-        id: String,
-        priority: Int,
-    ): DatasetParserStrategy =
-        object : DatasetParserStrategy {
-            override fun parse(
-                model: Model,
-                iri: String,
-            ): Dataset = minimalDataset(id, iri)
+    private fun createMockParser(id: String, priority: Int): DatasetParserStrategy = object : DatasetParserStrategy {
+        override fun parse(model: Model, iri: String): Dataset = minimalDataset(id, iri)
 
-            override fun parse(
-                model: Model,
-                iri: String,
-                fdkId: String,
-            ): Dataset = minimalDataset(id, iri)
-        }
+        override fun parse(model: Model, iri: String, fdkId: String): Dataset = minimalDataset(id, iri)
+    }
 
     @Test
     fun `results are returned in parser priority order`() {
@@ -142,29 +113,15 @@ class DatasetParserRegistryTest {
 
         val lowPriority =
             object : DatasetParserStrategy {
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                ): Dataset = minimalDataset("LOW", iri)
+                override fun parse(model: Model, iri: String): Dataset = minimalDataset("LOW", iri)
 
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                    fdkId: String,
-                ): Dataset = minimalDataset("LOW", iri)
+                override fun parse(model: Model, iri: String, fdkId: String): Dataset = minimalDataset("LOW", iri)
             }
         val highPriority =
             object : DatasetParserStrategy {
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                ): Dataset = minimalDataset("HIGH", iri)
+                override fun parse(model: Model, iri: String): Dataset = minimalDataset("HIGH", iri)
 
-                override fun parse(
-                    model: Model,
-                    iri: String,
-                    fdkId: String,
-                ): Dataset = minimalDataset("HIGH", iri)
+                override fun parse(model: Model, iri: String, fdkId: String): Dataset = minimalDataset("HIGH", iri)
             }
 
         registry.registerParser(lowPriority, priority = 50, name = "low")

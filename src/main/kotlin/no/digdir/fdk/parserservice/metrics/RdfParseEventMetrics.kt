@@ -10,11 +10,7 @@ object RdfParseEventMetrics {
         this.registry = registry
     }
 
-    fun recordPublish(
-        type: String,
-        kind: PublishKind,
-        outcome: PublishOutcome,
-    ) {
+    fun recordPublish(type: String, kind: PublishKind, outcome: PublishOutcome) {
         registry
             .counter(
                 "rdf_parse_event_publish_total",
@@ -29,17 +25,12 @@ object RdfParseEventMetrics {
             ).increment()
     }
 
-    enum class PublishKind(
-        val label: String,
-    ) {
+    enum class PublishKind(val label: String) {
         PARSED("parsed"),
         HARVEST("harvest"),
     }
 
-    enum class PublishOutcome(
-        val status: String,
-        val reason: String,
-    ) {
+    enum class PublishOutcome(val status: String, val reason: String) {
         SUCCESS("success", "published"),
         PUBLISH_FAILED("error", "publish_failed"),
         SKIPPED("error", "skipped"),

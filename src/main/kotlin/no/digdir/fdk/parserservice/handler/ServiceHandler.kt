@@ -21,9 +21,7 @@ import tools.jackson.databind.JsonNode
  * @since 1.0.0
  */
 @Service
-class ServiceHandler(
-    private val parserRegistry: ServiceParserRegistry,
-) {
+class ServiceHandler(private val parserRegistry: ServiceParserRegistry) {
     /**
      * Parses a service from RDF graph data and returns it as JSON.
      *
@@ -40,11 +38,7 @@ class ServiceHandler(
      * @throws NoAcceptableFDKRecordsException if no service is found with the given identifier
      * @throws IllegalStateException if no parsers can successfully parse the service
      */
-    fun parseService(
-        fdkId: String,
-        graph: String,
-        catalogGraph: String?,
-    ): JsonNode {
+    fun parseService(fdkId: String, graph: String, catalogGraph: String?): JsonNode {
         val model = ModelFactory.createDefaultModel()
         val service: no.digdir.fdk.model.service.Service =
             try {

@@ -21,9 +21,7 @@ import org.springframework.stereotype.Component
 import java.time.Duration
 
 @Component
-class KafkaReasonedEventConsumer(
-    private val circuitBreaker: KafkaReasonedEventCircuitBreaker,
-) {
+class KafkaReasonedEventConsumer(private val circuitBreaker: KafkaReasonedEventCircuitBreaker) {
     @KafkaListener(
         topics = ["data-service-events"],
         groupId = "fdk-parser-service",
@@ -31,10 +29,7 @@ class KafkaReasonedEventConsumer(
         containerFactory = "kafkaListenerContainerFactory",
         id = "data-service-event-consumer",
     )
-    fun dataServiceListener(
-        record: ConsumerRecord<String, Any>,
-        ack: Acknowledgment,
-    ) {
+    fun dataServiceListener(record: ConsumerRecord<String, Any>, ack: Acknowledgment) {
         handleListenerMessage<DataServiceEvent>(
             record = record,
             ack = ack,
@@ -51,10 +46,7 @@ class KafkaReasonedEventConsumer(
         containerFactory = "kafkaListenerContainerFactory",
         id = "concept-event-consumer",
     )
-    fun conceptListener(
-        record: ConsumerRecord<String, Any>,
-        ack: Acknowledgment,
-    ) {
+    fun conceptListener(record: ConsumerRecord<String, Any>, ack: Acknowledgment) {
         handleListenerMessage<ConceptEvent>(
             record = record,
             ack = ack,
@@ -71,10 +63,7 @@ class KafkaReasonedEventConsumer(
         containerFactory = "kafkaListenerContainerFactory",
         id = "dataset-event-consumer",
     )
-    fun datasetListener(
-        record: ConsumerRecord<String, Any>,
-        ack: Acknowledgment,
-    ) {
+    fun datasetListener(record: ConsumerRecord<String, Any>, ack: Acknowledgment) {
         handleListenerMessage<DatasetEvent>(
             record = record,
             ack = ack,
@@ -91,10 +80,7 @@ class KafkaReasonedEventConsumer(
         containerFactory = "kafkaListenerContainerFactory",
         id = "information-model-event-consumer",
     )
-    fun informationModelListener(
-        record: ConsumerRecord<String, Any>,
-        ack: Acknowledgment,
-    ) {
+    fun informationModelListener(record: ConsumerRecord<String, Any>, ack: Acknowledgment) {
         handleListenerMessage<InformationModelEvent>(
             record = record,
             ack = ack,
@@ -111,10 +97,7 @@ class KafkaReasonedEventConsumer(
         containerFactory = "kafkaListenerContainerFactory",
         id = "service-event-consumer",
     )
-    fun serviceListener(
-        record: ConsumerRecord<String, Any>,
-        ack: Acknowledgment,
-    ) {
+    fun serviceListener(record: ConsumerRecord<String, Any>, ack: Acknowledgment) {
         handleListenerMessage<ServiceEvent>(
             record = record,
             ack = ack,
@@ -131,10 +114,7 @@ class KafkaReasonedEventConsumer(
         containerFactory = "kafkaListenerContainerFactory",
         id = "event-event-consumer",
     )
-    fun eventListener(
-        record: ConsumerRecord<String, Any>,
-        ack: Acknowledgment,
-    ) {
+    fun eventListener(record: ConsumerRecord<String, Any>, ack: Acknowledgment) {
         handleListenerMessage<EventEvent>(
             record = record,
             ack = ack,

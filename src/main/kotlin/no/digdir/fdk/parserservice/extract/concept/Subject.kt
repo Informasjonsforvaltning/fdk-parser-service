@@ -8,12 +8,11 @@ import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.SKOS
 
-private fun ConceptSubject.hasContent() =
-    when {
-        uri != null -> true
-        label != null -> true
-        else -> false
-    }
+private fun ConceptSubject.hasContent() = when {
+    uri != null -> true
+    label != null -> true
+    else -> false
+}
 
 private fun Resource.buildFromResource(): ConceptSubject? {
     val builder = ConceptSubject.newBuilder()

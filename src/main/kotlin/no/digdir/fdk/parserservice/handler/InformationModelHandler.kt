@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service
 import tools.jackson.databind.JsonNode
 
 @Service
-class InformationModelHandler(
-    private val parserRegistry: InformationModelParserRegistry,
-) {
+class InformationModelHandler(private val parserRegistry: InformationModelParserRegistry) {
     /**
      * Parses an information model from RDF graph data and returns it as JSON.
      *
@@ -30,11 +28,7 @@ class InformationModelHandler(
      * @throws NoAcceptableFDKRecordsException if no information model is found with the given identifier
      * @throws IllegalStateException if no parsers can successfully parse the information model
      */
-    fun parseInformationModel(
-        fdkId: String,
-        graph: String,
-        catalogGraph: String?,
-    ): JsonNode {
+    fun parseInformationModel(fdkId: String, graph: String, catalogGraph: String?): JsonNode {
         val model = ModelFactory.createDefaultModel()
         val informationModel: InformationModel =
             try {

@@ -51,16 +51,9 @@ class SkosApNoV1Parser : BaseConceptParser() {
 
     private fun getAcceptableTypes(): List<Resource> = listOf(SKOS.Concept)
 
-    override fun parse(
-        model: Model,
-        iri: String,
-    ): Concept = parseConcept(model, iri, null)
+    override fun parse(model: Model, iri: String): Concept = parseConcept(model, iri, null)
 
-    override fun parse(
-        model: Model,
-        iri: String,
-        fdkId: String,
-    ): Concept = parseConcept(model, iri, fdkId)
+    override fun parse(model: Model, iri: String, fdkId: String): Concept = parseConcept(model, iri, fdkId)
 
     /**
      * Parses an RDF model into a Concept object according to SKOS-AP-NO v1.1.1.
@@ -75,11 +68,7 @@ class SkosApNoV1Parser : BaseConceptParser() {
      * @throws IllegalArgumentException if the model is null or invalid
      * @throws UnsupportedOperationException if no valid FDK record is found
      */
-    private fun parseConcept(
-        model: Model,
-        iri: String,
-        fdkId: String?,
-    ): Concept {
+    private fun parseConcept(model: Model, iri: String, fdkId: String?): Concept {
         val acceptableTypes = getAcceptableTypes()
         if (acceptableTypes.none { model.containsTriple(iri, RDF.type.uri, URI.create(it.uri)) }) {
             throw NoAcceptableTypesException("No acceptable types found for $iri")

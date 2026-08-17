@@ -16,13 +16,12 @@ private fun codeFromThemeURI(uri: String?): String? = uri?.split("/")?.last()
 
 fun isEuDataThemeURI(uri: String): Boolean = uri.contains(dataThemeBaseURL)
 
-private fun EuDataTheme.hasContent(): Boolean =
-    when {
-        uri != null -> true
-        code != null -> true
-        title != null -> true
-        else -> false
-    }
+private fun EuDataTheme.hasContent(): Boolean = when {
+    uri != null -> true
+    code != null -> true
+    title != null -> true
+    else -> false
+}
 
 /**
  * Extracts EU data theme metadata (code, URI and labels) from the resource.
@@ -46,14 +45,13 @@ fun Resource.extractEuDataTheme(): EuDataTheme? {
 
 fun isEurovocURI(uri: String): Boolean = uri.contains(eurovocBaseURL)
 
-private fun Eurovoc.hasContent(): Boolean =
-    when {
-        uri != null -> true
-        code != null -> true
-        label != null -> true
-        eurovocPaths != null -> true
-        else -> false
-    }
+private fun Eurovoc.hasContent(): Boolean = when {
+    uri != null -> true
+    code != null -> true
+    label != null -> true
+    eurovocPaths != null -> true
+    else -> false
+}
 
 /**
  * Extracts Eurovoc concept information including code, labels and stored theme paths.
@@ -78,14 +76,13 @@ fun Resource.extractEurovoc(): Eurovoc? {
 
 fun isLosURI(uri: String): Boolean = uri.contains(losBaseURL)
 
-private fun LosNode.hasContent(): Boolean =
-    when {
-        uri != null -> true
-        code != null -> true
-        name != null -> true
-        losPaths != null -> true
-        else -> false
-    }
+private fun LosNode.hasContent(): Boolean = when {
+    uri != null -> true
+    code != null -> true
+    name != null -> true
+    losPaths != null -> true
+    else -> false
+}
 
 /**
  * Extracts LOS theme metadata (code, labels, theme paths and tema flag) from the resource.

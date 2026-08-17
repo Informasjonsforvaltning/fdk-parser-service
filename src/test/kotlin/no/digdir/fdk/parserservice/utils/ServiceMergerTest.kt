@@ -11,14 +11,10 @@ import kotlin.test.assertEquals
 
 @Tag("unit")
 class ServiceMergerTest {
-    private fun minimal(
-        id: String,
-        uri: String,
-    ): Service =
-        Service().apply {
-            this.id = id
-            this.uri = uri
-        }
+    private fun minimal(id: String, uri: String): Service = Service().apply {
+        this.id = id
+        this.uri = uri
+    }
 
     @Test
     fun `should merge services with priority order`() {

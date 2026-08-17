@@ -61,16 +61,9 @@ class DcatApNoV2Parser : BaseDataServiceParser() {
 
     override fun getAcceptableTypes(): List<Resource> = listOf(DCAT.DataService)
 
-    override fun parse(
-        model: Model,
-        iri: String,
-    ): DataService = parseDataService(model, iri, null)
+    override fun parse(model: Model, iri: String): DataService = parseDataService(model, iri, null)
 
-    override fun parse(
-        model: Model,
-        iri: String,
-        fdkId: String,
-    ): DataService = parseDataService(model, iri, fdkId)
+    override fun parse(model: Model, iri: String, fdkId: String): DataService = parseDataService(model, iri, fdkId)
 
     /**
      * Parses an RDF model into a DataService object according to DCAT-AP-NO v2.2.
@@ -85,11 +78,7 @@ class DcatApNoV2Parser : BaseDataServiceParser() {
      * @throws IllegalArgumentException if the model is null or invalid
      * @throws UnsupportedOperationException if no valid FDK record is found
      */
-    private fun parseDataService(
-        model: Model,
-        iri: String,
-        fdkId: String?,
-    ): DataService {
+    private fun parseDataService(model: Model, iri: String, fdkId: String?): DataService {
         if (getAcceptableTypes().none { model.containsTriple(iri, RDF.type.uri, URI.create(it.uri)) }) {
             throw NoAcceptableTypesException("No acceptable types found for $iri")
         }

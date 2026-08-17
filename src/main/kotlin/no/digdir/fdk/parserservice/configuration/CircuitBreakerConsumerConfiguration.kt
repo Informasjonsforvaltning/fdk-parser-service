@@ -14,9 +14,7 @@ import org.springframework.context.annotation.Configuration
 import java.time.Duration
 
 @Configuration
-class CircuitBreakerConsumerConfiguration(
-    private val kafkaManager: KafkaManager,
-) {
+class CircuitBreakerConsumerConfiguration(private val kafkaManager: KafkaManager) {
     private val circuitBreakerToListenerMapping =
         mapOf(
             "rdf-parse-concept" to "concept-event-consumer",
@@ -50,11 +48,7 @@ class CircuitBreakerConsumerConfiguration(
         return registry
     }
 
-    private fun configureCircuitBreaker(
-        registry: CircuitBreakerRegistry,
-        circuitBreakerName: String,
-        listenerId: String?,
-    ) {
+    private fun configureCircuitBreaker(registry: CircuitBreakerRegistry, circuitBreakerName: String, listenerId: String?) {
         if (listenerId != null) {
             KafkaParseMetrics.registerListenerPausedGauge(listenerId)
         }

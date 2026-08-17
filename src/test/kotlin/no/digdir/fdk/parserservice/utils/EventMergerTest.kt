@@ -11,14 +11,10 @@ import kotlin.test.assertEquals
 
 @Tag("unit")
 class EventMergerTest {
-    private fun minimal(
-        id: String,
-        uri: String,
-    ): Event =
-        Event().apply {
-            this.id = id
-            this.uri = uri
-        }
+    private fun minimal(id: String, uri: String): Event = Event().apply {
+        this.id = id
+        this.uri = uri
+    }
 
     @Test
     fun `should merge events with priority order`() {

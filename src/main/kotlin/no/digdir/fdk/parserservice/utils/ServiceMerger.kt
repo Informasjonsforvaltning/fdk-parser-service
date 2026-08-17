@@ -66,8 +66,5 @@ object ServiceMerger {
     /**
      * Convenience overload for merging a prioritized service with fallback services.
      */
-    fun merge(
-        prioritized: Service,
-        vararg fallbacks: Service,
-    ): Service = merge(listOf(prioritized) + fallbacks)
+    fun merge(prioritized: Service, vararg fallbacks: Service): Service = merge(listOf(prioritized) + fallbacks)
 }

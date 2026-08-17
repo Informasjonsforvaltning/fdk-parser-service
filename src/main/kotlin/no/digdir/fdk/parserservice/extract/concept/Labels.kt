@@ -18,9 +18,8 @@ import org.apache.jena.vocabulary.SKOSXL
  * @see SKOSXL.prefLabel
  * @see SKOSXL.literalForm
  */
-fun Resource.extractPrefLabelV1(): LocalizedStrings? =
-    singleResource(SKOSXL.prefLabel)
-        ?.extractLocalizedStrings(SKOSXL.literalForm)
+fun Resource.extractPrefLabelV1(): LocalizedStrings? = singleResource(SKOSXL.prefLabel)
+    ?.extractLocalizedStrings(SKOSXL.literalForm)
 
 /**
  * Extracts labels for a concept using SKOS-XL.
@@ -32,7 +31,6 @@ fun Resource.extractPrefLabelV1(): LocalizedStrings? =
  * @return A list of labels as `LocalizedStrings`, or `null` if no labels are found
  * @see SKOSXL.literalForm
  */
-fun Resource.extractLabelsV1(predicate: Property): List<LocalizedStrings>? =
-    listResources(predicate)
-        ?.mapNotNull { it.extractLocalizedStrings(SKOSXL.literalForm) }
-        ?.takeIf { it.isNotEmpty() }
+fun Resource.extractLabelsV1(predicate: Property): List<LocalizedStrings>? = listResources(predicate)
+    ?.mapNotNull { it.extractLocalizedStrings(SKOSXL.literalForm) }
+    ?.takeIf { it.isNotEmpty() }

@@ -10,13 +10,12 @@ import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDFS
 
-private fun Reference.hasContent() =
-    when {
-        referenceType != null -> true
-        source?.uri != null -> true
-        source?.prefLabel != null -> true
-        else -> false
-    }
+private fun Reference.hasContent() = when {
+    referenceType != null -> true
+    source?.uri != null -> true
+    source?.prefLabel != null -> true
+    else -> false
+}
 
 private fun Resource.buildReference(predicate: Property): Reference? {
     val codeBuilder = ReferenceDataCode.newBuilder()

@@ -10,10 +10,7 @@ import no.digdir.fdk.parserservice.metrics.RdfParseEventMetrics
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class MetricsConfiguration(
-    private val circuitBreakerRegistry: CircuitBreakerRegistry,
-    private val meterRegistry: MeterRegistry,
-) {
+class MetricsConfiguration(private val circuitBreakerRegistry: CircuitBreakerRegistry, private val meterRegistry: MeterRegistry) {
     @PostConstruct
     fun bindMetrics() {
         ParseMetrics.bind(meterRegistry)

@@ -84,10 +84,9 @@ private fun Resource.buildQualityAnnotation(): QualityAnnotation? {
  * @param dimension DQV dimension resource to filter on
  * @return matching `QualityAnnotation` or `null` when none is found
  */
-fun Resource.extractQualityAnnotationV2(dimension: Resource): QualityAnnotation? =
-    listResources(DQV.hasQualityAnnotation)
-        ?.firstOrNull { model.containsTriple(it.uri, DQV.inDimension.uri, URI.create(dimension.uri)) }
-        ?.buildQualityAnnotationV2(dimension)
+fun Resource.extractQualityAnnotationV2(dimension: Resource): QualityAnnotation? = listResources(DQV.hasQualityAnnotation)
+    ?.firstOrNull { model.containsTriple(it.uri, DQV.inDimension.uri, URI.create(dimension.uri)) }
+    ?.buildQualityAnnotationV2(dimension)
 
 /**
  * Extracts all quality annotations (DQV) associated with a dataset or distribution.
@@ -95,7 +94,6 @@ fun Resource.extractQualityAnnotationV2(dimension: Resource): QualityAnnotation?
  * @receiver the RDF resource of the dataset to extract quality annotations from
  * @return list of `QualityAnnotation` objects, or `null` if no annotations are found
  */
-fun Resource.extractListOfQualityAnnotations(): List<QualityAnnotation>? =
-    listResources(DQV.hasQualityAnnotation)
-        ?.mapNotNull { it.buildQualityAnnotation() }
-        ?.takeIf { it.isNotEmpty() }
+fun Resource.extractListOfQualityAnnotations(): List<QualityAnnotation>? = listResources(DQV.hasQualityAnnotation)
+    ?.mapNotNull { it.buildQualityAnnotation() }
+    ?.takeIf { it.isNotEmpty() }

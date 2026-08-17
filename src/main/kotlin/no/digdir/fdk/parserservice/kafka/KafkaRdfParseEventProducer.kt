@@ -11,9 +11,7 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
 
 @Component
-class KafkaRdfParseEventProducer(
-    private val kafkaTemplate: KafkaTemplate<String, RdfParseEvent>,
-) {
+class KafkaRdfParseEventProducer(private val kafkaTemplate: KafkaTemplate<String, RdfParseEvent>) {
     fun sendMessage(msg: RdfParseEvent) {
         LOGGER.debug("Sending message to Kafka topic: $TOPIC_NAME")
         val type = ParseMetrics.metricType(msg.resourceType)

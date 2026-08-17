@@ -18,18 +18,17 @@ import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDF
 import org.apache.jena.vocabulary.SKOS
 
-private fun ServiceEvidence.hasContent() =
-    when {
-        uri != null -> true
-        identifier != null -> true
-        rdfType != null -> true
-        dctType != null -> true
-        name != null -> true
-        description != null -> true
-        language != null -> true
-        page != null -> true
-        else -> false
-    }
+private fun ServiceEvidence.hasContent() = when {
+    uri != null -> true
+    identifier != null -> true
+    rdfType != null -> true
+    dctType != null -> true
+    name != null -> true
+    description != null -> true
+    language != null -> true
+    page != null -> true
+    else -> false
+}
 
 private fun Resource.extractEvidenceRdfType(): String? {
     val types = extractListOfStrings(RDF.type)

@@ -10,14 +10,13 @@ import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.SKOS
 
-private fun AccessService.hasContent() =
-    when {
-        uri != null -> true
-        title != null -> true
-        description != null -> true
-        endpointDescription != null -> true
-        else -> false
-    }
+private fun AccessService.hasContent() = when {
+    uri != null -> true
+    title != null -> true
+    description != null -> true
+    endpointDescription != null -> true
+    else -> false
+}
 
 private fun Resource.buildAccessService(): AccessService? {
     val builder = AccessService.newBuilder()
@@ -37,7 +36,6 @@ private fun Resource.buildAccessService(): AccessService? {
  *
  * @return list of `AccessService` objects or `null` when no services are declared
  */
-fun Resource.extractListOfAccessServices(): List<AccessService>? =
-    listResources(DCAT.accessService)
-        ?.mapNotNull { it.buildAccessService() }
-        ?.takeIf { it.isNotEmpty() }
+fun Resource.extractListOfAccessServices(): List<AccessService>? = listResources(DCAT.accessService)
+    ?.mapNotNull { it.buildAccessService() }
+    ?.takeIf { it.isNotEmpty() }

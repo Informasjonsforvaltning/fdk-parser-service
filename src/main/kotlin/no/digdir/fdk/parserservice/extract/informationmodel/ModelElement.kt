@@ -18,50 +18,48 @@ import org.apache.jena.vocabulary.RDF
 import org.apache.jena.vocabulary.SKOS
 import org.apache.jena.vocabulary.XSD
 
-private fun InformationModelElement.hasContent() =
-    when {
-        uri != null -> true
-        identifier != null -> true
-        title != null -> true
-        description != null -> true
-        subject != null -> true
-        hasProperty != null -> true
-        belongsToModule != null -> true
-        elementTypes != null -> true
-        codeListReference != null -> true
-        codes != null -> true
-        typeDefinitionReference != null -> true
-        fractionDigits != null -> true
-        length != null -> true
-        maxInclusive != null -> true
-        maxLength != null -> true
-        minInclusive != null -> true
-        minLength != null -> true
-        pattern != null -> true
-        totalDigits != null -> true
-        else -> false
-    }
+private fun InformationModelElement.hasContent() = when {
+    uri != null -> true
+    identifier != null -> true
+    title != null -> true
+    description != null -> true
+    subject != null -> true
+    hasProperty != null -> true
+    belongsToModule != null -> true
+    elementTypes != null -> true
+    codeListReference != null -> true
+    codes != null -> true
+    typeDefinitionReference != null -> true
+    fractionDigits != null -> true
+    length != null -> true
+    maxInclusive != null -> true
+    maxLength != null -> true
+    minInclusive != null -> true
+    minLength != null -> true
+    pattern != null -> true
+    totalDigits != null -> true
+    else -> false
+}
 
-private fun InformationModelCodeElement.hasContent() =
-    when {
-        uri != null -> true
-        identifier != null -> true
-        prefLabel != null -> true
-        subject != null -> true
-        notation != null -> true
-        topConceptOf != null -> true
-        definition != null -> true
-        example != null -> true
-        exclusionNote != null -> true
-        previousElement != null -> true
-        hiddenLabel != null -> true
-        inclusionNote != null -> true
-        note != null -> true
-        nextElement != null -> true
-        scopeNote != null -> true
-        altLabel != null -> true
-        else -> false
-    }
+private fun InformationModelCodeElement.hasContent() = when {
+    uri != null -> true
+    identifier != null -> true
+    prefLabel != null -> true
+    subject != null -> true
+    notation != null -> true
+    topConceptOf != null -> true
+    definition != null -> true
+    example != null -> true
+    exclusionNote != null -> true
+    previousElement != null -> true
+    hiddenLabel != null -> true
+    inclusionNote != null -> true
+    note != null -> true
+    nextElement != null -> true
+    scopeNote != null -> true
+    altLabel != null -> true
+    else -> false
+}
 
 private fun Resource.buildModelCodeElement(): InformationModelCodeElement? {
     val builder = InformationModelCodeElement.newBuilder()

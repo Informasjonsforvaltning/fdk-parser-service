@@ -67,16 +67,9 @@ class ModellDcatApNoV1Parser : BaseInformationModelParser() {
 
     override fun getAcceptableTypes(): List<Resource> = listOf(MODELLDCATNO.InformationModel)
 
-    override fun parse(
-        model: Model,
-        iri: String,
-    ): InformationModel = parseInformationModel(model, iri, null)
+    override fun parse(model: Model, iri: String): InformationModel = parseInformationModel(model, iri, null)
 
-    override fun parse(
-        model: Model,
-        iri: String,
-        fdkId: String,
-    ): InformationModel = parseInformationModel(model, iri, fdkId)
+    override fun parse(model: Model, iri: String, fdkId: String): InformationModel = parseInformationModel(model, iri, fdkId)
 
     private data class ParseContext(
         val modelElements: MutableMap<CharSequence, InformationModelElement> = mutableMapOf(),
@@ -97,11 +90,7 @@ class ModellDcatApNoV1Parser : BaseInformationModelParser() {
      * @throws IllegalArgumentException if the model is null or invalid
      * @throws UnsupportedOperationException if no valid FDK record is found
      */
-    private fun parseInformationModel(
-        model: Model,
-        iri: String,
-        fdkId: String?,
-    ): InformationModel {
+    private fun parseInformationModel(model: Model, iri: String, fdkId: String?): InformationModel {
         if (getAcceptableTypes().none { model.containsTriple(iri, RDF.type.uri, URI.create(it.uri)) }) {
             throw NoAcceptableTypesException("No acceptable types found for $iri")
         }

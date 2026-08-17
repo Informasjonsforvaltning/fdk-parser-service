@@ -9,14 +9,10 @@ import kotlin.test.assertEquals
 
 @Tag("unit")
 class DatasetMergerTest {
-    private fun minimal(
-        id: String,
-        uri: String,
-    ): Dataset =
-        Dataset().apply {
-            this.id = id
-            this.uri = uri
-        }
+    private fun minimal(id: String, uri: String): Dataset = Dataset().apply {
+        this.id = id
+        this.uri = uri
+    }
 
     @Test
     fun `should merge datasets with priority order`() {
