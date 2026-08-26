@@ -29,6 +29,8 @@ class DataServiceExtractionTest {
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
             @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
             @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+            @prefix adms:  <http://www.w3.org/ns/adms#> .
+            @prefix r5r:   <http://data.europa.eu/r5r/> .
 
             <http://test.fellesdatakatalog.digdir.no/data-services/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
                 a                  dcat:CatalogRecord ;
@@ -46,6 +48,8 @@ class DataServiceExtractionTest {
                 dcat:landingPage          <https://example.com/landing> ;
                 foaf:page                 <https://example.com/page> ;
                 dct:accessRights          <http://publications.europa.eu/resource/authority/access-right/PUBLIC> ;
+                adms:status               <http://publications.europa.eu/resource/authority/distribution-status/COMPLETED> ;
+                r5r:availability          <http://publications.europa.eu/resource/authority/planned-availability/STABLE> ;
                 dct:language              <http://publications.europa.eu/resource/authority/language/NOB> ;
                 dcat:keyword              "keyword"@en ;
                 dct:conformsTo             <https://api.example.com/spec> ;
@@ -83,6 +87,14 @@ class DataServiceExtractionTest {
                 landingPage = listOf("https://example.com/landing")
                 page = listOf("https://example.com/page")
                 accessRights = ReferenceDataCode().apply { uri = "http://publications.europa.eu/resource/authority/access-right/PUBLIC" }
+                status =
+                    ReferenceDataCode().apply {
+                        uri = "http://publications.europa.eu/resource/authority/distribution-status/COMPLETED"
+                    }
+                availability =
+                    ReferenceDataCode().apply {
+                        uri = "http://publications.europa.eu/resource/authority/planned-availability/STABLE"
+                    }
                 language = listOf(ReferenceDataCode().apply { uri = "http://publications.europa.eu/resource/authority/language/NOB" })
                 keyword = listOf(LocalizedStrings().apply { en = "keyword" })
                 conformsTo = listOf(UriWithLabel().apply { uri = "https://api.example.com/spec" })

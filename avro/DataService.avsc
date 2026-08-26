@@ -66,6 +66,22 @@
       "doc": "Access rights for the data service"
     },
     {
+      "name": "status",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.ReferenceDataCode"
+      ],
+      "doc": "The status of the data service in the context of maturity lifecycle."
+    },
+    {
+      "name": "availability",
+      "type": [
+        "null",
+        "no.digdir.fdk.model.ReferenceDataCode"
+      ],
+      "doc": "The planned availability of the data service."
+    },
+    {
       "name": "themeUris",
       "type": [
         "null",

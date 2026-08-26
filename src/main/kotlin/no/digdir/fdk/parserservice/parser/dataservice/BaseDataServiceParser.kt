@@ -24,7 +24,9 @@ import no.digdir.fdk.parserservice.extract.isLosURI
 import no.digdir.fdk.parserservice.extract.isSkolemizedURI
 import no.digdir.fdk.parserservice.extract.listResources
 import no.digdir.fdk.parserservice.parser.DataServiceParserStrategy
+import no.digdir.fdk.parserservice.vocabulary.ADMS
 import no.digdir.fdk.parserservice.vocabulary.DCAT3
+import no.digdir.fdk.parserservice.vocabulary.DCATAP
 import no.digdir.fdk.parserservice.vocabulary.EUAT
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.sparql.vocabulary.FOAF
@@ -109,6 +111,10 @@ abstract class BaseDataServiceParser : DataServiceParserStrategy {
         setLandingPage(dataServiceResource.extractListOfStrings(DCAT.landingPage))
         setPage(dataServiceResource.extractListOfStrings(FOAF.page))
         setAccessRights(dataServiceResource.extractReferenceDataCode(DCTerms.accessRights, DC_11.identifier, SKOS.prefLabel))
+        setStatus(dataServiceResource.extractReferenceDataCode(ADMS.status, DC_11.identifier, SKOS.prefLabel))
+        setAvailability(
+            dataServiceResource.extractReferenceDataCode(DCATAP.availability, DC_11.identifier, SKOS.prefLabel),
+        )
         setLanguage(dataServiceResource.extractListOfReferenceDataCodes(DCTerms.language, EUAT.authorityCode, SKOS.prefLabel))
         setKeyword(dataServiceResource.extractLocalizedStringList(DCAT.keyword))
 
