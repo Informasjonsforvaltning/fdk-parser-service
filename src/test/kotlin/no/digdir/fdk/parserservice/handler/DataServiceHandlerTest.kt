@@ -79,6 +79,8 @@ class DataServiceHandlerTest {
                 },
                 "publisher": null,
                 "accessRights": null,
+                "status": null,
+                "availability": null,
                 "themeUris": null,
                 "theme": null,
                 "losTheme": null,
