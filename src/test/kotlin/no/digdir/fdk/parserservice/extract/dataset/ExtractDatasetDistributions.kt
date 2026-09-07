@@ -166,6 +166,45 @@ class ExtractDatasetDistributions {
         }
 
         @Test
+        fun extractDistributionConformsToFromSeeAlso() {
+            val turtle =
+                """
+                @prefix dct:   <http://purl.org/dc/terms/> .
+                @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+                @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+
+                <https://testdirektoratet.no/model/dataset/0>
+                    a                   dcat:Dataset ;
+                    dcat:distribution   [  a                dcat:Distribution ;
+                                           dct:conformsTo   [
+                                                a              dct:Standard ;
+                                                rdfs:seeAlso   <https://conforms.to> ;
+                                                dct:title      "Conforms to"@nb
+                                           ]
+                                        ] .
+                """.trimIndent()
+
+            val m = ModelFactory.createDefaultModel()
+            m.read(StringReader(turtle), null, "TURTLE")
+            val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
+
+            val expectedConformsTo =
+                UriWithLabel().apply {
+                    uri = "https://conforms.to"
+                    prefLabel = LocalizedStrings().apply { nb = "Conforms to" }
+                }
+
+            val expected =
+                listOf(
+                    Distribution().apply {
+                        conformsTo = listOf(expectedConformsTo)
+                    },
+                )
+
+            assertEquals(expected, subject.extractListOfDistributionsV1(DCAT.distribution))
+        }
+
+        @Test
         fun extractDistributionFormats() {
             val turtle =
                 """

@@ -36,6 +36,7 @@ import org.apache.jena.sparql.vocabulary.FOAF
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.DC_11
+import org.apache.jena.vocabulary.RDFS
 import org.apache.jena.vocabulary.SKOS
 
 /**
@@ -130,7 +131,7 @@ abstract class BaseDatasetParser : DatasetParserStrategy {
         setDctType(datasetResource.extractListOfReferenceDataCodes(DCTerms.type, DC_11.identifier, SKOS.prefLabel))
         setProvenance(datasetResource.extractReferenceDataCode(DCTerms.provenance, EUAT.authorityCode, SKOS.prefLabel))
         setSpatial(datasetResource.extractListOfReferenceDataCodes(DCTerms.spatial, DCTerms.identifier, DCTerms.title))
-        setConformsTo(datasetResource.extractListOfUriWithLabel(DCTerms.conformsTo, DCTerms.source, DCTerms.title))
+        setConformsTo(datasetResource.extractListOfUriWithLabel(DCTerms.conformsTo, listOf(RDFS.seeAlso, DCTerms.source), DCTerms.title))
         setSubject(datasetResource.extractListOfSubjects())
 
         setType(ResourceType.datasets)

@@ -5,6 +5,13 @@ import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.rdf.model.Statement
 
+fun Resource.extractListOfUriWithLabel(pred: Property, uriPreds: List<Property>, labelPred: Property): List<UriWithLabel>? =
+    listProperties(pred)
+        .asSequence()
+        .mapNotNull { it.buildUriWithLabel(uriPreds, labelPred) }
+        .toList()
+        .takeIf { it.isNotEmpty() }
+
 /**
  * Extracts URI-with-label structures where the URI is taken either from a nested predicate
  * or from the resource itself and the label from the supplied predicate.
@@ -14,27 +21,8 @@ import org.apache.jena.rdf.model.Statement
  * @param labelPred predicate used to extract the localized label
  * @return list of `UriWithLabel` objects or `null` when none exist
  */
-fun Resource.extractListOfUriWithLabel(pred: Property, uriPred: Property, labelPred: Property): List<UriWithLabel>? = listProperties(pred)
-    .asSequence()
-    .mapNotNull { it.buildUriWithLabel(uriPred, labelPred) }
-    .toList()
-    .takeIf { it.isNotEmpty() }
-
-private fun Statement.buildUriWithLabel(uriPred: Property, labelPred: Property): UriWithLabel? {
-    if (isResource(this)) {
-        val builder = UriWithLabel.newBuilder()
-        val uriValueFromPredicate = resource.extractStringValue(uriPred)
-        val uriValueFromResource = resource.extractURIStringValue()
-
-        return builder
-            .setUri(uriValueFromPredicate ?: uriValueFromResource)
-            .setPrefLabel(resource.extractLocalizedStrings(labelPred))
-            .build()
-            .takeIf { it.uri != null || it.prefLabel != null }
-    } else {
-        return null
-    }
-}
+fun Resource.extractListOfUriWithLabel(pred: Property, uriPred: Property, labelPred: Property): List<UriWithLabel>? =
+    extractListOfUriWithLabel(pred, listOf(uriPred), labelPred)
 
 /**
  * Extracts URI-with-label entries where the URI is taken directly from the linked resource
@@ -44,18 +32,17 @@ private fun Statement.buildUriWithLabel(uriPred: Property, labelPred: Property):
  * @param labelPred predicate supplying the localized label
  * @return list of `UriWithLabel` entries or `null` when no data is available
  */
-fun Resource.extractListOfUriWithLabel(pred: Property, labelPred: Property): List<UriWithLabel>? = listProperties(pred)
-    .asSequence()
-    .mapNotNull { it.buildUriWithLabel(labelPred) }
-    .toList()
-    .takeIf { it.isNotEmpty() }
+fun Resource.extractListOfUriWithLabel(pred: Property, labelPred: Property): List<UriWithLabel>? =
+    extractListOfUriWithLabel(pred, emptyList(), labelPred)
 
-private fun Statement.buildUriWithLabel(labelPred: Property): UriWithLabel? {
+private fun Statement.buildUriWithLabel(uriPreds: List<Property>, labelPred: Property): UriWithLabel? {
     if (isResource(this)) {
         val builder = UriWithLabel.newBuilder()
+        val uriValueFromPredicates = uriPreds.firstNotNullOfOrNull { resource.extractStringValue(it) }
+        val uriValueFromResource = resource.extractURIStringValue()
 
         return builder
-            .setUri(resource.extractURIStringValue())
+            .setUri(uriValueFromPredicates ?: uriValueFromResource)
             .setPrefLabel(resource.extractLocalizedStrings(labelPred))
             .build()
             .takeIf { it.uri != null || it.prefLabel != null }
