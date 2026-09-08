@@ -5,6 +5,16 @@ import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.rdf.model.Statement
 
+/**
+ * Extracts URI-with-label structures where the URI is taken from the first of the supplied
+ * predicates that holds a value, or from the resource itself, and the label from the supplied
+ * predicate.
+ *
+ * @param pred predicate pointing to the intermediate resource
+ * @param uriPreds predicates used to extract the URI value, tried in order
+ * @param labelPred predicate used to extract the localized label
+ * @return list of `UriWithLabel` objects or `null` when none exist
+ */
 fun Resource.extractListOfUriWithLabel(pred: Property, uriPreds: List<Property>, labelPred: Property): List<UriWithLabel>? =
     listProperties(pred)
         .asSequence()
