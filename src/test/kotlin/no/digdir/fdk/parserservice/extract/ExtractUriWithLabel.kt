@@ -6,6 +6,7 @@ import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDF
+import org.apache.jena.vocabulary.RDFS
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -99,6 +100,77 @@ class ExtractUriWithLabel {
             )
 
         assertEquals(expected, subject.extractListOfUriWithLabel(DCTerms.conformsTo, DCTerms.source, DCTerms.title))
+    }
+
+    @Test
+    fun extractWhenBlankNodeWithSeeAlso() {
+        val turtle =
+            """
+            @prefix dct:    <http://purl.org/dc/terms/> .
+            @prefix dcat:   <http://www.w3.org/ns/dcat#> .
+            @prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+
+            <https://testdirektoratet.no/model/dataset/0>
+                a                         dcat:Dataset ;
+                dct:conformsTo            [
+                    a               dct:Standard ;
+                    rdfs:seeAlso    <https://see-also.no> ;
+                    dct:title       "Blank node"@nb
+                ] .
+            """.trimIndent()
+
+        val m = ModelFactory.createDefaultModel()
+        m.read(StringReader(turtle), null, "TURTLE")
+        val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
+
+        val expected =
+            listOf(
+                UriWithLabel().apply {
+                    uri = "https://see-also.no"
+                    prefLabel = LocalizedStrings().also { label -> label.nb = "Blank node" }
+                },
+            )
+
+        assertEquals(
+            expected,
+            subject.extractListOfUriWithLabel(DCTerms.conformsTo, listOf(RDFS.seeAlso, DCTerms.source), DCTerms.title),
+        )
+    }
+
+    @Test
+    fun prefersFirstSuppliedUriPredicate() {
+        val turtle =
+            """
+            @prefix dct:    <http://purl.org/dc/terms/> .
+            @prefix dcat:   <http://www.w3.org/ns/dcat#> .
+            @prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+
+            <https://testdirektoratet.no/model/dataset/0>
+                a                         dcat:Dataset ;
+                dct:conformsTo            [
+                    a               dct:Standard ;
+                    rdfs:seeAlso    <https://see-also.no> ;
+                    dct:source      <https://source.no> ;
+                    dct:title       "Both predicates"@nb
+                ] .
+            """.trimIndent()
+
+        val m = ModelFactory.createDefaultModel()
+        m.read(StringReader(turtle), null, "TURTLE")
+        val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
+
+        val expected =
+            listOf(
+                UriWithLabel().apply {
+                    uri = "https://see-also.no"
+                    prefLabel = LocalizedStrings().also { label -> label.nb = "Both predicates" }
+                },
+            )
+
+        assertEquals(
+            expected,
+            subject.extractListOfUriWithLabel(DCTerms.conformsTo, listOf(RDFS.seeAlso, DCTerms.source), DCTerms.title),
+        )
     }
 
     @Test
