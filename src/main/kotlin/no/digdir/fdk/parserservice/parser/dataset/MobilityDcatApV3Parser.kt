@@ -1,6 +1,7 @@
 package no.digdir.fdk.parserservice.parser.dataset
 
 import no.digdir.fdk.model.dataset.Dataset
+import no.digdir.fdk.parserservice.extract.containsPredicate
 import no.digdir.fdk.parserservice.extract.containsTriple
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfMobilityDistributions
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfMobilitySampleData
@@ -8,6 +9,7 @@ import no.digdir.fdk.parserservice.extract.extractListOfReferenceDataCodes
 import no.digdir.fdk.parserservice.extract.fdk.addFdkData
 import no.digdir.fdk.parserservice.extract.fdk.fdkRecord
 import no.digdir.fdk.parserservice.extract.fdk.resourceOfIRI
+import no.digdir.fdk.parserservice.model.DcatProfile
 import no.digdir.fdk.parserservice.model.LanguageCodes
 import no.digdir.fdk.parserservice.model.NoAcceptableTypesException
 import no.digdir.fdk.parserservice.vocabulary.MobilityDCAT
@@ -62,6 +64,10 @@ class MobilityDcatApV3Parser : BaseDatasetParser() {
     override fun getVersion(): String = "3.0.0"
 
     override fun getSourceFormat(): String = "mobilityDCAT-AP"
+
+    override fun dcatProfile(): DcatProfile = DcatProfile.MOBILITY_DCAT_AP
+
+    override fun appliesTo(model: Model, iri: String): Boolean = model.containsPredicate(iri, MobilityDCAT.mobilityTheme)
 
     override fun getAcceptableTypes(): List<Resource> = listOf(DCAT.Dataset)
 

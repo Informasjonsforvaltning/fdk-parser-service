@@ -234,12 +234,38 @@ class DatasetHandlerTest {
               "last": null,
               "datasetsInSeries": null,
               "type": "datasets",
-              "specializedType": null
+              "specializedType": null,
+              "dcatProfiles": ["DCAT_AP_NO"]
             }
             """.trimIndent()
 
         val result = handler.parseDataset("a1c680ca-62d7-34d5-aa4c-d39b5db033ae", turtle, null)
         result.toString().shouldEqualJson(expected)
+    }
+
+    @Test
+    fun mobilityDatasetReportsBothProfiles() {
+        val turtle =
+            """
+            @prefix dct:   <http://purl.org/dc/terms/> .
+            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+            @prefix mobilitydcatap: <https://w3id.org/mobilitydcat-ap#> .
+
+            <http://test.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+                a                  dcat:CatalogRecord ;
+                dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
+                foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
+
+            <https://testdirektoratet.no/model/dataset/0>
+                a                            dcat:Dataset ;
+                dct:title                    "Datasett"@nb ;
+                mobilitydcatap:mobilityTheme <https://w3id.org/mobilitydcat-ap/mobility-theme/bike-hiring-availability> .
+            """.trimIndent()
+
+        val result = handler.parseDataset("a1c680ca-62d7-34d5-aa4c-d39b5db033ae", turtle, null)
+
+        result.get("dcatProfiles").toString().shouldEqualJson("""["MOBILITY_DCAT_AP", "DCAT_AP_NO"]""")
     }
 
     @Test

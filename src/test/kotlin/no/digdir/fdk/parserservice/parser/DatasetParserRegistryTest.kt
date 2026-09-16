@@ -1,6 +1,7 @@
 package no.digdir.fdk.parserservice.parser
 
 import no.digdir.fdk.model.dataset.Dataset
+import no.digdir.fdk.parserservice.model.DcatProfile
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.ModelFactory
 import org.junit.jupiter.api.Tag
@@ -51,7 +52,7 @@ class DatasetParserRegistryTest {
         registry.registerParser(parser2, 50, "Parser 2")
 
         val model = ModelFactory.createDefaultModel()
-        val results = registry.parseWithAllParsers(model, "http://example.org/dataset", "test-id")
+        val results = registry.parseWithAllParsers(model, "http://example.org/dataset", "test-id").datasets
 
         assertEquals(2, results.size)
         assertEquals("result1", results[0].id)
@@ -76,7 +77,7 @@ class DatasetParserRegistryTest {
         registry.registerParser(succeedingParser, 50, "Succeeding Parser")
 
         val model = ModelFactory.createDefaultModel()
-        val results = registry.parseWithAllParsers(model, "http://example.org/dataset", "test-id")
+        val results = registry.parseWithAllParsers(model, "http://example.org/dataset", "test-id").datasets
 
         assertEquals(1, results.size)
         assertEquals("success", results[0].id)
@@ -108,6 +109,59 @@ class DatasetParserRegistryTest {
     }
 
     @Test
+    fun `dcat profiles are collected from applicable parsers only, in priority order`() {
+        val registry = DatasetParserRegistry()
+
+        val mobility = createProfileParser("mobility", DcatProfile.MOBILITY_DCAT_AP, applies = true)
+        val hvd = createProfileParser("hvd", DcatProfile.HVD_DCAT_AP_NO, applies = false)
+        val v3 = createProfileParser("v3", DcatProfile.DCAT_AP_NO, applies = true)
+        val v2 = createProfileParser("v2", DcatProfile.DCAT_AP_NO, applies = true)
+
+        registry.registerParser(mobility, priority = 200, name = "mobility")
+        registry.registerParser(hvd, priority = 175, name = "hvd")
+        registry.registerParser(v3, priority = 150, name = "v3")
+        registry.registerParser(v2, priority = 100, name = "v2")
+
+        val model = ModelFactory.createDefaultModel()
+        val result = registry.parseWithAllParsers(model, "http://example.org/ds", "fdk-id")
+
+        assertEquals(listOf(DcatProfile.MOBILITY_DCAT_AP, DcatProfile.DCAT_AP_NO), result.dcatProfiles)
+    }
+
+    @Test
+    fun `profile of a failing parser is not reported`() {
+        val registry = DatasetParserRegistry()
+
+        val failing =
+            object : DatasetParserStrategy {
+                override fun parse(model: Model, iri: String): Dataset = throw RuntimeException("Parser failed")
+
+                override fun parse(model: Model, iri: String, fdkId: String): Dataset = throw RuntimeException("Parser failed")
+
+                override fun dcatProfile(): DcatProfile = DcatProfile.MOBILITY_DCAT_AP
+            }
+
+        registry.registerParser(failing, priority = 200, name = "failing")
+        registry.registerParser(createProfileParser("v3", DcatProfile.DCAT_AP_NO, applies = true), priority = 150, name = "v3")
+
+        val model = ModelFactory.createDefaultModel()
+        val result = registry.parseWithAllParsers(model, "http://example.org/ds", "fdk-id")
+
+        assertEquals(listOf(DcatProfile.DCAT_AP_NO), result.dcatProfiles)
+    }
+
+    private fun createProfileParser(id: String, profile: DcatProfile, applies: Boolean): DatasetParserStrategy =
+        object : DatasetParserStrategy {
+            override fun parse(model: Model, iri: String): Dataset = minimalDataset(id, iri)
+
+            override fun parse(model: Model, iri: String, fdkId: String): Dataset = minimalDataset(id, iri)
+
+            override fun appliesTo(model: Model, iri: String): Boolean = applies
+
+            override fun dcatProfile(): DcatProfile = profile
+        }
+
+    @Test
     fun `results are returned in parser priority order`() {
         val registry = DatasetParserRegistry()
 
@@ -128,7 +182,7 @@ class DatasetParserRegistryTest {
         registry.registerParser(highPriority, priority = 200, name = "high")
 
         val model = ModelFactory.createDefaultModel()
-        val results = registry.parseWithAllParsers(model, "http://example.org/ds", "fdk-id")
+        val results = registry.parseWithAllParsers(model, "http://example.org/ds", "fdk-id").datasets
 
         assertEquals(2, results.size)
         assertEquals("HIGH", results[0].id)

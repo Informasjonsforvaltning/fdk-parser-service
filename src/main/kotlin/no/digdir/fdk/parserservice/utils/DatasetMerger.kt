@@ -1,6 +1,7 @@
 package no.digdir.fdk.parserservice.utils
 
 import no.digdir.fdk.model.dataset.Dataset
+import no.digdir.fdk.parserservice.model.DcatProfile
 
 /**
  * Utility class for merging multiple Dataset objects in a prioritized manner.
@@ -18,10 +19,11 @@ object DatasetMerger {
      * Merges multiple datasets in priority order (first dataset has highest priority).
      *
      * @param datasets List of datasets in priority order (highest to lowest priority)
+     * @param dcatProfiles The specification profiles the dataset description is in accordance with
      * @return A new Dataset with values from the highest priority non-null source
      * @throws IllegalArgumentException if datasets list is empty
      */
-    fun merge(datasets: List<Dataset>): Dataset {
+    fun merge(datasets: List<Dataset>, dcatProfiles: List<DcatProfile> = emptyList()): Dataset {
         require(datasets.isNotEmpty()) { "At least one dataset must be provided for merging" }
 
         return Dataset
@@ -81,6 +83,7 @@ object DatasetMerger {
             .setDatasetsInSeries(datasets.firstNotNullOfOrNull { it.datasetsInSeries })
             .setType(datasets.firstNotNullOfOrNull { it.type })
             .setSpecializedType(datasets.firstNotNullOfOrNull { it.specializedType })
+            .setDcatProfiles(dcatProfiles.map { it.name }.takeIf { it.isNotEmpty() })
             .build()
     }
 

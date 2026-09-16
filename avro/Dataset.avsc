@@ -521,6 +521,18 @@
         }
       ],
       "doc": "Specialized dataset type"
+    },
+    {
+      "name": "dcatProfiles",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "default": null,
+      "doc": "Specification profiles the dataset description is in accordance with, e.g. DCAT_AP_NO, MOBILITY_DCAT_AP"
     }
   ]
 }

@@ -38,10 +38,10 @@ class DatasetHandler(private val parserRegistry: DatasetParserRegistry) {
                 val resourceIRI = topicUriOfRecordWithID(fdkId, model)
                 if (resourceIRI != null) {
                     // Parse with all registered parsers in priority order
-                    val parsedDatasets = parserRegistry.parseWithAllParsers(model, resourceIRI, fdkId)
+                    val parseResult = parserRegistry.parseWithAllParsers(model, resourceIRI, fdkId)
 
                     // Merge all successfully parsed datasets using the dataset merger
-                    DatasetMerger.merge(parsedDatasets)
+                    DatasetMerger.merge(parseResult.datasets, parseResult.dcatProfiles)
                 } else {
                     throw NoAcceptableFDKRecordsException("No dataset found with identifier '$fdkId'")
                 }

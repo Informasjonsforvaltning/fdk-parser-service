@@ -6,6 +6,7 @@ import no.digdir.fdk.model.dataset.Dataset
 import no.digdir.fdk.model.event.Event
 import no.digdir.fdk.model.informationmodel.InformationModel
 import no.digdir.fdk.model.service.Service
+import no.digdir.fdk.parserservice.model.DcatProfile
 import org.apache.jena.rdf.model.Model
 
 /**
@@ -43,6 +44,25 @@ interface RdfParserStrategy<T> {
      * @throws UnsupportedOperationException if the model format is not supported
      */
     fun parse(model: Model, iri: String, fdkId: String): T
+
+    /**
+     * Checks whether the specification profile of this parser applies to the resource.
+     *
+     * Parsers for a specialized profile check for the triples that profile requires,
+     * the default is to apply to every resource the parser is able to parse.
+     *
+     * @param model The Jena RDF model containing the resource
+     * @param iri The IRI of the resource to check
+     * @return true when the profile applies to the resource
+     */
+    fun appliesTo(model: Model, iri: String): Boolean = true
+
+    /**
+     * The specification profile implemented by this parser.
+     *
+     * @return The profile, or null when the parser does not report one
+     */
+    fun dcatProfile(): DcatProfile? = null
 }
 
 /**
