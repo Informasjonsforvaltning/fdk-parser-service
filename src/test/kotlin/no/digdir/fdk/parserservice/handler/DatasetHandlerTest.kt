@@ -244,7 +244,7 @@ class DatasetHandlerTest {
     }
 
     @Test
-    fun mobilityDatasetReportsBothProfiles() {
+    fun mobilityDatasetDoesNotReportDcatApNo() {
         val turtle =
             """
             @prefix dct:   <http://purl.org/dc/terms/> .
@@ -265,7 +265,7 @@ class DatasetHandlerTest {
 
         val result = handler.parseDataset("a1c680ca-62d7-34d5-aa4c-d39b5db033ae", turtle, null)
 
-        result.get("dcatProfiles").toString().shouldEqualJson("""["MOBILITY_DCAT_AP", "DCAT_AP_NO"]""")
+        result.get("dcatProfiles").toString().shouldEqualJson("""["MOBILITY_DCAT_AP"]""")
     }
 
     @Test

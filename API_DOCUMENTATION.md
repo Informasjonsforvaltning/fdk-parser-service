@@ -33,6 +33,8 @@ interface RdfParserStrategy<T> {
 `appliesTo` tells whether the specification profile of the parser applies to the resource,
 `dcatProfile` names that profile. Together they decide the `dcatProfiles` reported for a
 parsed dataset, independently of which parsers contribute values to the merged result.
+`DcatProfile.withoutConflicting` then drops profiles that cannot describe the same resource
+at the same time, a mobilityDCAT-AP description is not a DCAT-AP-NO description.
 
 #### `DatasetParserStrategy`
 

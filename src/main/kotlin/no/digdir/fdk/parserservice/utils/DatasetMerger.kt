@@ -83,7 +83,7 @@ object DatasetMerger {
             .setDatasetsInSeries(datasets.firstNotNullOfOrNull { it.datasetsInSeries })
             .setType(datasets.firstNotNullOfOrNull { it.type })
             .setSpecializedType(datasets.firstNotNullOfOrNull { it.specializedType })
-            .setDcatProfiles(dcatProfiles.map { it.name }.takeIf { it.isNotEmpty() })
+            .setDcatProfiles(DcatProfile.withoutConflicting(dcatProfiles).map { it.name }.takeIf { it.isNotEmpty() })
             .build()
     }
 
