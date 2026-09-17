@@ -3,6 +3,7 @@ package no.digdir.fdk.parserservice.parser
 import no.digdir.fdk.model.dataset.Dataset
 import no.digdir.fdk.parserservice.LOGGER
 import no.digdir.fdk.parserservice.metrics.ParseMetrics
+import no.digdir.fdk.parserservice.model.DcatProfile
 import no.fdk.rdf.parse.RdfParseResourceType
 import org.apache.jena.rdf.model.Model
 import org.springframework.stereotype.Component
@@ -42,15 +43,20 @@ class DatasetParserRegistry {
      * @param model The RDF model to parse
      * @param iri The IRI of the resource to parse
      * @param fdkId The FDK ID of the resource
-     * @return List of successfully parsed datasets in priority order
+     * @return Successfully parsed datasets in priority order, and the profiles the dataset is in accordance with
      */
-    fun parseWithAllParsers(model: Model, iri: String, fdkId: String): List<Dataset> {
+    fun parseWithAllParsers(model: Model, iri: String, fdkId: String): DatasetParseResult {
         val results = mutableListOf<Dataset>()
+        val profiles = linkedSetOf<DcatProfile>()
 
         for (entry in parsers) {
             try {
                 val dataset = entry.parser.parse(model, iri, fdkId)
                 results.add(dataset)
+                entry.parser
+                    .dcatProfile()
+                    ?.takeIf { entry.parser.appliesTo(model, iri) }
+                    ?.let { profiles.add(it) }
                 ParseMetrics.recordProfileMatch(RdfParseResourceType.DATASET, entry.name, matched = true)
                 LOGGER.debug("Successfully parsed dataset with parser '${entry.name}'")
             } catch (e: Exception) {
@@ -64,7 +70,7 @@ class DatasetParserRegistry {
         }
 
         LOGGER.info("Successfully parsed dataset $fdkId with ${results.size} out of ${parsers.size} parsers")
-        return results
+        return DatasetParseResult(results, profiles.toList())
     }
 
     /**
@@ -78,6 +84,11 @@ class DatasetParserRegistry {
     fun getParserInfo(): List<ParserInfo> = parsers.map {
         ParserInfo(it.name, it.priority)
     }
+
+    /**
+     * Result of parsing a dataset with all registered parsers.
+     */
+    data class DatasetParseResult(val datasets: List<Dataset>, val dcatProfiles: List<DcatProfile>)
 
     /**
      * Internal data class for storing parser entries.

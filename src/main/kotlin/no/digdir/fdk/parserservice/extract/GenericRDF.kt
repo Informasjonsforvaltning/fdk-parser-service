@@ -199,6 +199,20 @@ fun Statement.extractStringLanguagePair(): Pair<LanguageCodes, String>? {
 }
 
 /**
+ * Checks if a model contains any triple with the given subject and predicate.
+ *
+ * @param subj The subject URI
+ * @param pred The predicate
+ * @return true if the subject has the predicate, false otherwise
+ */
+fun Model.containsPredicate(subj: String, pred: Property): Boolean = try {
+    contains(getResource(subj), pred)
+} catch (ex: Exception) {
+    LOGGER.debug("Failed to check ${pred.uri} on $subj", ex)
+    false
+}
+
+/**
  * Checks if a model contains a specific triple with string object.
  *
  * This function uses SPARQL ASK queries to check for the existence of a triple.

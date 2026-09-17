@@ -23,9 +23,18 @@ Generic interface for RDF parsing strategies.
 
 ```kotlin
 interface RdfParserStrategy<T> {
-    fun parse(model: Model): T
+    fun parse(model: Model, iri: String): T
+    fun parse(model: Model, iri: String, fdkId: String): T
+    fun appliesTo(model: Model, iri: String): Boolean = true
+    fun dcatProfile(): DcatProfile? = null
 }
 ```
+
+`appliesTo` tells whether the specification profile of the parser applies to the resource,
+`dcatProfile` names that profile. Together they decide the `dcatProfiles` reported for a
+parsed dataset, independently of which parsers contribute values to the merged result.
+`DcatProfile.withoutConflicting` then drops profiles that cannot describe the same resource
+at the same time, a mobilityDCAT-AP description is not a DCAT-AP-NO description.
 
 #### `DatasetParserStrategy`
 

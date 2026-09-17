@@ -14,6 +14,7 @@ import no.digdir.fdk.parserservice.extract.extractStringValue
 import no.digdir.fdk.parserservice.extract.fdk.addFdkData
 import no.digdir.fdk.parserservice.extract.fdk.fdkRecord
 import no.digdir.fdk.parserservice.extract.fdk.resourceOfIRI
+import no.digdir.fdk.parserservice.model.DcatProfile
 import no.digdir.fdk.parserservice.model.LanguageCodes
 import no.digdir.fdk.parserservice.model.NoAcceptableTypesException
 import no.digdir.fdk.parserservice.vocabulary.ADMS
@@ -73,6 +74,8 @@ class DcatApNoV2Parser : BaseDatasetParser() {
     override fun getVersion(): String = "2.2"
 
     override fun getSourceFormat(): String = "DCAT-AP-NO"
+
+    override fun dcatProfile(): DcatProfile = DcatProfile.DCAT_AP_NO
 
     override fun getAcceptableTypes(): List<Resource> = listOf(DCAT.Dataset, DCAT3.DatasetSeries)
 

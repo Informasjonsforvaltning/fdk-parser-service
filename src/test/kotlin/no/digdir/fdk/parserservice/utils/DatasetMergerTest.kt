@@ -2,6 +2,7 @@ package no.digdir.fdk.parserservice.utils
 
 import no.digdir.fdk.model.LocalizedStrings
 import no.digdir.fdk.model.dataset.Dataset
+import no.digdir.fdk.parserservice.model.DcatProfile
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -35,6 +36,35 @@ class DatasetMergerTest {
 
         val result = DatasetMerger.merge(prioritized, fallback1, fallback2)
         assertEquals("prioritized-id", result.id)
+    }
+
+    @Test
+    fun `mobility replaces dcat-ap-no, which cannot describe the same dataset`() {
+        val result =
+            DatasetMerger.merge(
+                listOf(minimal("id", "http://uri")),
+                listOf(DcatProfile.MOBILITY_DCAT_AP, DcatProfile.DCAT_AP_NO),
+            )
+
+        assertEquals(listOf("MOBILITY_DCAT_AP"), result.dcatProfiles)
+    }
+
+    @Test
+    fun `hvd supplements dcat-ap-no and is kept alongside it`() {
+        val result =
+            DatasetMerger.merge(
+                listOf(minimal("id", "http://uri")),
+                listOf(DcatProfile.HVD_DCAT_AP_NO, DcatProfile.DCAT_AP_NO),
+            )
+
+        assertEquals(listOf("HVD_DCAT_AP_NO", "DCAT_AP_NO"), result.dcatProfiles)
+    }
+
+    @Test
+    fun `dcat profiles are null when no profile applies`() {
+        val result = DatasetMerger.merge(listOf(minimal("id", "http://uri")))
+
+        assertEquals(null, result.dcatProfiles)
     }
 
     @Test

@@ -2,6 +2,7 @@ package no.digdir.fdk.parserservice.parser.dataset
 
 import no.digdir.fdk.model.dataset.Dataset
 import no.digdir.fdk.model.dataset.DatasetType
+import no.digdir.fdk.parserservice.extract.containsPredicate
 import no.digdir.fdk.parserservice.extract.containsTriple
 import no.digdir.fdk.parserservice.extract.dataset.extractInSeries
 import no.digdir.fdk.parserservice.extract.dataset.extractListOfDatasetsInSeries
@@ -11,6 +12,7 @@ import no.digdir.fdk.parserservice.extract.extractStringValue
 import no.digdir.fdk.parserservice.extract.fdk.addFdkData
 import no.digdir.fdk.parserservice.extract.fdk.fdkRecord
 import no.digdir.fdk.parserservice.extract.fdk.resourceOfIRI
+import no.digdir.fdk.parserservice.model.DcatProfile
 import no.digdir.fdk.parserservice.model.LanguageCodes
 import no.digdir.fdk.parserservice.model.NoAcceptableTypesException
 import no.digdir.fdk.parserservice.vocabulary.ADMS
@@ -45,6 +47,10 @@ class HvdDcatApNoParser : BaseDatasetParser() {
     override fun getVersion(): String = "1.0.2"
 
     override fun getSourceFormat(): String = "HVD-DCAT-AP-NO"
+
+    override fun dcatProfile(): DcatProfile = DcatProfile.HVD_DCAT_AP_NO
+
+    override fun appliesTo(model: Model, iri: String): Boolean = model.containsPredicate(iri, DCATAP.hvdCategory)
 
     override fun getAcceptableTypes(): List<Resource> = listOf(DCAT.Dataset, DCAT3.DatasetSeries)
 
