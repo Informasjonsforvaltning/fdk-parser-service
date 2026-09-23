@@ -14,6 +14,7 @@ import no.digdir.fdk.parserservice.extract.extractLocalizedStringList
 import no.digdir.fdk.parserservice.extract.extractLocalizedStrings
 import no.digdir.fdk.parserservice.extract.extractLosNode
 import no.digdir.fdk.parserservice.extract.extractOrganization
+import no.digdir.fdk.parserservice.extract.extractReferenceDataCode
 import no.digdir.fdk.parserservice.extract.extractStringValue
 import no.digdir.fdk.parserservice.extract.informationmodel.extractListOfModelFormat
 import no.digdir.fdk.parserservice.extract.informationmodel.extractListOfModelStandard
@@ -130,7 +131,7 @@ abstract class BaseInformationModelParser : InformationModelParserStrategy {
         setReplaces(infoModelResource.extractStringValue(DCTerms.replaces))
         setHasFormat(infoModelResource.extractListOfModelFormat())
         setHomepage(infoModelResource.extractStringValue(FOAF.homepage))
-        setStatus(infoModelResource.extractStringValue(ADMS.status))
+        setStatusCode(infoModelResource.extractReferenceDataCode(ADMS.status, DC_11.identifier, SKOS.prefLabel))
         setVersionInfo(infoModelResource.extractStringValue(OWL.versionInfo))
         setVersionNotes(infoModelResource.extractLocalizedStrings(ADMS.versionNotes))
 

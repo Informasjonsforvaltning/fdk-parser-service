@@ -154,8 +154,8 @@
       "doc": "Homepage for the information model"
     },
     {
-      "name": "status",
-      "type": ["null", "string"],
+      "name": "statusCode",
+      "type": ["null", "no.digdir.fdk.model.ReferenceDataCode"],
       "doc": "Status of the information model"
     },
     {
