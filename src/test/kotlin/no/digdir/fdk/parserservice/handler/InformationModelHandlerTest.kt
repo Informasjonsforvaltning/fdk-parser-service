@@ -194,7 +194,7 @@ class InformationModelHandlerTest {
               "temporal": null,
               "hasFormat": null,
               "homepage": "https://example.com/info-model",
-              "status": null,
+              "statusCode": null,
               "versionInfo": "1.0",
               "versionNotes": null,
               "subjects": null,

@@ -25,6 +25,8 @@ class InformationModelExtractionTest {
     fun `should extract basic information model properties`() {
         val turtle =
             """
+            @prefix adms:  <http://www.w3.org/ns/adms#> .
+            @prefix dc:    <http://purl.org/dc/elements/1.1/> .
             @prefix dct:   <http://purl.org/dc/terms/> .
             @prefix dcat:  <http://www.w3.org/ns/dcat#> .
             @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
@@ -49,12 +51,17 @@ class InformationModelExtractionTest {
                 dct:modified              "2023-01-02"^^xsd:date ;
                 foaf:homepage             <https://example.com/info-model> ;
                 dct:accessRights          <http://publications.europa.eu/resource/authority/access-right/PUBLIC> ;
+                adms:status               <http://publications.europa.eu/resource/authority/product-status/PRODUCTION> ;
                 dct:language              <http://publications.europa.eu/resource/authority/language/NOB> ;
                 dcat:keyword              "modell"@no , "model"@en ;
                 modelldcatno:informationModelIdentifier "https://www.digdir.no/test-model" ;
                 dct:type                  "Fellesmodell"@no ;
                 owl:versionInfo           "1.0" ;
                 dct:conformsTo            <https://statswiki.unece.org/display/gsim/Generic+Statistical+Information+Model> .
+
+            <http://publications.europa.eu/resource/authority/product-status/PRODUCTION>
+                dc:identifier   "PRODUCTION";
+                skos:prefLabel  "i produksjon"@no , "i produksjon"@nb , "in production"@en , "i produksjon"@nn .
 
             <https://testdirektoratet.no/publisher>
                 a                         foaf:Agent ;
@@ -82,6 +89,17 @@ class InformationModelExtractionTest {
                 issued = "2023-01-01"
                 modified = "2023-01-02"
                 homepage = "https://example.com/info-model"
+                statusCode =
+                    ReferenceDataCode().apply {
+                        uri = "http://publications.europa.eu/resource/authority/product-status/PRODUCTION"
+                        code = "PRODUCTION"
+                        prefLabel = LocalizedStrings().apply {
+                            no = "i produksjon"
+                            nb = "i produksjon"
+                            nn = "i produksjon"
+                            en = "in production"
+                        }
+                    }
                 language = listOf(ReferenceDataCode().apply { uri = "http://publications.europa.eu/resource/authority/language/NOB" })
                 keyword = listOf(LocalizedStrings().apply { no = "modell" }, LocalizedStrings().apply { en = "model" })
                 informationModelIdentifier = "https://www.digdir.no/test-model"
