@@ -46,7 +46,7 @@ import java.net.URI
  *
  * The parser extracts the following information model properties:
  * - Basic metadata (title, description, identifier)
- * - Publisher and organization information
+ * - Publisher, creator and organization information
  * - Model elements and properties
  * - Conformance information
  * - Contact points and access rights
