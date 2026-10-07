@@ -46,6 +46,7 @@ class InformationModelExtractionTest {
                 dct:title                 "Test Informasjonsmodell"@no , "Test Information Model"@en ;
                 dct:description           "Beskrivelse av informasjonsmodell"@no , "Description of information model"@en ;
                 dct:publisher             <https://testdirektoratet.no/publisher> ;
+                dct:creator               <https://testdirektoratet.no/creator> ;
                 dct:identifier            "test-identifier" ;
                 dct:issued                "2023-01-01"^^xsd:date ;
                 dct:modified              "2023-01-02"^^xsd:date ;
@@ -67,6 +68,11 @@ class InformationModelExtractionTest {
                 a                         foaf:Agent ;
                 dct:identifier            "112233445" ;
                 foaf:name                 "Test Publisher" .
+
+            <https://testdirektoratet.no/creator>
+                a                         foaf:Agent ;
+                dct:identifier            "998877665" ;
+                foaf:name                 "Test Creator" .
             """.trimIndent()
 
         val model = ModelFactory.createDefaultModel()
@@ -134,6 +140,14 @@ class InformationModelExtractionTest {
                         name = "Test Publisher"
                         prefLabel = LocalizedStrings().apply { no = "Test Publisher" }
                         title = LocalizedStrings().apply { no = "Test Publisher" }
+                    }
+                creator =
+                    Organization().apply {
+                        uri = "https://testdirektoratet.no/creator"
+                        id = "998877665"
+                        name = "Test Creator"
+                        prefLabel = LocalizedStrings().apply { no = "Test Creator" }
+                        title = LocalizedStrings().apply { no = "Test Creator" }
                     }
             }
 

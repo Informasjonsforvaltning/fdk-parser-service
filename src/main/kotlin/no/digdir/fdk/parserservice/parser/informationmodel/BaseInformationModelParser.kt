@@ -85,7 +85,7 @@ abstract class BaseInformationModelParser : InformationModelParserStrategy {
      * Adds common information model values to the builder that are shared across all versions.
      *
      * This method extracts and sets common properties such as title, description,
-     * publisher, themes, and other metadata that are consistent across ModelDCAT-AP-NO versions.
+     * publisher, creator, themes, and other metadata that are consistent across ModelDCAT-AP-NO versions.
      *
      * @param infoModelResource The RDF resource representing the information model
      */
@@ -99,6 +99,7 @@ abstract class BaseInformationModelParser : InformationModelParserStrategy {
         setDescriptionFormatted(formattedDescription)
         setDescription(formattedDescription?.descriptionHtmlCleaner())
         setPublisher(infoModelResource.extractOrganization(DCTerms.publisher))
+        setCreator(infoModelResource.extractOrganization(DCTerms.creator))
         setIdentifier(infoModelResource.extractListOfStrings(DCTerms.identifier))
         setModified(infoModelResource.extractStringValue(DCTerms.modified))
         setIssued(infoModelResource.extractStringValue(DCTerms.issued))

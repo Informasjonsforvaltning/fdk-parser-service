@@ -174,6 +174,7 @@ class InformationModelHandlerTest {
                 },
                 "organisasjonsform": null
               },
+              "creator": null,
               "dctType": "Fellesmodell",
               "conformsTo": [
                 {
