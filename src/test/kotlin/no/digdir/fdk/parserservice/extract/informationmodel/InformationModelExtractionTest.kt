@@ -619,4 +619,65 @@ class InformationModelExtractionTest {
 
         assertNull(informationModel.hasFormat)
     }
+
+    @Test
+    fun `should extract multiple part and replacement relations`() {
+        val turtle =
+            """
+            @prefix dct:   <http://purl.org/dc/terms/> .
+            @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+            @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+            @prefix modelldcatno: <https://data.norge.no/vocabulary/modelldcatno#> .
+
+            <http://test.fellesdatakatalog.digdir.no/information-models/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+                a                  dcat:CatalogRecord ;
+                dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
+                foaf:primaryTopic  <http://test.fellesdatakatalog.digdir.no/information-model/test> .
+
+            <http://test.fellesdatakatalog.digdir.no/information-model/test>
+                a                         modelldcatno:InformationModel ;
+                dct:title                 "Test Information Model"@no ;
+                dct:isPartOf              <https://example.org/model/parent-1> ,
+                                          <https://example.org/model/parent-2> ;
+                dct:hasPart               <https://example.org/model/child-1> ,
+                                          <https://example.org/model/child-2> ;
+                dct:isReplacedBy          <https://example.org/model/newer-1> ,
+                                          <https://example.org/model/newer-2> ;
+                dct:replaces              <https://example.org/model/older-1> ,
+                                          <https://example.org/model/older-2> .
+            """.trimIndent()
+
+        val model = ModelFactory.createDefaultModel()
+        model.read(StringReader(turtle), null, "TURTLE")
+
+        val parser = ModellDcatApNoV1Parser()
+        val informationModel =
+            parser.parse(
+                model,
+                "http://test.fellesdatakatalog.digdir.no/information-model/test",
+                "a1c680ca-62d7-34d5-aa4c-d39b5db033ae",
+            )
+
+        assertEquals(
+            setOf("https://example.org/model/parent-1", "https://example.org/model/parent-2"),
+            informationModel.isPartOfList?.toSet(),
+        )
+        assertEquals(
+            setOf("https://example.org/model/child-1", "https://example.org/model/child-2"),
+            informationModel.hasPartList?.toSet(),
+        )
+        assertEquals(
+            setOf("https://example.org/model/newer-1", "https://example.org/model/newer-2"),
+            informationModel.isReplacedByList?.toSet(),
+        )
+        assertEquals(
+            setOf("https://example.org/model/older-1", "https://example.org/model/older-2"),
+            informationModel.replacesList?.toSet(),
+        )
+
+        assertEquals(informationModel.isPartOfList?.firstOrNull(), informationModel.isPartOf)
+        assertEquals(informationModel.hasPartList?.firstOrNull(), informationModel.hasPart)
+        assertEquals(informationModel.isReplacedByList?.firstOrNull(), informationModel.isReplacedBy)
+        assertEquals(informationModel.replacesList?.firstOrNull(), informationModel.replaces)
+    }
 }

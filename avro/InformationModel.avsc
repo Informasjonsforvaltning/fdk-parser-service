@@ -103,17 +103,17 @@
     {
       "name": "isPartOf",
       "type": ["null", "string"],
-      "doc": "Information model this is part of"
+      "doc": "[DEPRECATED] Information model this is part of. Use isPartOfList instead."
     },
     {
       "name": "hasPart",
       "type": ["null", "string"],
-      "doc": "Information models that are part of this"
+      "doc": "[DEPRECATED] Information model that is part of this. Use hasPartList instead."
     },
     {
       "name": "isReplacedBy",
       "type": ["null", "string"],
-      "doc": "Information model this is replaced by"
+      "doc": "[DEPRECATED] Information model this is replaced by. Use isReplacedByList instead."
     },
     {
       "name": "isProfileOf",
@@ -129,7 +129,55 @@
     {
       "name": "replaces",
       "type": ["null", "string"],
-      "doc": "Information model this replaces"
+      "doc": "[DEPRECATED] Information model this replaces. Use replacesList instead."
+    },
+    {
+      "name": "isPartOfList",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "default": null,
+      "doc": "Information models this is part of"
+    },
+    {
+      "name": "hasPartList",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "default": null,
+      "doc": "Information models that are part of this"
+    },
+    {
+      "name": "isReplacedByList",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "default": null,
+      "doc": "Information models this is replaced by"
+    },
+    {
+      "name": "replacesList",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "default": null,
+      "doc": "Information models this replaces"
     },
     {
       "name": "temporal",
