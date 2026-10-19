@@ -125,11 +125,23 @@ abstract class BaseInformationModelParser : InformationModelParserStrategy {
         setInformationModelIdentifier(infoModelResource.extractStringValue(MODELLDCATNO.informationModelIdentifier))
         setSpatial(infoModelResource.extractListOfReferenceDataCodes(DCTerms.spatial, DCTerms.identifier, DCTerms.title))
         setTemporal(infoModelResource.extractListOfTemporal(DCTerms.temporal, DCAT.startDate, DCAT.endDate))
-        setIsPartOf(infoModelResource.extractStringValue(DCTerms.isPartOf))
-        setHasPart(infoModelResource.extractStringValue(DCTerms.hasPart))
-        setIsReplacedBy(infoModelResource.extractStringValue(DCTerms.isReplacedBy))
+        val isPartOf = infoModelResource.extractListOfStrings(DCTerms.isPartOf)
+        setIsPartOf(isPartOf?.firstOrNull()) // Deprecated
+        setIsPartOfList(isPartOf)
+
+        val hasPart = infoModelResource.extractListOfStrings(DCTerms.hasPart)
+        setHasPart(hasPart?.firstOrNull()) // Deprecated
+        setHasPartList(hasPart)
+
+        val isReplacedBy = infoModelResource.extractListOfStrings(DCTerms.isReplacedBy)
+        setIsReplacedBy(isReplacedBy?.firstOrNull()) // Deprecated
+        setIsReplacedByList(isReplacedBy)
+
         setIsProfileOf(infoModelResource.extractListOfModelStandard(PROF.isProfileOf))
-        setReplaces(infoModelResource.extractStringValue(DCTerms.replaces))
+
+        val replaces = infoModelResource.extractListOfStrings(DCTerms.replaces)
+        setReplaces(replaces?.firstOrNull()) // Deprecated
+        setReplacesList(replaces)
         setHasFormat(infoModelResource.extractListOfModelFormat())
         setHomepage(infoModelResource.extractStringValue(FOAF.homepage))
         setStatusCode(infoModelResource.extractReferenceDataCode(ADMS.status, DC_11.identifier, SKOS.prefLabel))
