@@ -50,7 +50,8 @@ class HvdDcatApNoParser : BaseDatasetParser() {
 
     override fun dcatProfile(): DcatProfile = DcatProfile.HVD_DCAT_AP_NO
 
-    override fun appliesTo(model: Model, iri: String): Boolean = model.containsPredicate(iri, DCATAP.hvdCategory)
+    override fun appliesTo(model: Model, iri: String): Boolean = model.containsPredicate(iri, DCATAP.hvdCategory) &&
+        model.containsTriple(iri, DCATAP.applicableLegislation.uri, URI.create(HVD_REGULATION))
 
     override fun getAcceptableTypes(): List<Resource> = listOf(DCAT.Dataset, DCAT3.DatasetSeries)
 
@@ -118,5 +119,9 @@ class HvdDcatApNoParser : BaseDatasetParser() {
         builder.setHasAccuracyAnnotation(null)
 
         return builder.build()
+    }
+
+    companion object {
+        const val HVD_REGULATION = "http://data.europa.eu/eli/reg_impl/2023/138/oj"
     }
 }

@@ -58,7 +58,23 @@ class DatasetProfileTest {
     }
 
     @Test
-    fun `hvd profile applies when the dataset has an hvd category`() {
+    fun `hvd profile applies when the dataset has an hvd category and the hvd regulation`() {
+        val model =
+            modelOf(
+                """
+                <https://testdirektoratet.no/model/dataset/0>
+                    a                            dcat:Dataset ;
+                    dcatap:hvdCategory           <http://data.europa.eu/bna/c_dd313021> ;
+                    dcatap:applicableLegislation <http://data.europa.eu/eli/reg_impl/2023/138/oj> .
+                """.trimIndent(),
+            )
+
+        assertTrue(HvdDcatApNoParser().appliesTo(model, datasetIRI))
+        assertEquals(DcatProfile.HVD_DCAT_AP_NO, HvdDcatApNoParser().dcatProfile())
+    }
+
+    @Test
+    fun `hvd profile does not apply without the hvd regulation`() {
         val model =
             modelOf(
                 """
@@ -68,8 +84,22 @@ class DatasetProfileTest {
                 """.trimIndent(),
             )
 
-        assertTrue(HvdDcatApNoParser().appliesTo(model, datasetIRI))
-        assertEquals(DcatProfile.HVD_DCAT_AP_NO, HvdDcatApNoParser().dcatProfile())
+        assertFalse(HvdDcatApNoParser().appliesTo(model, datasetIRI))
+    }
+
+    @Test
+    fun `hvd profile does not apply when the legislation is not the hvd regulation`() {
+        val model =
+            modelOf(
+                """
+                <https://testdirektoratet.no/model/dataset/0>
+                    a                            dcat:Dataset ;
+                    dcatap:hvdCategory           <http://data.europa.eu/bna/c_dd313021> ;
+                    dcatap:applicableLegislation <http://data.europa.eu/eli/reg/2016/679/oj> .
+                """.trimIndent(),
+            )
+
+        assertFalse(HvdDcatApNoParser().appliesTo(model, datasetIRI))
     }
 
     @Test
@@ -78,8 +108,8 @@ class DatasetProfileTest {
             modelOf(
                 """
                 <https://testdirektoratet.no/model/dataset/0>
-                    a          dcat:Dataset ;
-                    dct:title  "Datasett"@nb .
+                    a                            dcat:Dataset ;
+                    dcatap:applicableLegislation <http://data.europa.eu/eli/reg_impl/2023/138/oj> .
                 """.trimIndent(),
             )
 
