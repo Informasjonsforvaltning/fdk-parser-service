@@ -26,11 +26,10 @@ private fun Resource.buildLegalResource(): LegalResource? {
     builder
         .setUri(extractURIStringValue())
         .setTitle(extractLocalizedStrings(DCTerms.title))
-        .setDctTitle(extractLocalizedStrings(DCTerms.title)) // Deprecated
         .setDescription(extractLocalizedStrings(DCTerms.description))
         .setLanguage(extractListOfReferenceDataCodes(DCTerms.language, EUAT.authorityCode, SKOS.prefLabel))
         .setType(extractReferenceDataCode(DCTerms.type, "#", SKOS.prefLabel))
-        .setSeeAlso(extractListOfStrings(RDFS.seeAlso))
+        .setReferences(extractListOfStrings(RDFS.seeAlso))
         .setRelation(extractListOfStrings(DCTerms.relation))
 
     return builder.build().takeIf { it.hasContent() }

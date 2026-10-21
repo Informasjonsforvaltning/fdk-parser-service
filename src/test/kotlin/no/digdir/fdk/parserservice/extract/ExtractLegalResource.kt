@@ -58,9 +58,8 @@ class ExtractLegalResource {
                     .newBuilder()
                     .setUri("https://test.no/legal/1")
                     .setTitle(LocalizedStrings().apply { en = "Legal title" })
-                    .setDctTitle(LocalizedStrings().apply { en = "Legal title" })
                     .setDescription(LocalizedStrings().apply { en = "Legal description" })
-                    .setSeeAlso(listOf("https://test.no/seealso"))
+                    .setReferences(listOf("https://test.no/seealso"))
                     .setRelation(listOf("https://test.no/related"))
                     .setLanguage(
                         listOf(
