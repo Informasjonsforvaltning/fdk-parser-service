@@ -11,11 +11,10 @@ import org.apache.jena.vocabulary.SKOS
 private fun LegalResource.hasContent() = when {
     uri != null -> true
     title != null -> true
-    dctTitle != null -> true
     description != null -> true
     language != null -> true
     type != null -> true
-    seeAlso != null -> true
+    references != null -> true
     relation != null -> true
     else -> false
 }
