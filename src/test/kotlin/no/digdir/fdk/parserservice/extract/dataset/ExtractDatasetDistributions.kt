@@ -487,6 +487,73 @@ class ExtractDatasetDistributions {
         }
 
         @Test
+        fun extractDistributionRightsReuserGuidelines() {
+            val turtle =
+                """
+                @prefix dct:   <http://purl.org/dc/terms/> .
+                @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+                @prefix odrs:  <http://schema.theodi.org/odrs#> .
+
+                <https://testdirektoratet.no/model/dataset/0>
+                    a                   dcat:Dataset ;
+                    dcat:distribution   [  a                dcat:Distribution ;
+                                           dcat:accessURL   <https://testdirektoratet.no/access> ;
+                                           dct:rights       [  a                     dct:RightsStatement , odrs:RightsStatement ;
+                                                               dct:type              <https://w3id.org/mobilitydcat-ap/conditions-for-access-and-usage/free-of-charge> ;
+                                                               odrs:reuserGuidelines <https://testdirektoratet.no/guidelines/1> ,
+                                                                                     <https://testdirektoratet.no/guidelines/2>
+                                                            ]
+                                        ] .
+                """.trimIndent()
+
+            val m = ModelFactory.createDefaultModel()
+            m.read(StringReader(turtle), null, "TURTLE")
+            val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
+
+            val rights = subject.extractListOfDistributionsV3(DCAT.distribution)?.single()?.rights
+
+            assertEquals(
+                ReferenceDataCode().apply {
+                    uri = "https://w3id.org/mobilitydcat-ap/conditions-for-access-and-usage/free-of-charge"
+                    code = "free-of-charge"
+                },
+                rights?.type,
+            )
+            assertEquals(
+                listOf("https://testdirektoratet.no/guidelines/1", "https://testdirektoratet.no/guidelines/2"),
+                rights?.reuserGuidelines?.map { it.toString() }?.sorted(),
+            )
+        }
+
+        @Test
+        fun extractDistributionRightsWithOnlyReuserGuidelines() {
+            val turtle =
+                """
+                @prefix dct:   <http://purl.org/dc/terms/> .
+                @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+                @prefix odrs:  <http://schema.theodi.org/odrs#> .
+
+                <https://testdirektoratet.no/model/dataset/0>
+                    a                   dcat:Dataset ;
+                    dcat:distribution   [  a                dcat:Distribution ;
+                                           dcat:accessURL   <https://testdirektoratet.no/access> ;
+                                           dct:rights       [  a                     odrs:RightsStatement ;
+                                                               odrs:reuserGuidelines <https://testdirektoratet.no/guidelines>
+                                                            ]
+                                        ] .
+                """.trimIndent()
+
+            val m = ModelFactory.createDefaultModel()
+            m.read(StringReader(turtle), null, "TURTLE")
+            val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
+
+            val expected =
+                RightsStatement().apply { reuserGuidelines = listOf("https://testdirektoratet.no/guidelines") }
+
+            assertEquals(expected, subject.extractListOfDistributionsV3(DCAT.distribution)?.single()?.rights)
+        }
+
+        @Test
         fun extractDistributionFormats() {
             val turtle =
                 """

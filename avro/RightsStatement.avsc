@@ -18,6 +18,17 @@
         "no.digdir.fdk.model.LocalizedStrings"
       ],
       "doc": "The text of the Rights Statement."
+    },
+    {
+      "name": "reuserGuidelines",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": "string"
+        }
+      ],
+      "doc": "Links to documents with guidelines for re-users of data covered by the Rights Statement."
     }
   ]
 }
