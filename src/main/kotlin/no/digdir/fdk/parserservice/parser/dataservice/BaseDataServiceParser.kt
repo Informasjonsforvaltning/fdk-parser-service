@@ -10,6 +10,7 @@ import no.digdir.fdk.parserservice.extract.extractListOfContactPoints
 import no.digdir.fdk.parserservice.extract.extractListOfCosts
 import no.digdir.fdk.parserservice.extract.extractListOfFormats
 import no.digdir.fdk.parserservice.extract.extractListOfReferenceDataCodes
+import no.digdir.fdk.parserservice.extract.extractListOfStandards
 import no.digdir.fdk.parserservice.extract.extractListOfStrings
 import no.digdir.fdk.parserservice.extract.extractListOfUriWithLabel
 import no.digdir.fdk.parserservice.extract.extractLocalizedStringList
@@ -33,7 +34,6 @@ import org.apache.jena.sparql.vocabulary.FOAF
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.DC_11
-import org.apache.jena.vocabulary.RDFS
 import org.apache.jena.vocabulary.SKOS
 
 /**
@@ -124,7 +124,7 @@ abstract class BaseDataServiceParser : DataServiceParserStrategy {
         setCosts(dataServiceResource.extractListOfCosts())
         setLicense(dataServiceResource.extractReferenceDataCode(DCTerms.license, DC_11.identifier, SKOS.prefLabel))
         setConformsTo(
-            dataServiceResource.extractListOfUriWithLabel(DCTerms.conformsTo, listOf(RDFS.seeAlso, DCTerms.source), DCTerms.title),
+            dataServiceResource.extractListOfStandards(),
         )
         setContactPoint(dataServiceResource.extractListOfContactPoints())
 

@@ -67,7 +67,7 @@
         "null",
         {
           "type": "array",
-          "items": "no.digdir.fdk.model.UriWithLabel"
+          "items": "no.digdir.fdk.model.Standard"
         }
       ],
       "doc": "Established schemas to which the described distribution conforms"

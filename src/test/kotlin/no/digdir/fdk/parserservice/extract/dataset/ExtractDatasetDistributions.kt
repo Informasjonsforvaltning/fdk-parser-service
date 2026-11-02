@@ -5,6 +5,7 @@ import no.digdir.fdk.model.FormatType
 import no.digdir.fdk.model.LocalizedStrings
 import no.digdir.fdk.model.ReferenceDataCode
 import no.digdir.fdk.model.RightsStatement
+import no.digdir.fdk.model.Standard
 import no.digdir.fdk.model.UriWithLabel
 import no.digdir.fdk.model.UriWithLabelAndType
 import no.digdir.fdk.model.dataset.AccessService
@@ -129,8 +130,9 @@ class ExtractDatasetDistributions {
             val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
 
             val expectedConformsTo =
-                UriWithLabel().apply {
+                Standard().apply {
                     uri = "https://conforms.to"
+                    seeAlso = listOf("https://conforms.to")
                     prefLabel = LocalizedStrings().apply { en = "Conforms to" }
                 }
 
@@ -189,8 +191,9 @@ class ExtractDatasetDistributions {
             val subject = m.listSubjectsWithProperty(RDF.type, DCAT.Dataset).toList().first()
 
             val expectedConformsTo =
-                UriWithLabel().apply {
+                Standard().apply {
                     uri = "https://conforms.to"
+                    seeAlso = listOf("https://conforms.to")
                     prefLabel = LocalizedStrings().apply { nb = "Conforms to" }
                 }
 

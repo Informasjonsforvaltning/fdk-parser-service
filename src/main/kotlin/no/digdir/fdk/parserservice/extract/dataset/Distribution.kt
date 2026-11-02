@@ -4,6 +4,7 @@ import no.digdir.fdk.model.dataset.Distribution
 import no.digdir.fdk.parserservice.extract.extractFormat
 import no.digdir.fdk.parserservice.extract.extractListOfFormats
 import no.digdir.fdk.parserservice.extract.extractListOfLegalResources
+import no.digdir.fdk.parserservice.extract.extractListOfStandards
 import no.digdir.fdk.parserservice.extract.extractListOfStrings
 import no.digdir.fdk.parserservice.extract.extractListOfUriWithLabel
 import no.digdir.fdk.parserservice.extract.extractListOfUriWithLabelAndType
@@ -21,7 +22,6 @@ import org.apache.jena.sparql.vocabulary.FOAF
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.DC_11
-import org.apache.jena.vocabulary.RDFS
 import org.apache.jena.vocabulary.SKOS
 
 private fun Distribution.hasContent() = when {
@@ -47,7 +47,7 @@ private fun Resource.addCommonDistributionValuesToBuilder(builder: Distribution.
         .setDescription(extractLocalizedStrings(DCTerms.description))
         .setDownloadURL(extractListOfStrings(DCAT.downloadURL))
         .setLicense(extractListOfUriWithLabelAndType(DCTerms.license, DCTerms.source, SKOS.prefLabel))
-        .setConformsTo(extractListOfUriWithLabel(DCTerms.conformsTo, listOf(RDFS.seeAlso, DCTerms.source), DCTerms.title))
+        .setConformsTo(extractListOfStandards())
         .setPage(extractListOfUriWithLabelAndType(FOAF.page, DCTerms.source, SKOS.prefLabel))
 }
 

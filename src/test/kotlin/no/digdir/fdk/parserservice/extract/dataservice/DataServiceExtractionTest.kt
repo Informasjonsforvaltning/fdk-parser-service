@@ -10,6 +10,7 @@ import no.digdir.fdk.model.LosNode
 import no.digdir.fdk.model.Organization
 import no.digdir.fdk.model.ReferenceDataCode
 import no.digdir.fdk.model.ResourceType
+import no.digdir.fdk.model.Standard
 import no.digdir.fdk.model.UriWithLabel
 import no.digdir.fdk.model.dataservice.DataService
 import no.digdir.fdk.parserservice.parser.dataservice.DcatApNoV2Parser
@@ -97,7 +98,13 @@ class DataServiceExtractionTest {
                     }
                 language = listOf(ReferenceDataCode().apply { uri = "http://publications.europa.eu/resource/authority/language/NOB" })
                 keyword = listOf(LocalizedStrings().apply { en = "keyword" })
-                conformsTo = listOf(UriWithLabel().apply { uri = "https://api.example.com/spec" })
+                conformsTo =
+                    listOf(
+                        Standard().apply {
+                            uri = "https://api.example.com/spec"
+                            seeAlso = listOf("https://api.example.com/spec")
+                        },
+                    )
                 dctType = "API"
                 endpointURL = listOf("https://api.example.com/data")
                 endpointDescription = listOf("https://api.example.com/docs")
