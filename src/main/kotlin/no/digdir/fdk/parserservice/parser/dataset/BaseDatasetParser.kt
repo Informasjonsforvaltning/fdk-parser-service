@@ -13,6 +13,7 @@ import no.digdir.fdk.parserservice.extract.extractEurovoc
 import no.digdir.fdk.parserservice.extract.extractListOfContactPoints
 import no.digdir.fdk.parserservice.extract.extractListOfLegalResources
 import no.digdir.fdk.parserservice.extract.extractListOfReferenceDataCodes
+import no.digdir.fdk.parserservice.extract.extractListOfStandards
 import no.digdir.fdk.parserservice.extract.extractListOfStrings
 import no.digdir.fdk.parserservice.extract.extractListOfTemporal
 import no.digdir.fdk.parserservice.extract.extractListOfUriWithLabel
@@ -36,7 +37,6 @@ import org.apache.jena.sparql.vocabulary.FOAF
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.DC_11
-import org.apache.jena.vocabulary.RDFS
 import org.apache.jena.vocabulary.SKOS
 
 /**
@@ -131,7 +131,7 @@ abstract class BaseDatasetParser : DatasetParserStrategy {
         setDctType(datasetResource.extractListOfReferenceDataCodes(DCTerms.type, DC_11.identifier, SKOS.prefLabel))
         setProvenance(datasetResource.extractReferenceDataCode(DCTerms.provenance, EUAT.authorityCode, SKOS.prefLabel))
         setSpatial(datasetResource.extractListOfReferenceDataCodes(DCTerms.spatial, DCTerms.identifier, DCTerms.title))
-        setConformsTo(datasetResource.extractListOfUriWithLabel(DCTerms.conformsTo, listOf(RDFS.seeAlso, DCTerms.source), DCTerms.title))
+        setConformsTo(datasetResource.extractListOfStandards())
         setSubject(datasetResource.extractListOfSubjects())
 
         setType(ResourceType.datasets)
