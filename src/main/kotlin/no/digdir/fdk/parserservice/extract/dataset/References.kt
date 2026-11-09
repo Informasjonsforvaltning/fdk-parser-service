@@ -5,6 +5,7 @@ import no.digdir.fdk.model.UriWithLabel
 import no.digdir.fdk.model.dataset.Reference
 import no.digdir.fdk.parserservice.extract.extractLocalizedStrings
 import no.digdir.fdk.parserservice.extract.listResources
+import no.digdir.fdk.parserservice.vocabulary.DCAT3
 import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.vocabulary.DCTerms
@@ -47,6 +48,8 @@ private fun Resource.buildReference(predicate: Property): Reference? {
 fun Resource.extractListOfReferences(): List<Reference>? {
     val referencePredicates =
         listOf(
+            DCAT3.hasVersion,
+            DCAT3.isVersionOf,
             DCTerms.hasVersion,
             DCTerms.isVersionOf,
             DCTerms.isPartOf,
