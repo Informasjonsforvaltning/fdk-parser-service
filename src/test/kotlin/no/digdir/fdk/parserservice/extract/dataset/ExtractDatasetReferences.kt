@@ -24,6 +24,8 @@ class ExtractDatasetReferences {
 
             <https://testdirektoratet.no/model/dataset/0>
                 a                   dcat:Dataset ;
+                dcat:hasVersion     <https://dcat-hasversion.no> ;
+                dcat:isVersionOf    <https://dcat-isversionof.no> ;
                 dct:hasVersion      <https://hasversion.no> ;
                 dct:isVersionOf     <https://isversionof.no> ;
                 dct:isPartOf        <https://ispartof.no> ;
@@ -48,6 +50,14 @@ class ExtractDatasetReferences {
 
         val expected =
             listOf(
+                Reference().apply {
+                    referenceType = ReferenceDataCode().apply { uri = "http://www.w3.org/ns/dcat#hasVersion" }
+                    source = UriWithLabel().apply { uri = "https://dcat-hasversion.no" }
+                },
+                Reference().apply {
+                    referenceType = ReferenceDataCode().apply { uri = "http://www.w3.org/ns/dcat#isVersionOf" }
+                    source = UriWithLabel().apply { uri = "https://dcat-isversionof.no" }
+                },
                 Reference().apply {
                     referenceType = ReferenceDataCode().apply { uri = "http://purl.org/dc/terms/hasVersion" }
                     source = UriWithLabel().apply { uri = "https://hasversion.no" }
