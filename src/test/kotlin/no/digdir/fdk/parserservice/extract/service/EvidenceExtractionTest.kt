@@ -110,6 +110,54 @@ class EvidenceExtractionTest {
     }
 
     @Test
+    fun extractRequiredEvidenceWithDatasetTypeAndValidityDuration() {
+        val turtle =
+            """
+            @prefix cpsvno: <https://data.norge.no/vocabulary/cpsvno#> .
+            @prefix dct:    <http://purl.org/dc/terms/> .
+            @prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
+            @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+
+            <https://test.no/service>
+                a                           cpsvno:Service ;
+                cpsvno:hasRequiredEvidence  <https://test.no/evidence/1> .
+
+            <https://test.no/evidence/1>
+                a                       cpsvno:RequiredEvidence ;
+                dct:identifier          "1" ;
+                dct:isPartOf            <https://test.no/dataset/1> ,
+                                        <https://test.no/dataset/2> ;
+                dct:type                <https://data.norge.no/vocabulary/evidence-type#attestation> ;
+                cpsvno:validityDuration "P6M"^^xsd:duration .
+
+            <https://data.norge.no/vocabulary/evidence-type#attestation>
+                a               skos:Concept ;
+                skos:prefLabel  "Attest"@nb .
+            """.trimIndent()
+
+        val m = ModelFactory.createDefaultModel()
+        m.read(StringReader(turtle), null, "TURTLE")
+        val subject = m.getResource("https://test.no/service")
+
+        val result = subject.extractListOfServiceEvidence(CPSVNO.hasRequiredEvidence)
+        assertEquals(1, result?.size)
+        val evidence = result!!.first()
+
+        assertEquals("https://data.norge.no/vocabulary/cpsvno#RequiredEvidence", evidence.rdfType?.toString())
+        assertEquals(
+            listOf("https://test.no/dataset/1", "https://test.no/dataset/2"),
+            evidence.isPartOf?.map { it.toString() }?.sorted(),
+        )
+        assertEquals("P6M", evidence.validityDuration?.toString())
+
+        assertEquals(1, evidence.dctType?.size)
+        val type = evidence.dctType!!.first()
+        assertEquals("https://data.norge.no/vocabulary/evidence-type#attestation", type.uri?.toString())
+        assertEquals("attestation", type.code?.toString())
+        assertEquals("Attest", type.prefLabel?.nb?.toString())
+    }
+
+    @Test
     fun extractOfServiceEvidenceIsNullWhenNoRelevantValuesAreExtracted() {
         val turtle =
             """
