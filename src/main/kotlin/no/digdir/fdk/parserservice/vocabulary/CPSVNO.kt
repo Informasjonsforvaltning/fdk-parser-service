@@ -14,6 +14,7 @@ class CPSVNO {
         val ruleForDisclosure: Property = ResourceFactory.createProperty("${URI}ruleForDisclosure")
         val ruleForNonDisclosure: Property = ResourceFactory.createProperty("${URI}ruleForNonDisclosure")
         val ruleForDataProcessing: Property = ResourceFactory.createProperty("${URI}ruleForDataProcessing")
+        val validityDuration: Property = ResourceFactory.createProperty("${URI}validityDuration")
 
         val Service: Resource = ResourceFactory.createResource("${URI}Service")
     }

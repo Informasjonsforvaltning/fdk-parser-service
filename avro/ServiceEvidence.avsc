@@ -43,6 +43,16 @@
       "name": "page",
       "type": ["null", {"type": "array", "items": "string"}],
       "doc": "Pages related to the evidence"
+    },
+    {
+      "name": "isPartOf",
+      "type": ["null", {"type": "array", "items": "string"}],
+      "doc": "Datasets that the evidence can be part of"
+    },
+    {
+      "name": "validityDuration",
+      "type": ["null", "string"],
+      "doc": "Validity duration for the evidence, e.g. P6M"
     }
   ]
 }

@@ -424,7 +424,9 @@ class ServiceHandlerTest {
             "name": null,
             "description": null,
             "language": null,
-            "page": null
+            "page": null,
+            "isPartOf": null,
+            "validityDuration": null
           },
           {
             "uri": "http://public-service-publisher.fellesdatakatalog.digdir.no/evidence/3",
@@ -439,7 +441,9 @@ class ServiceHandlerTest {
               "en": null
             },
             "language": null,
-            "page": null
+            "page": null,
+            "isPartOf": null,
+            "validityDuration": null
           },
           {
             "uri": "http://public-service-publisher.fellesdatakatalog.digdir.no/evidence/1",
@@ -459,7 +463,9 @@ class ServiceHandlerTest {
               "en": null
             },
             "language": null,
-            "page": null
+            "page": null,
+            "isPartOf": null,
+            "validityDuration": null
           },
           {
             "uri": null,
@@ -469,7 +475,9 @@ class ServiceHandlerTest {
             "name": null,
             "description": null,
             "language": null,
-            "page": null
+            "page": null,
+            "isPartOf": null,
+            "validityDuration": null
           },
           {
             "uri": "http://public-service-publisher.fellesdatakatalog.digdir.no/evidence/4",
@@ -479,7 +487,9 @@ class ServiceHandlerTest {
             "name": null,
             "description": null,
             "language": null,
-            "page": null
+            "page": null,
+            "isPartOf": null,
+            "validityDuration": null
           },
           {
             "uri": "http://public-service-publisher.fellesdatakatalog.digdir.no/evidence/2",
@@ -499,7 +509,9 @@ class ServiceHandlerTest {
               "en": null
             },
             "language": null,
-            "page": null
+            "page": null,
+            "isPartOf": null,
+            "validityDuration": null
           }
         ]"""
         result.get("hasInput").toString().shouldEqualJson(expectedEvidence)

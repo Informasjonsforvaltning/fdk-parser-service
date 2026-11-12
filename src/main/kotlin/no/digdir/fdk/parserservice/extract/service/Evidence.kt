@@ -3,6 +3,7 @@ package no.digdir.fdk.parserservice.extract.service
 import no.digdir.fdk.model.service.ServiceEvidence
 import no.digdir.fdk.parserservice.extract.extractListOfReferenceDataCodes
 import no.digdir.fdk.parserservice.extract.extractListOfStrings
+import no.digdir.fdk.parserservice.extract.extractListOfUriOrIdentifier
 import no.digdir.fdk.parserservice.extract.extractLocalizedStrings
 import no.digdir.fdk.parserservice.extract.extractStringValue
 import no.digdir.fdk.parserservice.extract.extractURIStringValue
@@ -27,6 +28,8 @@ private fun ServiceEvidence.hasContent() = when {
     description != null -> true
     language != null -> true
     page != null -> true
+    isPartOf != null -> true
+    validityDuration != null -> true
     else -> false
 }
 
@@ -56,6 +59,8 @@ private fun Resource.buildServiceEvidence(): ServiceEvidence? {
         .setDescription(extractLocalizedStrings(DCTerms.description))
         .setLanguage(extractListOfReferenceDataCodes(DCTerms.language, EUAT.authorityCode, SKOS.prefLabel))
         .setPage(extractListOfStrings(FOAF.page))
+        .setIsPartOf(extractListOfUriOrIdentifier(DCTerms.isPartOf))
+        .setValidityDuration(extractStringValue(CPSVNO.validityDuration))
 
     return builder.build().takeIf { it.hasContent() }
 }
