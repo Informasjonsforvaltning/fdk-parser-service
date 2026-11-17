@@ -416,7 +416,8 @@ class DatasetExtractionTest {
                     dct:spatial            <https://data.geonorge.no/administrativeEnheter/fylke/id/34> ;
                     dct:provenance         <http://data.brreg.no/datakatalog/provinens/nasjonal> ;
                     dct:accrualPeriodicity <http://publications.europa.eu/resource/authority/frequency/ANNUAL> ;
-                    dct:type               <http://publications.europa.eu/resource/authority/dataset-type/TEST_DATA> .
+                    dct:type               <http://publications.europa.eu/resource/authority/dataset-type/TEST_DATA> ,
+                                           <https://data.norge.no/vocabulary/high-value-dataset-type#eu-hvd> .
 
                 <https://data.geonorge.no/administrativeEnheter/fylke/id/34>
                     a               dct:Location;
@@ -435,6 +436,10 @@ class DatasetExtractionTest {
                 <http://publications.europa.eu/resource/authority/dataset-type/TEST_DATA>
                     dc:identifier   "TEST_DATA" ;
                     skos:prefLabel  "Testdata"@nn , "Test data"@en , "Testdata"@no , "Testdata"@nb .
+
+                <https://data.norge.no/vocabulary/high-value-dataset-type#eu-hvd>
+                    dct:identifier  "https://data.norge.no/vocabulary/high-value-dataset-type#eu-hvd" ;
+                    skos:prefLabel  "Datasett av høg verdi (EU)"@nn , "High-value dataset (EU)"@en , "Datasett av høy verdi (EU)"@nb .
                 """.trimIndent()
 
             val expectedSpatial =
@@ -487,6 +492,18 @@ class DatasetExtractionTest {
                         }
                 }
 
+            val expectedHighValueType =
+                ReferenceDataCode().apply {
+                    uri = "https://data.norge.no/vocabulary/high-value-dataset-type#eu-hvd"
+                    code = "eu-hvd"
+                    prefLabel =
+                        LocalizedStrings().apply {
+                            nb = "Datasett av høy verdi (EU)"
+                            nn = "Datasett av høg verdi (EU)"
+                            en = "High-value dataset (EU)"
+                        }
+                }
+
             val m = ModelFactory.createDefaultModel()
             m.read(StringReader(turtle), null, "TURTLE")
             val result = parser.parse(m, datasetIRI, fdkId)
@@ -494,7 +511,7 @@ class DatasetExtractionTest {
             assertEquals(expectedSpatial, result.spatial)
             assertEquals(expectedProvenance, result.provenance)
             assertEquals(expectedFrequency, result.accrualPeriodicity)
-            assertEquals(listOf(expectedType), result.dctType)
+            assertEquals(setOf(expectedType, expectedHighValueType), result.dctType?.toSet())
         }
 
         @Test
