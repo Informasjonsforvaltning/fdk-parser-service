@@ -56,7 +56,11 @@ private fun Resource.buildReferenceDataCode(codeSeparator: String?, labelPredica
  * @param labelPredicate The predicate for the label value
  * @return ReferenceDataCode if able to find any values for the object, null otherwise
  */
-private fun Resource.buildReferenceDataCode(codePredicate: Property, codeSeparators: List<String>, labelPredicate: Property): ReferenceDataCode? {
+private fun Resource.buildReferenceDataCode(
+    codePredicate: Property,
+    codeSeparators: List<String>,
+    labelPredicate: Property,
+): ReferenceDataCode? {
     val builder = ReferenceDataCode.newBuilder()
     val uri = extractURIStringValue()
 
