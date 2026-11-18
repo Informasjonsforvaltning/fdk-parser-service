@@ -49,6 +49,32 @@ private fun Resource.buildReferenceDataCode(codeSeparator: String?, labelPredica
 }
 
 /**
+ * Builds ReferenceDataCode, using a split of the uri as code when the code predicate is missing.
+ *
+ * @param codePredicate The predicate for the code value
+ * @param codeSeparators The separators used to split the code from the URI when the code predicate is missing
+ * @param labelPredicate The predicate for the label value
+ * @return ReferenceDataCode if able to find any values for the object, null otherwise
+ */
+private fun Resource.buildReferenceDataCode(
+    codePredicate: Property,
+    codeSeparators: List<String>,
+    labelPredicate: Property,
+): ReferenceDataCode? {
+    val builder = ReferenceDataCode.newBuilder()
+    val uri = extractURIStringValue()
+
+    builder
+        .setUri(uri)
+        .setCode(
+            extractStringValue(codePredicate)
+                ?: uri?.split(*codeSeparators.toTypedArray())?.lastOrNull()?.takeIf { it.isNotBlank() && it != uri },
+        ).setPrefLabel(extractLocalizedStrings(labelPredicate))
+
+    return builder.build().takeIf { it.hasContent() }
+}
+
+/**
  * Extracts values for a resource originating from fdk-reference-data.
  *
  * @param mainPredicate The predicate that points to the reference data from the originating resource
@@ -102,4 +128,23 @@ fun Resource.extractListOfReferenceDataCodes(
     labelPredicate: Property,
 ): List<ReferenceDataCode>? = listResources(mainPredicate)
     ?.mapNotNull { it.buildReferenceDataCode(codeSeparator, labelPredicate) }
+    ?.takeIf { it.isNotEmpty() }
+
+/**
+ * Extracts values for a list of resources originating from fdk-reference-data, using a split of the uri as code
+ * for resources missing the code predicate.
+ *
+ * @param mainPredicate The predicate that points to the reference data from the originating resource
+ * @param codePredicate The predicate for the code value
+ * @param codeSeparators The separators used to split the code from the URI when the code predicate is missing
+ * @param labelPredicate The predicate for the label value
+ * @return ReferenceDataCode if any exists, null otherwise
+ */
+fun Resource.extractListOfReferenceDataCodes(
+    mainPredicate: Property,
+    codePredicate: Property,
+    codeSeparators: List<String>,
+    labelPredicate: Property,
+): List<ReferenceDataCode>? = listResources(mainPredicate)
+    ?.mapNotNull { it.buildReferenceDataCode(codePredicate, codeSeparators, labelPredicate) }
     ?.takeIf { it.isNotEmpty() }
