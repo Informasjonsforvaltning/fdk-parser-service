@@ -443,6 +443,7 @@ class KafkaReasonedEventCircuitBreaker(
                 null,
                 null,
                 false,
+                null,
             )
         harvestEventProducer.sendMessage(harvestEvent)
     }
